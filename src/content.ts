@@ -12,7 +12,7 @@ export type Project = {
   categories: Category[];
   platforms: string[];
   /** Shown as a small drawn preview on the card. */
-  visual: "travel" | "payments" | "fleet" | "visa" | "trading" | "marketplace";
+  visual: "travel" | "payments" | "fleet" | "visa" | "trading" | "marketplace" | "assistant";
 };
 
 export type Category = "Automation" | "Manual" | "AI-first" | "API" | "Mobile" | "Performance";
@@ -44,9 +44,9 @@ export const site = {
   // Paste the codes from Google Search Console and Bing Webmaster Tools (meta-tag method).
   googleSiteVerification: "",
   bingSiteVerification: "",
-  title: "Tabeeda Shakir — Senior QA Engineer (Manual, Automation and AI-first QA)",
+  title: "Tabeeda Shakir — Senior QA Engineer, SDET & QA Automation (Playwright, RestAssured)",
   description:
-    "Tabeeda Shakir is a Senior QA Engineer with 5+ years in manual, automated and AI-first testing with Playwright, Java, RestAssured and SQL. Open to remote roles.",
+    "Tabeeda Shakir, Senior QA Engineer: 5+ years of test automation (Playwright, Selenium, RestAssured, Java), API, mobile and AI-first QA. Open to SDET and QA roles.",
 };
 
 export const person = {
@@ -56,18 +56,25 @@ export const person = {
   initials: "TS",
   role: "Senior QA Engineer",
   tagline: "Test · Improve · Deliver",
-  rotating: ["AI-first QA", "Manual QA", "Test automation", "API testing"],
+  rotatingLead: "Specialising in",
+  rotating: ["test automation", "API testing", "manual QA", "AI-first QA"],
+  targetRoles: ["Senior QA Engineer", "SDET", "QA Automation Engineer"],
+  rolesShort: "Senior QA · SDET · QA Automation",
   intro:
-    "Tabeeda Shakir is a Senior QA Engineer with 5+ years of experience in manual, automated and AI-first testing. She owns quality from test strategy to release sign-off for web, mobile and API products.",
+    "Tabeeda Shakir is a Senior QA Engineer with 5+ years in test automation, manual and AI-first testing, open to Senior QA, SDET and QA Automation roles. She owns quality from test strategy to release sign-off for web, mobile and API products.",
   heroLead:
-    "I help teams ship with confidence through manual, automated and AI-first testing: clear test strategy, fast regression and bugs caught before your users find them.",
+    "I own quality from test plan to go/no-go: Playwright and Selenium UI automation, RestAssured API tests in Java, and careful manual testing for web, mobile and API products.",
   quote: "Quality is not an act, it's a mindset.",
-  location: "Pakistan (previously Cyprus)",
-  country: "PK",
-  timezone: "Asia/Karachi",
-  timezoneLabel: "Pakistan",
-  openTo: "Remote roles and relocation to Cyprus, Dubai or the EU",
-  languages: "English, Urdu, Turkish (beginner)",
+  location: "Pakistan and Cyprus",
+  countries: ["PK", "CY"],
+  timezones: [
+    { label: "Pakistan", tz: "Asia/Karachi", offset: "UTC+5" },
+    { label: "Cyprus", tz: "Asia/Nicosia", offset: "UTC+2, UTC+3 in summer" },
+  ],
+  workAuthorisation: "Authorised to work in Pakistan and Cyprus, and remotely from anywhere",
+  openTo: "Remote, hybrid or on-site roles, and relocation within the EU or the GCC",
+  employment: "Full-time or long-term contract",
+  languages: "English (professional), Urdu, Turkish (beginner)",
   available: "Open to new roles",
   email: "tabeeda1@gmail.com",
   linkedin: "https://www.linkedin.com/in/tabeeda-shakirshah101010",
@@ -88,7 +95,7 @@ export const stats = [
 export const about = {
   paragraphs: [
     "I'm a Senior QA Engineer with 5+ years in software testing across SaaS, travel, logistics, e-commerce and fintech, including time as the only QA engineer at a startup. Today I lead QA for travel, logistics and fleet products at Epicmetry, a Dubai-based company.",
-    "I combine careful manual and exploratory testing with automation that teams rely on: Playwright for UI, RestAssured and Postman for APIs, all running in CI. I work AI-first, using AI tools to design tests faster and to test AI-powered features properly.",
+    "I combine careful manual and exploratory testing with automation that teams rely on: Playwright and Selenium for UI, RestAssured (Java) and Postman for APIs, all running in CI with GitHub Actions, Jenkins or Azure DevOps. I work AI-first: AI helps me write and debug test code and find edge cases faster, and I review everything it suggests.",
     "I get involved early, write bug reports developers like to receive, and give clear go/no-go calls on releases.",
   ],
 };
@@ -97,8 +104,8 @@ export const services = [
   {
     icon: "sparkles",
     title: "AI-first QA",
-    text: "I use AI to design test cases, generate test data and draft Playwright and API tests faster, then review every result. I also test AI-powered features for accuracy, consistency and safety.",
-    points: ["AI-assisted test design", "LLM and chatbot testing", "Prompt-based test generation"],
+    text: "AI is part of my daily workflow. I use ChatGPT, Claude and GitHub Copilot to draft and debug Playwright and RestAssured code, explain unfamiliar errors and APIs, and suggest edge cases I might have missed, then I review and run everything before it's merged. I also test AI features, like the chat assistant on this site, for honesty, accuracy and safety.",
+    points: ["AI pair-programming for test code", "AI-suggested edge cases, human-reviewed", "Testing AI and LLM features"],
   },
   {
     icon: "clipboard",
@@ -109,8 +116,8 @@ export const services = [
   {
     icon: "automation",
     title: "Test automation",
-    text: "UI suites in Playwright and Selenium, API suites in RestAssured with TestNG, running in GitHub Actions, Azure DevOps or Jenkins.",
-    points: ["Playwright and Selenium", "Page objects and fixtures", "CI pipelines"],
+    text: "UI suites in Playwright and Selenium, API suites in RestAssured (Java) with TestNG, running in CI/CD pipelines on GitHub Actions, Jenkins or Azure DevOps.",
+    points: ["Playwright and Selenium", "RestAssured, Java and TestNG", "GitHub Actions, Jenkins, Azure DevOps"],
   },
   {
     icon: "api",
@@ -161,8 +168,8 @@ export const projects: Project[] = [
     slug: "fleetify",
     name: "Fleetify",
     company: "Epicmetry",
-    domain: "Fleet management",
-    summary: "Fleet management platform. I covered login and role flows, core fleet workflows and performance under load.",
+    domain: "Fleet management (GCC)",
+    summary: "Fleet management app used in the GCC. I covered login and role flows, core fleet workflows and performance under load.",
     highlights: ["Login and permission flows", "Core fleet workflows", "Performance testing"],
     tags: ["Login flows", "Performance", "Regression"],
     categories: ["Manual", "Performance", "Automation"],
@@ -184,9 +191,9 @@ export const projects: Project[] = [
   {
     slug: "trading-platforms",
     name: "Forex, gold and crypto platforms",
-    company: "Maleyat Group",
+    company: "Maleyat Group (now Naqdi)",
     domain: "Fintech",
-    summary: "CRM and CMS trading platforms. I led regression and backend validation, catching MetaTrader 5 issues before production.",
+    summary: "CRM and CMS platforms for forex, gold and crypto trading. I led regression and backend validation, catching MetaTrader 5 issues before production.",
     highlights: ["120+ regression test cases", "350+ BDD (Gherkin) scenarios", "MetaTrader 5 validation"],
     tags: ["Fintech", "BDD", "MT5"],
     categories: ["Manual", "API"],
@@ -199,11 +206,23 @@ export const projects: Project[] = [
     company: "Dastgyr",
     domain: "E-commerce",
     summary: "High-transaction marketplace with retailer, seller and warehouse apps, plus 3 logistics apps for pickup, transit and delivery.",
-    highlights: ["800+ validation scenarios on iOS, Android and web", "Nightly Jenkins regression with RestAssured", "JMeter load tests"],
-    tags: ["Mobile", "Jenkins", "JMeter"],
+    highlights: ["800+ validation scenarios on iOS, Android and web", "Selenium UI and RestAssured API tests in Java, run nightly in Jenkins", "JMeter load tests"],
+    tags: ["Mobile", "Selenium", "Jenkins"],
     categories: ["Mobile", "Automation", "Performance", "Manual"],
     platforms: ["iOS", "Android", "Web"],
     visual: "marketplace",
+  },
+  {
+    slug: "portfolio-ai-assistant",
+    name: "AI chat assistant",
+    company: "This portfolio",
+    domain: "AI and LLM features",
+    summary: "A recruiter-facing assistant that answers from my CV, with an optional Claude mode. I tested it like a product: honesty, prompt injection, outages and rate limits.",
+    highlights: ["Answers only from my CV and never invents experience", "Prompt-injection, off-topic and salary questions tested", "AI service mocked in Playwright; API key server unit-tested"],
+    tags: ["LLM testing", "Prompt injection", "Playwright"],
+    categories: ["AI-first", "Automation", "API"],
+    platforms: ["Web", "API"],
+    visual: "assistant",
   },
 ];
 
@@ -217,7 +236,7 @@ export const caseStudies: CaseStudy[] = [
     summary: "300+ Playwright, RestAssured and Postman/Newman tests in GitHub Actions cut full regression from 2–3 days to under a day.",
     tags: ["Playwright", "RestAssured", "Postman / Newman", "GitHub Actions", "TestRail"],
     context: {
-      product: "Three SaaS products across travel, logistics and fleet management, on web, mobile and API",
+      product: "Three SaaS products at Epicmetry (Al Rais Travel, Modon Express and Tawla.ae) on web, mobile and API",
       team: "Agile product teams",
       role: "QA lead: test strategy, automation, bug triage and release readiness",
     },
@@ -261,7 +280,7 @@ export const caseStudies: CaseStudy[] = [
     area: "Mobile and web at scale",
     title: "QA across a B2B marketplace and its logistics apps",
     summary: "Owned QA across six marketplace and logistics apps and moved regression into nightly Jenkins builds, cutting manual verification by about 50% per sprint.",
-    tags: ["RestAssured", "Jenkins", "JMeter", "TestRail", "SQL"],
+    tags: ["Selenium", "RestAssured", "Java", "Jenkins", "JMeter", "SQL"],
     context: {
       product: "High-transaction B2B marketplace connecting retailers with suppliers: retailer, seller and warehouse-picker apps, plus 3 logistics apps for pickup, transit and delivery",
       role: "QA owner for the marketplace apps and QA lead for the logistics apps",
@@ -269,7 +288,7 @@ export const caseStudies: CaseStudy[] = [
     challenge: "Every order passed through several apps on iOS, Android and web, from retailer to warehouse to delivery.",
     approach: [
       { decision: "Designed 800+ validation scenarios across iOS, Android and web" },
-      { decision: "Automated API tests with RestAssured and ran them in nightly Jenkins regression builds" },
+      { decision: "Automated UI tests with Selenium WebDriver and API tests with RestAssured in Java, and ran them in nightly Jenkins regression builds" },
       { decision: "Load-tested the backend with JMeter", why: "To validate backend performance under real marketplace traffic." },
       { decision: "Validated backend data with SQL across seller, retailer and logistics modules", why: "To confirm data stayed consistent between the apps, not only on screen." },
     ],
@@ -278,6 +297,31 @@ export const caseStudies: CaseStudy[] = [
       { value: "800+", label: "validation scenarios before release" },
       { value: "6", label: "marketplace and logistics apps covered" },
     ],
+  },
+  {
+    slug: "testing-an-ai-chat-assistant",
+    area: "AI-first QA",
+    title: "Testing an AI chat assistant before recruiters use it",
+    summary: "Built this site's chat assistant with AI pair-programming and tested it like a product: no invented experience, safe with prompt injection, useful when AI is down.",
+    tags: ["LLM testing", "Playwright", "Node test runner", "Cloudflare Workers", "Claude API"],
+    context: {
+      product: "The \"Ask about me\" assistant on this portfolio: built-in answers from my CV, plus an optional Claude mode behind a small Cloudflare Worker that keeps the API key secret",
+      role: "Owner and QA: defined what the assistant may say, designed the test strategy, and used AI as a coding partner to build it",
+    },
+    challenge: "An assistant that talks to recruiters must never invent experience, leak its API key, drift off topic or break when the AI service fails. One made-up skill in front of a hiring manager would cost more than having no chatbot at all.",
+    approach: [
+      { decision: "Made the CV the single source of truth: built-in answers and the AI both read from the same content", why: "So the chat, the website and the CV can't disagree." },
+      { decision: "Tested the awkward questions first: tools not on my CV, salary, visas, personal questions and prompt injection", why: "These are the questions that expose an assistant that guesses." },
+      { decision: "Mocked the AI service in Playwright to test replies, conversation history, outages and rate limits", why: "Fast, free and repeatable tests, without calling a paid API on every run." },
+      { decision: "Unit-tested the server that holds the API key: allowed websites, input limits, rate limiting and hidden error details" },
+      { decision: "Used AI throughout the build, for drafting code, explaining errors and suggesting edge cases, and reviewed every change in CI before it went live", why: "AI makes me faster; review and tests keep it trustworthy." },
+    ],
+    metrics: [
+      { value: "20+", label: "automated tests for the chat and its AI server" },
+      { value: "3", label: "browsers on every push: Chrome, Firefox and mobile" },
+      { value: "0", label: "API keys in the website code" },
+    ],
+    lessons: "AI is a great pair-programmer for test code, but its output still needs a tester's eye, which is exactly the standard I apply when testing AI features themselves.",
   },
 ];
 
@@ -311,11 +355,11 @@ export const experience = [
     tags: ["RestAssured", "TestNG", "Playwright", "SQL", "JMeter"],
   },
   {
-    company: "Maleyat Group",
+    company: "Maleyat Group (now Naqdi)",
     role: "SQA Specialist",
     period: "Jan 2024 – Jun 2024",
     location: "Remote · UAE",
-    summary: "Forex, gold and crypto trading platforms.",
+    summary: "Forex, gold and crypto trading platforms (MetaTrader 5).",
     bullets: [
       "Led regression and backend validation on CRM/CMS trading platforms with 120+ test cases, catching MetaTrader 5 issues before production.",
       "Wrote and maintained 350+ functional and BDD (Gherkin) scenarios for dashboards, onboarding and trading logic.",
@@ -332,10 +376,10 @@ export const experience = [
     bullets: [
       "Owned QA for a high-transaction B2B marketplace (retailer, seller and warehouse apps) and led QA for 3 logistics apps.",
       "Designed and ran 800+ validation scenarios across iOS, Android and web before release.",
-      "Added RestAssured API tests to nightly Jenkins regression builds, cutting manual verification by about 50% per sprint.",
+      "Automated UI tests with Selenium WebDriver and API tests with RestAssured in Java, running in nightly Jenkins regression builds and cutting manual verification by about 50% per sprint.",
       "Validated backend data integrity with SQL and tracked results in TestRail.",
     ],
-    tags: ["Mobile", "RestAssured", "Jenkins", "SQL"],
+    tags: ["Mobile", "Selenium", "RestAssured", "Java", "Jenkins"],
   },
   {
     company: "Squarera (A DataPillar Company)",
@@ -363,7 +407,7 @@ export const skillGroups = [
   { group: "Manual QA", items: ["Manual testing", "Test case design", "Exploratory testing", "Regression and smoke", "UAT", "Cross-browser and responsive", "Bug reporting and triage"] },
   { group: "Automation", items: ["Playwright", "Selenium", "RestAssured", "TestNG", "JUnit", "Postman", "Newman", "Gherkin (BDD)"] },
   { group: "Languages and data", items: ["Java", "JavaScript", "SQL"] },
-  { group: "CI/CD and tools", items: ["GitHub Actions", "Azure DevOps", "Jenkins", "Git", "Jira", "TestRail", "Confluence", "Figma"] },
+  { group: "CI/CD and tools", items: ["GitHub Actions", "Jenkins", "Azure DevOps", "CI/CD pipelines", "Git", "GitHub", "Jira", "TestRail", "Confluence", "Figma"] },
   { group: "Performance and security", items: ["JMeter", "OWASP ZAP", "Chrome DevTools"] },
   { group: "Practices", items: ["Test strategy", "Agile / Scrum", "Shift-left testing", "Release readiness (go/no-go)", "Root cause analysis", "WCAG accessibility"] },
 ];
@@ -389,10 +433,12 @@ export const skillAliases: Record<string, string[]> = {
   Postman: ["postman"],
   Newman: ["newman"],
   "Gherkin (BDD)": ["gherkin", "bdd", "cucumber"],
-  JavaScript: ["javascript", "typescript", "node.js", "nodejs"],
+  JavaScript: ["javascript", "node.js", "nodejs"],
   SQL: ["sql", "mysql", "postgresql", "postgres", "database"],
-  "GitHub Actions": ["github actions", "ci/cd", "ci / cd", "continuous integration"],
-  "Azure DevOps": ["azure devops", "ado"],
+  "GitHub Actions": ["github actions"],
+  "CI/CD pipelines": ["ci/cd", "ci / cd", "ci-cd", "continuous integration", "continuous delivery", "pipeline", "pipelines"],
+  GitHub: ["github"],
+  "Azure DevOps": ["azure devops", "ado", "azure pipelines"],
   JMeter: ["jmeter", "load testing", "performance testing"],
   "OWASP ZAP": ["owasp", "zap", "security testing"],
   "Chrome DevTools": ["devtools", "dev tools"],
@@ -420,15 +466,23 @@ export const faqs = [
   },
   {
     q: "What does Tabeeda specialise in?",
-    a: "Manual and exploratory testing, test automation with Playwright and Selenium, API testing with RestAssured and Postman, and AI-first QA: using AI to design tests faster and testing AI-powered features.",
+    a: "Test automation with Playwright and Selenium, API testing with RestAssured (Java) and Postman, manual and exploratory testing, and AI-first QA: using AI to work faster and testing AI-powered features.",
   },
   {
     q: "Which tools does she use?",
-    a: "Playwright, Selenium, RestAssured, TestNG, Postman and Newman, Java, JavaScript and SQL, JMeter and OWASP ZAP, with GitHub Actions, Azure DevOps or Jenkins for CI, and Jira and TestRail for test management.",
+    a: "Playwright, Selenium, RestAssured, TestNG, Postman and Newman, Java, JavaScript and SQL, JMeter and OWASP ZAP, with GitHub Actions, Jenkins or Azure DevOps for CI/CD, Git and GitHub for version control, and Jira and TestRail for test management.",
   },
   {
-    q: "Where is she based, and is she open to remote work?",
-    a: "She is based in Pakistan, previously Cyprus, and is open to remote roles and to relocating to Cyprus, Dubai or the EU.",
+    q: "What roles is Tabeeda open to?",
+    a: "Senior QA Engineer, SDET and QA Automation Engineer roles, full-time or long-term contract. She works remote, hybrid or on-site, and is open to relocating within the EU or the GCC.",
+  },
+  {
+    q: "Where is she based, and can she work remotely?",
+    a: "She is based in Pakistan and Cyprus, is authorised to work in both, and works remotely from anywhere. Her time zones, Pakistan (UTC+5) and Cyprus (UTC+2, UTC+3 in summer), overlap with the Gulf and European working day.",
+  },
+  {
+    q: "How does she use AI in testing?",
+    a: "Every day: as a coding partner for Playwright and RestAssured test code, to explain errors and unfamiliar APIs, and to suggest edge cases. She reviews and runs everything before it is merged, and she tests AI features too, like the chat assistant on this site.",
   },
   {
     q: "How can I contact Tabeeda?",
@@ -438,10 +492,10 @@ export const faqs = [
 
 export const nav = [
   { id: "about", label: "About" },
-  { id: "services", label: "Services" },
+  { id: "experience", label: "Experience" },
   { id: "projects", label: "Projects" },
   { id: "case-studies", label: "Case studies" },
-  { id: "experience", label: "Experience" },
+  { id: "services", label: "Expertise" },
   { id: "skills", label: "Skills" },
   { id: "contact", label: "Contact" },
 ];

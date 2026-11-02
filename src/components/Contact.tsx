@@ -1,6 +1,6 @@
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { person, site } from "../content";
-import { useLocalTime } from "../lib/hooks";
+import { Clocks } from "./Clocks";
 import { Reveal } from "../lib/motion";
 import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
 import { CopyEmailButton } from "./Hero";
@@ -66,7 +66,6 @@ export function Contact() {
   const [mailto, setMailto] = useState("");
   const formRef = useRef<HTMLFormElement | null>(null);
   const resultRef = useRef<HTMLDivElement | null>(null);
-  const time = useLocalTime(person.timezone);
 
   const set = (key: keyof Fields) => (e: { target: { value: string } }) => {
     const value = e.target.value;
@@ -188,13 +187,7 @@ export function Contact() {
               <p className="mt-6 flex items-start gap-2.5 text-sm leading-relaxed text-mute">
                 <span className="mt-1.5 size-2 shrink-0 rounded-full bg-ok" aria-hidden="true" />
                 <span>
-                  {person.available}. {person.openTo}.
-                  {time && (
-                    <>
-                      {" "}
-                      It's <span className="font-mono text-ink">{time}</span> in {person.timezoneLabel}.
-                    </>
-                  )}
+                  {person.available}: {person.targetRoles.join(", ")}. {person.openTo}. Local time: <Clocks />.
                 </span>
               </p>
             </Reveal>

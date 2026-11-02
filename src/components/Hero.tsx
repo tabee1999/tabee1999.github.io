@@ -143,6 +143,40 @@ function HeroPhoto() {
   );
 }
 
+/** The facts recruiters check first, in one place near the top. */
+function QuickFacts() {
+  const facts = [
+    { icon: "briefcase", label: "Roles", value: person.targetRoles.join(" · ") },
+    { icon: "check", label: "Experience", value: "5+ years · Senior QA Engineer at Epicmetry" },
+    { icon: "mapPin", label: "Based in", value: person.location },
+    { icon: "passport", label: "Work authorisation", value: person.workAuthorisation },
+    { icon: "globe", label: "Open to", value: person.openTo },
+    { icon: "clipboard", label: "Employment", value: person.employment },
+    { icon: "quote", label: "Languages", value: person.languages },
+    { icon: "clock", label: "Time zones", value: person.timezones.map((t) => `${t.label} ${t.offset}`).join(" · ") },
+  ];
+  return (
+    <section aria-labelledby="facts-title" className="animate-rise order-2 lg:order-3 lg:col-span-2" style={{ animationDelay: "440ms" }}>
+      <h2 id="facts-title" className="sr-only">
+        Quick facts
+      </h2>
+      <dl className="glass grid gap-x-8 gap-y-5 p-5 sm:grid-cols-2 md:p-6 lg:grid-cols-4" data-testid="quick-facts">
+        {facts.map((f) => (
+          <div key={f.label} className="relative min-h-9 pl-12">
+            <dt className="text-xs font-semibold tracking-wide text-mute uppercase">
+              <span className="absolute top-0.5 left-0 grid size-9 place-items-center rounded-xl bg-brand-500/15 text-brand-200">
+                <Icon name={f.icon} className="size-4.5" />
+              </span>
+              {f.label}
+            </dt>
+            <dd className="mt-0.5 text-sm leading-snug text-ink">{f.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
 export function Hero() {
   return (
     <section id="top" aria-labelledby="hero-title" className="relative overflow-hidden pt-28 pb-10 md:pt-36 lg:pb-16">
@@ -157,15 +191,15 @@ export function Hero() {
         aria-hidden="true"
       />
 
-      <div className="wrap grid items-center gap-14 lg:grid-cols-[1.15fr_1fr] lg:gap-10">
-        <div className="max-w-[44rem]">
+      <div className="wrap grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-x-10 lg:gap-y-14">
+        <div className="order-1 max-w-[44rem]">
           <p className="animate-rise inline-flex items-center gap-2.5 rounded-full border border-line bg-white/[0.04] py-1.5 pr-4 pl-2 text-sm text-mute">
             <span className="relative flex size-2.5">
               <span className="animate-pulse-dot absolute inline-flex size-full rounded-full bg-ok" />
               <span className="relative inline-flex size-2.5 rounded-full bg-ok" />
             </span>
             <span>
-              <strong className="font-semibold text-ink">{person.available}</strong> · Remote or relocation
+              <strong className="font-semibold text-ink">{person.available}</strong> · {person.rolesShort}
             </span>
           </p>
 
@@ -182,7 +216,7 @@ export function Hero() {
             <span className="font-mono text-sm tracking-wide text-brand-300 uppercase">{person.tagline}</span>
             <span className="hidden h-4 w-px bg-line sm:block" aria-hidden="true" />
             <span>
-              5+ years in <RotatingWord />
+              {person.rotatingLead} <RotatingWord />
             </span>
           </p>
 
@@ -191,11 +225,11 @@ export function Hero() {
           </p>
 
           <div className="animate-rise mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: "400ms" }}>
-            <a href="#projects" className="btn btn-primary" data-testid="cta-work">
-              View my work <Icon name="arrowRight" className="arrow size-4" />
-            </a>
-            <a href={person.cv} download className="btn btn-ghost" data-testid="cta-cv">
+            <a href={person.cv} download className="btn btn-primary" data-testid="cta-cv">
               <Icon name="download" className="size-4" /> Download CV
+            </a>
+            <a href={`mailto:${person.email}`} className="btn btn-ghost" data-testid="cta-email">
+              <Icon name="mail" className="size-4" /> Email me
             </a>
             <div className="flex items-center gap-2 sm:ml-2">
               <a
@@ -220,27 +254,13 @@ export function Hero() {
             </div>
           </div>
 
-          <dl className="animate-rise mt-10 flex flex-wrap gap-x-8 gap-y-3 text-sm" style={{ animationDelay: "480ms" }}>
-            <div className="text-mute">
-              <dt className="sr-only">Location</dt>
-              <dd className="flex items-center gap-2">
-                <Icon name="mapPin" className="size-4 text-brand-300" />
-                {person.location}
-              </dd>
-            </div>
-            <div className="text-mute">
-              <dt className="sr-only">Current role</dt>
-              <dd className="flex items-center gap-2">
-                <Icon name="briefcase" className="size-4 text-brand-300" />
-                Senior QA Engineer at Epicmetry
-              </dd>
-            </div>
-          </dl>
         </div>
 
-        <div className="animate-rise" style={{ animationDelay: "200ms" }}>
+        <div className="animate-rise order-3 lg:order-2" style={{ animationDelay: "200ms" }}>
           <HeroPhoto />
         </div>
+
+        <QuickFacts />
       </div>
 
       {/* Stat cards */}

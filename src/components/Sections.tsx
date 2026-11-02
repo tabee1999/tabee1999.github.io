@@ -7,12 +7,6 @@ import { Section } from "./Layout";
 // ── About ─────────────────────────────────────────────────────────────────
 
 export function About() {
-  const facts = [
-    { icon: "mapPin", label: "Based in", value: person.location },
-    { icon: "globe", label: "Open to", value: person.openTo },
-    { icon: "briefcase", label: "Currently", value: "Senior QA Engineer at Epicmetry" },
-    { icon: "quote", label: "Languages", value: person.languages },
-  ];
   return (
     <Section id="about" eyebrow="About me" title="Quality from the first requirement to the release call">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] lg:gap-8">
@@ -38,19 +32,20 @@ export function About() {
               </p>
             </div>
           </div>
-          <dl className="mt-6 space-y-4 border-t border-line pt-6">
-            {facts.map((f) => (
-              <div key={f.label} className="relative min-h-9 pl-12">
-                <dt className="text-xs font-semibold tracking-wide text-mute uppercase">
-                  <span className="absolute top-0.5 left-0 grid size-9 place-items-center rounded-xl bg-brand-500/15 text-brand-200">
-                    <Icon name={f.icon} className="size-4.5" />
-                  </span>
-                  {f.label}
-                </dt>
-                <dd className="text-ink">{f.value}</dd>
-              </div>
+          <h3 className="mt-6 border-t border-line pt-6 text-sm font-semibold tracking-wide text-ink uppercase">How I work</h3>
+          <ol className="mt-4 space-y-4">
+            {process.map((step, i) => (
+              <li key={step.title} className="flex gap-3">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 font-mono text-xs font-bold text-white">
+                  {i + 1}
+                </span>
+                <span>
+                  <span className="block font-semibold text-ink">{step.title}</span>
+                  <span className="block text-sm leading-relaxed text-mute">{step.text}</span>
+                </span>
+              </li>
             ))}
-          </dl>
+          </ol>
           <div className="mt-7 flex flex-wrap gap-3">
             <a href={person.cv} download className="btn btn-primary btn-sm">
               <Icon name="download" className="size-4" /> Download CV
@@ -93,28 +88,31 @@ export function About() {
   );
 }
 
-// ── Services ──────────────────────────────────────────────────────────────
+// ── Expertise (section id "services") ─────────────────────────────────────
+
+/** Automation first for SDET and QA Automation roles; AI-first and manual QA right after. */
+const expertiseOrder = ["Test automation", "AI-first QA", "Manual and exploratory QA", "API testing", "Web and mobile testing", "Performance and security"];
 
 export function Services() {
   return (
     <Section
       id="services"
-      eyebrow="What I do"
-      title="Manual, automated and AI-first QA"
-      lead="Five years of hands-on testing across web, mobile and APIs. I pick the right mix for your product instead of automating everything."
+      eyebrow="Expertise"
+      title="Automated, manual and AI-first QA"
+      lead="Five years of hands-on testing across web, mobile and APIs. I pick the right mix for each product instead of automating everything."
     >
       <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {services.map((s, i) => (
+        {expertiseOrder.map((title) => services.find((s) => s.title === title)!).map((s, i) => (
           <Reveal as="li" key={s.title} delay={(i % 3) * 90} className="glass spotlight group flex flex-col p-6 md:p-7" onPointerMove={trackSpotlight}>
             <div className="flex items-start justify-between">
               <span className="grid size-12 place-items-center rounded-2xl bg-gradient-to-br from-brand-400/30 to-brand-700/30 text-brand-200 ring-1 ring-brand-300/20 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
                 <Icon name={s.icon} className="size-6" />
               </span>
-              {i < 2 && <span className="chip !text-xs">Core strength</span>}
+              {i < 3 && <span className="chip !text-xs">Core strength</span>}
             </div>
             <h3 className="mt-5 text-xl font-bold text-ink">{s.title}</h3>
             <p className="mt-2 leading-relaxed text-mute">{s.text}</p>
-            <ul className="mt-5 space-y-2 border-t border-line pt-5 text-sm">
+            <ul className="mt-5 hidden space-y-2 border-t border-line pt-5 text-sm sm:block">
               {s.points.map((p) => (
                 <li key={p} className="flex items-center gap-2 text-ink">
                   <Icon name="check" className="size-4 text-ok" /> {p}
@@ -124,31 +122,6 @@ export function Services() {
           </Reveal>
         ))}
       </ul>
-    </Section>
-  );
-}
-
-// ── Process ───────────────────────────────────────────────────────────────
-
-export function Process() {
-  return (
-    <Section id="process" eyebrow="How I work" title="A simple process that keeps releases calm">
-      <div className="relative">
-      <div className="absolute top-11 right-[12%] left-[12%] hidden h-px bg-gradient-to-r from-transparent via-brand-400/50 to-transparent lg:block" aria-hidden="true" />
-      <ol className="relative grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {process.map((step, i) => (
-          <Reveal as="li" key={step.title} delay={i * 110} className="relative">
-            <div className="glass spotlight h-full p-6" onPointerMove={trackSpotlight}>
-              <span className="relative grid size-10 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 font-mono text-sm font-bold text-white shadow-lg shadow-brand-700/40">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="mt-4 text-lg font-bold text-ink">{step.title}</h3>
-              <p className="mt-2 leading-relaxed text-mute">{step.text}</p>
-            </div>
-          </Reveal>
-        ))}
-      </ol>
-      </div>
     </Section>
   );
 }

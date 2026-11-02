@@ -34,19 +34,33 @@ test.describe("chat (built-in answers)", () => {
     await openChat(page);
     await page.getByRole("button", { name: "Does she know Playwright?" }).click();
     const reply = page.getByTestId("chat-answer").last();
-    await expect(reply).toContainText("Playwright is part of Tabeeda's day-to-day toolkit");
+    await expect(reply).toContainText("hands-on experience with Playwright");
     await expect(reply).toContainText("Epicmetry");
     await expect(reply.getByRole("link", { name: "Download CV" })).toHaveAttribute("download", "");
   });
 
   test("answers typed questions about availability, skills and contact", async ({ page }) => {
     await openChat(page);
-    await expect(await ask(page, "Is she open to remote work?")).toContainText("open to remote roles and relocation");
+    await expect(await ask(page, "Is she open to remote work?")).toContainText("open to remote, hybrid or on-site roles");
     await expect(await ask(page, "Does she know Cypress?")).toContainText("Cypress isn't on her CV");
     const contact = await ask(page, "How can I contact her?");
     await expect(contact).toContainText(person.email);
     await expect(contact.getByRole("link", { name: "Email Tabeeda" })).toHaveAttribute("href", `mailto:${person.email}`);
     await expect(page.getByTestId("chat-answer")).toHaveCount(3);
+  });
+
+  test("answers work authorisation, start date and leadership questions", async ({ page }) => {
+    await openChat(page);
+    await expect(await ask(page, "Does she have the right to work in the EU?")).toContainText("authorised to work in Pakistan and Cyprus");
+    await expect(await ask(page, "When can she start?")).toContainText("notice period and earliest start date");
+    await expect(await ask(page, "Can she lead a QA team?")).toContainText("Yes, she leads QA");
+  });
+
+  test("backs up a skill with where she used it", async ({ page }) => {
+    await openChat(page);
+    const reply = await ask(page, "Does she know Selenium?");
+    await expect(reply).toContainText("hands-on experience with Selenium");
+    await expect(reply).toContainText("Dastgyr");
   });
 
   test("stays on topic for personal or unrelated questions", async ({ page }) => {
@@ -122,7 +136,7 @@ test.describe("chat (AI mode, with the AI service mocked)", () => {
     await openChat(page);
     const reply = await ask(page, "Is she open to remote work?");
     await expect(reply).toContainText("The AI assistant isn't available right now");
-    await expect(reply).toContainText("open to remote roles and relocation");
+    await expect(reply).toContainText("open to remote, hybrid or on-site roles");
   });
 
   test("explains when too many questions were sent", async ({ page }) => {

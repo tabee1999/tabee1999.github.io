@@ -3,7 +3,7 @@
 // site doesn't. When site.chatEndpoint is set, Claude answers instead and this is the fallback.
 
 import { caseStudies, education, experience, person, process, projects, services, skillGroups, stats } from "../content";
-import { matchJob, mentions, termsFor } from "./match";
+import { matchJob, mentions, nameOf, notOnCv, termsFor } from "./match";
 
 export type ChatAction = { label: string; href: string; kind: "download" | "external" | "internal" | "mail" };
 export type Answer = { text: string; actions?: ChatAction[]; topic: string };
@@ -34,42 +34,10 @@ const inHerWords = (text: string) => `In her words: “${text}”`;
 const toolGroups = ["Automation", "Languages and data", "CI/CD and tools", "Performance and security"];
 const tools = new Set([...skillGroups.filter((g) => toolGroups.includes(g.group)).flatMap((g) => g.items), "GitHub Copilot", "ChatGPT and Claude"]);
 
-/** Common QA tools that aren't on the CV, with the closest thing she has used. */
-const notOnCv: Record<string, string> = {
-  cypress: "Playwright",
-  webdriverio: "Playwright and Selenium",
-  testcafe: "Playwright",
-  katalon: "Playwright and Selenium",
-  "robot framework": "Playwright and Selenium",
-  appium: "manual and exploratory testing of iOS and Android apps",
-  k6: "JMeter",
-  gatling: "JMeter",
-  locust: "JMeter",
-  loadrunner: "JMeter",
-  pytest: "TestNG and JUnit",
-  karate: "RestAssured and Postman",
-  soapui: "Postman and RestAssured",
-  insomnia: "Postman",
-  "c#": "Java and JavaScript",
-  ".net": "Java",
-  ruby: "Java and JavaScript",
-  golang: "Java and JavaScript",
-  gitlab: "GitHub Actions, Azure DevOps and Jenkins",
-  circleci: "GitHub Actions, Azure DevOps and Jenkins",
-  zephyr: "TestRail",
-  xray: "TestRail",
-  graphql: "REST API testing with RestAssured and Postman",
-  mongodb: "SQL",
-  docker: "",
-  kubernetes: "",
-  aws: "",
-};
-const display: Record<string, string> = { k6: "k6", "c#": "C#", ".net": ".NET", aws: "AWS", graphql: "GraphQL", mongodb: "MongoDB", soapui: "SoapUI", testcafe: "TestCafe", webdriverio: "WebdriverIO" };
 /** Broad phrases that also map to a tool; on their own they get a topic answer, not a tool answer. */
-const generic = new Set(["api testing", "api automation", "load testing", "performance testing", "security testing", "ci/cd", "ci / cd", "continuous integration", "database", "test data", "release"]);
+const generic = new Set(["api testing", "api automation", "load testing", "performance testing", "security testing", "ci/cd", "ci / cd", "ci-cd", "continuous integration", "continuous delivery", "pipeline", "pipelines", "database", "test data", "release"]);
 const namesTool = (q: string, skill: string) => termsFor(skill).some((t) => !generic.has(t) && mentions(q, t));
 
-const nameOf = (t: string) => display[t] ?? t.replace(/\b\w/g, (c) => c.toUpperCase());
 
 const askingAboutSkill = (q: string) =>
   /\b(know|knows|use|uses|used|using|experience (with|in)|experienced|familiar|worked with|work with|skilled|proficient|can she|does she|has she|tool|tools)\b/.test(q) ||
@@ -95,7 +63,7 @@ function skillAnswer(q: string): Answer | null {
 
   const parts: string[] = [];
   if (known.length) {
-    parts.push(`Yes. ${listOf(known)} ${known.length === 1 ? "is" : "are"} part of Tabeeda's day-to-day toolkit.`);
+    parts.push(`Yes. Tabeeda has hands-on experience with ${listOf(known)} in her QA work.`);
     const seen = evidence(known);
     if (seen.length) parts.push(bullets(seen));
   }
@@ -117,10 +85,12 @@ const projectNames: Record<string, string[]> = {
   "visa-platform": ["visa platform", "visa processing"],
   "trading-platforms": ["forex", "trading", "crypto", "metatrader", "mt5"],
   "b2b-marketplace": ["marketplace", "b2b", "logistics apps"],
+  "portfolio-ai-assistant": ["chat assistant", "this chatbot", "this chat"],
 };
 
 function entityAnswer(q: string): Answer | null {
-  const job = experience.find((j) => mentions(q, j.company.split(/[\s(]/)[0].replace(/\.co$/i, "")) || (j.company === "Epicmetry" && mentions(q, "tawla")));
+  const otherNames: Record<string, string[]> = { Epicmetry: ["tawla"], "Maleyat Group (now Naqdi)": ["naqdi"] };
+  const job = experience.find((j) => mentions(q, j.company.split(/[\s(]/)[0].replace(/\.co$/i, "")) || (otherNames[j.company] ?? []).some((n) => mentions(q, n)));
   if (job) {
     const current = job.period.includes("present");
     return {
@@ -173,8 +143,11 @@ const topics: Topic[] = [
   },
   {
     id: "visa",
-    words: ["visa", "work permit", "permit", "sponsorship", "sponsor", "citizenship", "passport", "nationality"],
-    answer: () => ({ text: "Questions about work authorisation depend on the role and country, so it's best to ask Tabeeda directly.", actions: [email] }),
+    words: ["visa", "work permit", "permit", "sponsorship", "sponsor", "citizenship", "passport", "nationality", "right to work", "work authorisation", "work authorization", "authorised", "authorized", "eligible", "eligibility", "legally"],
+    answer: () => ({
+      text: `She's ${lowerFirst(person.workAuthorisation)}. For on-site roles in other countries she's open to relocating within the EU or the GCC, so ask her about the details for your location.`,
+      actions: [email],
+    }),
   },
   {
     id: "contact",
@@ -206,18 +179,38 @@ const topics: Topic[] = [
     },
   },
   {
+    id: "leadership",
+    words: ["lead", "leads", "leader", "leadership", "manage", "manager", "management", "team lead", "qa lead", "own", "owns", "ownership"],
+    answer: () => ({
+      text: `Yes, she leads QA.\n\n${bullets([
+        "Epicmetry: QA lead for travel, logistics and fleet products. She owns test strategy, leads bug triage and gives go/no-go input on 3+ releases a month.",
+        "Dastgyr: owned QA for the B2B marketplace apps and led QA for 3 logistics apps.",
+        "Propellus.co: the sole QA engineer, owning testing from planning to release.",
+      ])}`,
+      actions: [section("experience", "See experience"), cv],
+    }),
+  },
+  {
+    id: "start",
+    words: ["when can she start", "start", "start date", "starting", "notice", "notice period", "earliest", "join", "joining", "available from"],
+    answer: () => ({
+      text: `She's open to new roles now (${lowerFirst(person.employment)}). For her notice period and earliest start date, the quickest way is a short email.`,
+      actions: [email, cv],
+    }),
+  },
+  {
     id: "location",
     words: ["where", "based", "location", "located", "live", "lives", "country", "city", "remote", "relocate", "relocation", "relocating", "onsite", "on-site", "hybrid", "timezone", "time zone", "cyprus", "dubai", "uae", "europe", "eu", "pakistan", "move"],
     answer: () => ({
-      text: `She's based in ${person.location} and is open to ${lowerFirst(person.openTo)}. She works on Pakistan time (UTC+5) and has worked remotely with teams in the UAE.`,
+      text: `She's based in ${person.location} and works on ${person.timezones.map((t) => `${t.label} time (${t.offset})`).join(" or ")}. She's ${lowerFirst(person.workAuthorisation)}. She's open to ${lowerFirst(person.openTo)}.`,
       actions: [email],
     }),
   },
   {
     id: "availability",
-    words: ["available", "availability", "hire", "hiring", "open", "looking", "opportunity", "opportunities", "role", "position", "job", "start", "join", "notice", "notice period", "freelance", "contract", "full-time", "full time"],
+    words: ["available", "availability", "hire", "hiring", "open", "looking", "opportunity", "opportunities", "role", "roles", "position", "job", "freelance", "contract", "full-time", "full time"],
     answer: () => ({
-      text: `Yes, she's open to new roles: ${lowerFirst(person.openTo)}. For start dates or notice period, the quickest way is a short email.`,
+      text: `Yes, she's open to ${listOf(person.targetRoles)} roles (${lowerFirst(person.employment)}). She's open to ${lowerFirst(person.openTo)}. For start dates or notice period, the quickest way is a short email.`,
       actions: [email, cv],
     }),
   },
@@ -246,11 +239,11 @@ const topics: Topic[] = [
   },
   {
     id: "languages",
-    words: ["language", "languages", "speak", "speaks", "english", "urdu", "turkish", "fluent"],
+    words: ["language", "languages", "speak", "speaks", "english", "urdu", "turkish", "fluent", "fluency"],
     answer: (q) =>
       /\b(programming|coding|code)\b/.test(q)
         ? { text: "She writes tests in Java and JavaScript, and uses SQL to check the data behind the screens." }
-        : { text: `She speaks ${person.languages}.` },
+        : { text: "She speaks English at a professional working level, plus Urdu and some Turkish (beginner)." },
   },
   {
     id: "ai",
@@ -264,7 +257,7 @@ const topics: Topic[] = [
   },
   {
     id: "automation",
-    words: ["automation", "automate", "automated", "framework", "frameworks", "scripts", "ci", "ci/cd", "pipeline", "pipelines"],
+    words: ["automation", "automate", "automated", "framework", "frameworks", "scripts", "ci", "ci/cd", "pipeline", "pipelines", "sdet", "qa automation", "automation engineer", "coding", "code"],
     answer: () => serviceAnswer("Test automation", " Her suites have reached 300+ automated tests in CI, cutting full regression from 2–3 days to under a day."),
   },
   {

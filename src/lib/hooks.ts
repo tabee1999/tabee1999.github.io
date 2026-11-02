@@ -54,6 +54,29 @@ export function useScrollSpy(ids: string[]) {
   return active;
 }
 
+/** Local times in several time zones, e.g. ["18:42", "16:42"]. Empty on the server. */
+export function useLocalTimes(timeZones: string[]) {
+  const key = timeZones.join("|");
+  const [times, setTimes] = useState<string[]>(() => timeZones.map(() => ""));
+  useEffect(() => {
+    const zones = key.split("|");
+    const format = () =>
+      setTimes(
+        zones.map((timeZone) => {
+          try {
+            return new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", minute: "2-digit" }).format(new Date());
+          } catch {
+            return "";
+          }
+        }),
+      );
+    format();
+    const id = window.setInterval(format, 30_000);
+    return () => window.clearInterval(id);
+  }, [key]);
+  return times;
+}
+
 /** Local time in a time zone, e.g. "18:42". Empty on the server to avoid hydration mismatches. */
 export function useLocalTime(timeZone: string) {
   const [time, setTime] = useState("");

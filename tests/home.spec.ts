@@ -14,11 +14,22 @@ test.describe("home page", () => {
     await expect(h1).toContainText(person.role);
     await expect(page.getByText(person.available).first()).toBeVisible();
 
-    await expect(page.getByTestId("cta-work")).toHaveAttribute("href", "#projects");
     await expect(page.getByTestId("cta-cv")).toHaveAttribute("download", "");
+    await expect(page.getByTestId("cta-email")).toHaveAttribute("href", `mailto:${person.email}`);
     await expect(page.getByRole("img", { name: person.photoAlt })).toBeVisible();
 
     expect(errors).toEqual([]);
+  });
+
+  test("answers a recruiter's first questions in the quick facts", async ({ page }) => {
+    await page.goto("/");
+    const facts = page.getByTestId("quick-facts");
+    await expect(facts).toBeVisible();
+    for (const text of ["SDET", "QA Automation Engineer", person.location, person.workAuthorisation, person.openTo, person.employment, "English (professional)", "UTC+5"]) {
+      await expect(facts).toContainText(text);
+    }
+    // No claim of "5+ years" of AI-first QA: the rotating line is about specialisms, not years.
+    await expect(page.locator("#top")).not.toContainText("5+ years in AI-first QA");
   });
 
   test("shows the key numbers from the CV", async ({ page }) => {

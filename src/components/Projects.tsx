@@ -8,7 +8,7 @@ import { Section } from "./Layout";
 const projectCaseStudy: Record<string, string> = {
   "al-rais-travel": "regression-automation-three-products",
   "modon-express": "regression-automation-three-products",
-  fleetify: "regression-automation-three-products",
+  "portfolio-ai-assistant": "testing-an-ai-chat-assistant",
   "visa-platform": "qa-from-scratch-at-a-startup",
   "b2b-marketplace": "b2b-marketplace-and-logistics-apps",
 };
@@ -20,6 +20,7 @@ const visualIcon: Record<Project["visual"], string> = {
   visa: "passport",
   trading: "candles",
   marketplace: "store",
+  assistant: "chat",
 };
 
 /** A small drawn preview for each project card, so the grid isn't just text. */
@@ -110,6 +111,25 @@ function ProjectVisual({ kind }: { kind: Project["visual"] }) {
               </g>
             ))}
             <path d="M40 120 C 100 110, 160 104, 290 70" stroke="#a78bfa" strokeWidth="2" strokeDasharray="4 6" />
+          </>
+        )}
+        {kind === "assistant" && (
+          <>
+            <rect x="40" y="24" width="150" height="34" rx="14" fill="rgb(255 255 255 / 0.07)" stroke="rgb(196 181 253 / 0.3)" />
+            <rect x="54" y="38" width="96" height="6" rx="3" fill="#aaa6cc" />
+            <rect x="130" y="70" width="150" height="34" rx="14" fill="url(#chatGrad)" />
+            <rect x="146" y="84" width="104" height="6" rx="3" fill="#fff" opacity="0.75" />
+            <rect x="196" y="20" width="84" height="22" rx="11" fill="rgb(74 222 128 / 0.15)" stroke="rgb(74 222 128 / 0.5)" />
+            <text x="208" y="35" fill="#4ade80" fontSize="10" fontFamily="monospace">honest ✓</text>
+            <circle cx="62" cy="118" r="4" fill="#c4b5fd" className="typing-dot" />
+            <circle cx="76" cy="118" r="4" fill="#c4b5fd" className="typing-dot" style={{ animationDelay: "150ms" }} />
+            <circle cx="90" cy="118" r="4" fill="#c4b5fd" className="typing-dot" style={{ animationDelay: "300ms" }} />
+            <defs>
+              <linearGradient id="chatGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#8b5cf6" />
+                <stop offset="1" stopColor="#6d28d9" />
+              </linearGradient>
+            </defs>
           </>
         )}
         {kind === "marketplace" && (

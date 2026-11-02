@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { nav, person, site } from "../content";
-import { useLocalTime, useScrolled, useScrollProgress, useScrollSpy } from "../lib/hooks";
+import { useScrolled, useScrollProgress, useScrollSpy } from "../lib/hooks";
+import { Clocks } from "./Clocks";
 import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
 
 // ── Toast ─────────────────────────────────────────────────────────────────
@@ -165,21 +166,17 @@ export function Header({ root }: { root: string }) {
 // ── Footer ────────────────────────────────────────────────────────────────
 
 export function Footer({ root, year }: { root: string; year: number }) {
-  const time = useLocalTime(person.timezone);
   return (
     <footer className="border-t border-line">
       <div className="wrap grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-4">
           <Logo root={root} />
           <p className="max-w-sm text-sm leading-relaxed text-mute">
-            Senior QA Engineer for manual, automated and AI-first testing. Open to remote roles and relocation.
+            Senior QA Engineer, SDET and QA Automation: manual, automated and AI-first testing. Based in Pakistan and Cyprus, working remotely from anywhere.
           </p>
           <p className="flex items-center gap-2 text-sm text-mute">
-            <Icon name="clock" className="size-4 text-brand-300" />
-            {person.timezoneLabel}
-            <time suppressHydrationWarning className="font-mono text-ink" data-testid="local-time">
-              {time}
-            </time>
+            <Icon name="clock" className="size-4 shrink-0 text-brand-300" />
+            <Clocks />
           </p>
         </div>
         <nav aria-label="Footer">

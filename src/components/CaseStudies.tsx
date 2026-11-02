@@ -4,7 +4,7 @@ import { Reveal, trackSpotlight } from "../lib/motion";
 import { Icon } from "./Icon";
 import { Section } from "./Layout";
 
-const caseIcon = ["automation", "rocket", "devices"];
+const caseIcon = ["automation", "rocket", "devices", "sparkles"];
 
 // ── Home page section: tabs ───────────────────────────────────────────────
 
@@ -253,13 +253,21 @@ export function CaseStudyPage({ study }: { study: CaseStudy }) {
           </ol>
         </section>
 
-        {(study.outcome || study.lessons) && (
+        {study.outcome && (
           <Reveal as="section" aria-labelledby="outcome-title" className="mt-12">
             <h2 id="outcome-title" className="text-2xl font-bold">
               Outcome
             </h2>
-            {study.outcome && <p className="mt-3 text-lg leading-relaxed text-mute">{study.outcome}</p>}
-            {study.lessons && <p className="mt-3 text-lg leading-relaxed text-mute">{study.lessons}</p>}
+            <p className="mt-3 text-lg leading-relaxed text-mute">{study.outcome}</p>
+          </Reveal>
+        )}
+
+        {study.lessons && (
+          <Reveal as="section" aria-labelledby="lessons-title" className="mt-12">
+            <h2 id="lessons-title" className="text-2xl font-bold">
+              What I learned
+            </h2>
+            <p className="mt-3 text-lg leading-relaxed text-mute">{study.lessons}</p>
           </Reveal>
         )}
 

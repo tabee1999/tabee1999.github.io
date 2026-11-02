@@ -108,6 +108,17 @@ test.describe("skills", () => {
     await expect(result).toContainText("Currently learning: Python");
   });
 
+  test("job match is honest about what isn't on the CV", async ({ page }) => {
+    await page.goto("/#skills");
+    await page.getByLabel("Job description").fill("SDET with TypeScript, Playwright, Docker, GraphQL and performance testing with k6. Kubernetes is a plus.");
+    await page.getByRole("button", { name: "Check my fit" }).click();
+    const gaps = page.getByTestId("job-gaps");
+    for (const tool of ["TypeScript", "Docker", "GraphQL", "k6", "Kubernetes"]) await expect(gaps).toContainText(tool);
+    await expect(gaps).toContainText("k6 · closest experience: JMeter");
+    await expect(page.getByTestId("job-summary")).toContainText("on my CV");
+    await expect(page.getByTestId("job-result").getByText("Playwright", { exact: true })).toBeVisible();
+  });
+
   test("job match asks for more text when the box is nearly empty", async ({ page }) => {
     await page.goto("/#skills");
     await page.getByLabel("Job description").fill("QA");

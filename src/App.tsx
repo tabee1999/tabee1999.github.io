@@ -7,7 +7,7 @@ import { Hero } from "./components/Hero";
 import { Icon } from "./components/Icon";
 import { BackToTop, Footer, Header, ToastProvider } from "./components/Layout";
 import { Projects } from "./components/Projects";
-import { About, Faq, Process, Services } from "./components/Sections";
+import { About, Faq, Services } from "./components/Sections";
 import { Skills } from "./components/Skills";
 
 export type PageData = { route: "home" } | { route: "case-study"; slug: string } | { route: "404" };
@@ -48,12 +48,11 @@ export function App({ page, year }: { page: PageData; year: number }) {
           <>
             <Hero />
             <About />
-            <Services />
+            <Experience />
             <Projects />
             <CaseStudies />
-            <Experience />
+            <Services />
             <Skills />
-            <Process />
             <Faq />
             <Contact />
           </>
