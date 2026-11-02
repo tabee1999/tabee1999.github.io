@@ -39,6 +39,9 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      - name: Unit tests (AI chat worker)
+        run: npm run test:worker
+
       - name: Run tests (desktop Chrome, desktop Firefox, mobile Chrome)
         run: npx playwright test
 

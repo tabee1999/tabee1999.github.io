@@ -110,6 +110,29 @@
   }
 }
 
+@keyframes ping-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(139 92 246 / 0.55);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 14px rgb(139 92 246 / 0);
+  }
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
 @layer base {
   html {
     scroll-padding-top: 88px;
@@ -388,6 +411,15 @@
   /* Dashed routes on project previews drift slowly */
   .draw-path {
     animation: dash 3s linear infinite;
+  }
+
+  /* Chat button pulse and typing dots */
+  .chat-ping {
+    animation: ping-ring 2.4s ease-out infinite;
+  }
+
+  .typing-dot {
+    animation: typing 1.1s ease-in-out infinite;
   }
 
   .hero-photo-frame {

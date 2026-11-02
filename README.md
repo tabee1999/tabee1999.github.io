@@ -14,6 +14,7 @@ A portfolio built and tested like a product: React + TypeScript + Tailwind CSS, 
 - **Experience timeline** with expandable roles, **skills**, and a **"Check my fit"** tool where recruiters paste a job ad and see matching skills
 - **Contact form** with validation (opens a ready-to-send email until a form service is connected), copy-email button, LinkedIn, GitHub and CV
 - **FAQ** written for recruiters and for AI search engines
+- **Chat assistant** ("Ask about me") on every page: answers recruiter questions about experience, skills, projects, availability and contact. It works today with answers built from `src/content.ts`, and switches to Claude AI once the chat worker is set up ([chat-worker/README.md](chat-worker/README.md))
 
 ## Motion
 
@@ -47,7 +48,9 @@ The motion layer is in `src/lib/motion.tsx` (about 150 lines, no dependencies). 
 ├─ public/                    ← photo, CV, favicon, link-preview image (copied as-is)
 ├─ scripts/build.mjs          ← esbuild + Tailwind → dist/
 ├─ scripts/serve.mjs          ← tiny static server for preview and tests
-├─ tests/                     ← Playwright: home, navigation, interactions, contact, responsive, accessibility, SEO
+├─ src/lib/assistant.ts       ← the chat's built-in answers (no server needed)
+├─ chat-worker/               ← Cloudflare Worker for AI chat answers (Claude), with unit tests
+├─ tests/                     ← Playwright: home, navigation, interactions, contact, chat, responsive, accessibility, SEO
 ├─ playwright.config.ts
 ├─ lighthouserc.json          ← Lighthouse budgets for the live site
 └─ .github/workflows/ci.yml   ← test → deploy to GitHub Pages → Lighthouse
@@ -64,6 +67,7 @@ npx playwright install chromium firefox
 npm run dev            # build and serve at http://localhost:4321
 npm test               # full suite (builds and starts the server for you)
 npm run test:chrome    # faster: desktop + mobile Chrome only
+npm run test:worker    # unit tests for the AI chat worker
 npm run report         # open the HTML report of the last run
 ```
 
@@ -73,6 +77,7 @@ npm run report         # open the HTML report of the last run
 - **Photo:** `public/images/tabeeda-shakir-senior-qa-engineer.{webp,jpg}` (480×720)
 - **CV:** replace `public/cv/Tabeeda-Shakir-CV.pdf` (keep the file name)
 - **Contact form straight to your inbox:** create a free form at [formspree.io](https://formspree.io), then paste its endpoint into `site.formEndpoint`
+- **AI chat:** follow [chat-worker/README.md](chat-worker/README.md), then paste the worker address into `site.chatEndpoint`
 - **Search Console / Bing:** paste the verification codes into `site.googleSiteVerification` and `site.bingSiteVerification`
 
 ## Test strategy
@@ -83,6 +88,7 @@ npm run report         # open the HTML report of the last run
 | Broken links or pages | every internal link on every page is requested; anchors exist; 404 page works |
 | Layout breaks on a phone | no sideways scrolling at 360, 768, 1024 and 1440px; mobile menu; 44px tap targets |
 | Interactive parts stop working | project filters and dialog, case study tabs (mouse and keyboard), experience accordion, FAQ, job match, copy email |
+| The chat says something wrong or goes off topic | built-in answers checked against the CV; AI mode tested with a mocked service (reply, history, outage fallback, rate limit); worker unit tests for origin checks, input limits, rate limiting, hidden errors and the on-topic system prompt |
 | Not usable with a keyboard or screen reader | axe (WCAG 2.2 AA) on every page and in open states; skip link; visible focus; heading order |
 | Not found in Google or AI search | titles, descriptions, canonicals, social cards, JSON-LD, robots.txt, sitemap, llms.txt; content present before JavaScript runs |
 | Slow or poorly built | Lighthouse on the live site after each deploy |

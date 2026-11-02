@@ -38,6 +38,9 @@ export const site = {
   // Formspree endpoint, e.g. "https://formspree.io/f/abcdwxyz". While empty, the form opens the
   // visitor's email app with the message filled in, so it still works.
   formEndpoint: "",
+  // Address of the AI chat worker (see chat-worker/README.md), e.g.
+  // "https://tabeeda-chat.your-name.workers.dev". While empty, the chat answers from this file.
+  chatEndpoint: "",
   // Paste the codes from Google Search Console and Bing Webmaster Tools (meta-tag method).
   googleSiteVerification: "",
   bingSiteVerification: "",

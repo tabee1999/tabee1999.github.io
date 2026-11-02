@@ -34,6 +34,7 @@ const paths: Record<string, string> = {
   store: "M4 9l1.5-5h13L20 9M4 9h16v11H4zM4 9c0 1.7 1.3 3 3 3s3-1.3 3-3c0 1.7 1.3 3 2 3s3-1.3 3-3c0 1.7 1.3 3 3 3s2-1.3 2-3M10 20v-5h4v5",
   quote: "M9 7c-3 1-4.5 3.2-4.5 6.5V17H9v-4H6.8C7 10.8 8 9.6 10 9zM19 7c-3 1-4.5 3.2-4.5 6.5V17H19v-4h-2.2c.2-2.2 1.2-3.4 3.2-4z",
   layers: "M12 3l9 5-9 5-9-5zM3 13l9 5 9-5",
+  chat: "M4 5h16v11H10l-5 4v-4H4zM8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01",
 };
 
 export type IconName = keyof typeof paths;

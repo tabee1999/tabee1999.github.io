@@ -221,7 +221,8 @@ export function Footer({ root, year }: { root: string; year: number }) {
         </div>
       </div>
       <div className="border-t border-line">
-        <div className="wrap flex flex-col gap-3 py-6 text-xs text-mute sm:flex-row sm:items-center sm:justify-between">
+        {/* Extra space at the bottom so the chat button never covers these links */}
+        <div className="wrap flex flex-col gap-3 pt-6 pb-24 text-xs text-mute sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {year} {person.name}. Built with React, TypeScript and Tailwind CSS.
           </p>
@@ -256,7 +257,7 @@ export function BackToTop() {
         window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
         document.querySelector<HTMLElement>("main")?.focus({ preventScroll: true });
       }}
-      className={`no-print fixed right-4 bottom-4 z-40 grid size-12 place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-xl shadow-brand-700/40 transition-all duration-300 hover:scale-110 active:scale-95 ${
+      className={`no-print fixed right-5 bottom-[5.25rem] z-40 grid size-12 sm:right-6 sm:bottom-[5.75rem] place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-xl shadow-brand-700/40 transition-all duration-300 hover:scale-110 active:scale-95 ${
         visible ? "visible translate-y-0 opacity-100" : "invisible translate-y-3 opacity-0"
       }`}
     >

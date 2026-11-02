@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "playwright test",
     "test:chrome": "playwright test --project=desktop-chrome --project=mobile-chrome",
+    "test:worker": "node --test chat-worker/worker.test.mjs",
     "lighthouse": "lhci autorun",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report"

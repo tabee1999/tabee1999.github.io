@@ -1,5 +1,6 @@
 import { caseStudies } from "./content";
 import { CaseStudies, CaseStudyPage } from "./components/CaseStudies";
+import { Chat } from "./components/Chat";
 import { Contact } from "./components/Contact";
 import { Experience } from "./components/Experience";
 import { Hero } from "./components/Hero";
@@ -62,6 +63,7 @@ export function App({ page, year }: { page: PageData; year: number }) {
       </main>
       <Footer root={root} year={year} />
       <BackToTop />
+      <Chat />
     </ToastProvider>
   );
 }

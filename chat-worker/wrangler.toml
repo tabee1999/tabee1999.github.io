@@ -1,0 +1,10 @@
+# Deploy with: npx wrangler deploy --config chat-worker/wrangler.toml
+# Then add the API key: npx wrangler secret put ANTHROPIC_API_KEY --config chat-worker/wrangler.toml
+name = "tabeeda-chat"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://tabee1999.github.io"
+MODEL = "claude-haiku-5-5"
+PROFILE_URL = "https://tabee1999.github.io/llms.txt"

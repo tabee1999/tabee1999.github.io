@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { learning, skillAliases, skillGroups } from "../content";
+import { skillGroups } from "../content";
+import { matchJob } from "../lib/match";
 import { Reveal, trackSpotlight } from "../lib/motion";
 import { Icon } from "./Icon";
 import { Section } from "./Layout";
@@ -13,26 +14,6 @@ const groupIcon: Record<string, string> = {
   "Performance and security": "gauge",
   Practices: "chart",
 };
-
-const escape = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-/** True when `term` appears in `text` as a whole word (so "java" doesn't match "javascript"). */
-function mentions(text: string, term: string) {
-  return new RegExp(`(^|[^a-z0-9+#])${escape(term.toLowerCase())}([^a-z0-9+#]|$)`).test(text);
-}
-
-export function matchJob(description: string) {
-  const text = description.toLowerCase();
-  const matched: string[] = [];
-  for (const group of skillGroups) {
-    for (const item of group.items) {
-      const terms = skillAliases[item] ?? [item];
-      if (terms.some((t) => mentions(text, t))) matched.push(item);
-    }
-  }
-  const learningHits = learning.filter((l) => mentions(text, l.split(" ")[0]));
-  return { matched, learningHits };
-}
 
 function JobMatch() {
   const [text, setText] = useState("");
