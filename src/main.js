@@ -33,6 +33,27 @@
     toastTimer = setTimeout(() => toastEl.classList.remove("is-visible"), 2600);
   }
 
+  // ── Local time next to the city (updates every 30 seconds) ──────────────
+  const clocks = document.querySelectorAll(".local-time[data-tz]");
+  function tick() {
+    for (const el of clocks) {
+      try {
+        el.textContent = new Intl.DateTimeFormat("en-GB", {
+          timeZone: el.dataset.tz,
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(new Date());
+        el.title = "Local time";
+      } catch {
+        el.hidden = true; // unknown time zone: hide rather than show a wrong time
+      }
+    }
+  }
+  if (clocks.length) {
+    tick();
+    setInterval(tick, 30000);
+  }
+
   // ── Mobile menu ─────────────────────────────────────────────────────────
   const menuBtn = document.querySelector(".menu-btn");
   const nav = document.getElementById("site-nav");

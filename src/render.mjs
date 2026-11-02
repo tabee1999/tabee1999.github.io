@@ -50,8 +50,8 @@ function link(href, label, { cls = "", attrs = "" } = {}) {
 }
 
 const NAV_LABELS = {
-  services: "What I do",
-  "case-studies": "Case studies",
+  services: "Services",
+  "case-studies": "Work",
   projects: "Projects",
   samples: "Work samples",
   skills: "Skills",
@@ -106,13 +106,13 @@ function head(c, { title, description, path, root }) {
 <meta name="twitter:title" content="${esc(title)}">
 <meta name="twitter:description" content="${esc(description)}">
 <meta name="twitter:image" content="${esc(og)}">
-<meta name="theme-color" content="#f5f7f4" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101614" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f5f5f2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e0e0f" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="${root}favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="${root}apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=JetBrains+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="${root}styles.css">
 <script>document.documentElement.classList.add("js");try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>
@@ -128,7 +128,7 @@ function header(c, root, onHome, navIds) {
   return `<a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap header-inner">
-    <a class="brand" href="${onHome ? "#top" : root}"><span class="brand-mark" aria-hidden="true">✓</span>${esc(c.person.name)}</a>
+    <a class="brand" href="${onHome ? "#top" : root}">${esc(c.person.name)}</a>
     <nav id="site-nav" class="site-nav" aria-label="Main">
       <ul>${navIds.map((id) => `<li><a href="${href(id)}" data-section="${id}">${NAV_LABELS[id]}</a></li>`).join("")}</ul>
     </nav>
@@ -148,15 +148,20 @@ function header(c, root, onHome, navIds) {
 
 function footer(c, root) {
   const year = new Date().getFullYear();
+  const p = c.person;
   const report = c.site.qualityReportPath ? `${root}${c.site.qualityReportPath}` : "";
+  const links = [
+    link(p.linkedin, "LinkedIn", { cls: "footer-link" }),
+    link(p.github, "GitHub", { cls: "footer-link" }),
+    link(report, "Quality report", { cls: "footer-link", attrs: 'data-testid="quality-report"' }),
+    link(c.site.repoUrl, "Source code", { cls: "footer-link" }),
+  ].filter(Boolean);
   return `<footer class="site-footer">
   <div class="wrap footer-inner">
-    <p>© ${year} ${esc(c.person.name)}</p>
-    <p class="footer-tested">
-      <span><span class="check" aria-hidden="true">✓</span> This site is tested with Playwright.</span>
-      ${link(report, "Quality report", { cls: "footer-link", attrs: 'data-testid="quality-report"' })}
-      ${link(c.site.repoUrl, "Source code", { cls: "footer-link" })}
-    </p>
+    <p class="footer-name">© ${year} ${esc(p.name)}</p>
+    ${p.timezone && has(p.city) ? `<p class="footer-local">${t(p.city)} <time class="local-time" data-tz="${esc(p.timezone)}"></time></p>` : ""}
+    <p class="footer-tested"><span class="check" aria-hidden="true">✓</span> Built and tested with Playwright</p>
+    <nav class="footer-links" aria-label="Elsewhere">${links.join("")}</nav>
   </div>
 </footer>`;
 }
@@ -201,9 +206,6 @@ const tags = (list) => {
 
 function hero(c) {
   const { person, site } = c;
-  const photo = person.photo
-    ? `<img class="hero-photo" src="${esc(person.photo)}" alt="${esc(person.photoAlt)}" width="96" height="96">`
-    : "";
   const SHOW_ON_PHONE = 4;
   const lines = site.heroRun
     .map(
@@ -212,29 +214,7 @@ function hero(c) {
     )
     .join("\n");
   const more = site.heroRun.length - SHOW_ON_PHONE;
-  const [now, ...before] = c.experience.map((e) => strip(e.company).replace(/\s*\(.*\)$/, "")).filter(Boolean);
-  const history = now
-    ? `<p class="hero-history">Now at <strong>${esc(now)}</strong>${before.length ? `. Before: ${esc(before.join(", "))}` : ""}</p>`
-    : "";
-  return `<section class="hero" id="top" aria-labelledby="hero-name">
-  <div class="wrap hero-grid">
-    <div class="hero-copy">
-      ${photo}
-      <p class="badge" data-testid="open-to-work"><span class="badge-dot" aria-hidden="true"></span>${esc(person.openTo)}</p>
-      <h1 id="hero-name">${esc(person.name)}</h1>
-      <p class="role">${esc(person.role)}<span class="role-detail">${esc(person.roleDetail)}</span></p>
-      <p class="statement">${t(person.statement)}</p>
-      <div class="cta-row">
-        <a class="btn btn-primary" href="#case-studies">View my work</a>
-        <a class="btn btn-secondary" href="#contact">Contact me</a>
-      </div>
-      <p class="hero-meta">
-        ${link(person.cv, "Download CV (PDF)", { cls: "text-link", attrs: 'download data-testid="cv-download"' })}
-        ${has(person.location) ? `<span class="hero-location">${t(person.location)}</span>` : ""}
-      </p>
-      ${history}
-    </div>
-    <figure class="run" aria-labelledby="run-caption">
+  const run = `<figure class="run" aria-labelledby="run-caption">
       <div class="run-window">
         <div class="run-head"><span>tabeeda-portfolio</span><span class="run-status"><span class="run-status-dot" aria-hidden="true"></span>Runs on every push</span></div>
         <pre class="run-body"><code><span class="run-cmd"><span class="run-prompt" aria-hidden="true">$</span> npx playwright test</span>
@@ -242,7 +222,40 @@ ${lines}${more > 0 ? `\n<span class="run-more">+ ${more} more checks</span>` : "
 <span class="run-sum">Deploys only when every check passes</span></code></pre>
       </div>
       <figcaption id="run-caption">Real tests from this website's suite. ${link(site.qualityReportPath, "See the latest report", { cls: "run-link" })}</figcaption>
-    </figure>
+    </figure>`;
+  const portrait = person.photo
+    ? `<figure class="hero-portrait"><img src="${esc(person.photo)}" alt="${esc(person.photoAlt)}" width="480" height="600" fetchpriority="high"></figure>`
+    : "";
+  const [now, ...before] = c.experience.map((e) => strip(e.company).replace(/\s*\(.*\)$/, "")).filter(Boolean);
+  const history = now
+    ? `<p class="hero-history"><span>Now</span> ${esc(now)}${before.length ? `<span>Before</span> ${esc(before.join(", "))}` : ""}</p>`
+    : "";
+  const [first, ...rest] = person.name.split(" ");
+  const local =
+    person.timezone && has(person.city)
+      ? `<p class="hero-local"><span>${t(person.city)}</span><time class="local-time" data-tz="${esc(person.timezone)}"></time></p>`
+      : "";
+  return `<section class="hero" id="top" aria-labelledby="hero-name">
+  <div class="wrap">
+    <div class="hero-meta-row">
+      <p class="role">${esc(person.role)}<span class="role-detail">${esc(person.roleDetail)}</span></p>
+      ${local}
+      <p class="badge" data-testid="open-to-work"><span class="badge-dot" aria-hidden="true"></span>${esc(person.openTo)}</p>
+    </div>
+    <div class="hero-grid${portrait ? " has-portrait" : ""}">
+      <div class="hero-copy">
+        <h1 id="hero-name"><span>${esc(first)}</span> <span>${esc(rest.join(" "))}</span></h1>
+        <p class="statement">${t(person.statement)}</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#case-studies">View my work</a>
+          <a class="btn btn-secondary" href="#contact">Contact me</a>
+          ${link(person.cv, "Download CV (PDF)", { cls: "text-link hero-cv", attrs: 'download data-testid="cv-download"' })}
+        </div>
+        ${has(person.location) ? `<p class="hero-location">${t(person.location)}</p>` : ""}
+        ${history}
+      </div>
+      ${portrait || run}
+    </div>
   </div>
 </section>`;
 }
@@ -296,19 +309,19 @@ function products(c) {
     "products",
     "Products I've tested",
     "Across e-commerce, logistics, travel and fintech.",
-    `<ul class="product-grid">${items
-      .map(
-        (x) => `<li class="product">
-          <span class="product-mark" aria-hidden="true">${esc(strip(x.name).charAt(0))}</span>
-          <div class="product-text">
-            <p class="product-domain">${t(x.domain)}</p>
-            <h3>${t(x.name)}</h3>
-            <p class="product-company">${t(x.company)}</p>
-            <ul class="platforms" aria-label="Platforms">${x.platforms.filter(has).map((pl) => `<li>${t(pl)}</li>`).join("")}</ul>
-          </div>
+    `<div class="product-table">
+      <div class="product-head" aria-hidden="true"><span>Product</span><span>Domain</span><span>Company</span><span>Platforms</span></div>
+      <ul class="product-list">${items
+        .map(
+          (x) => `<li class="product-row">
+          <h3>${t(x.name)}</h3>
+          <p class="product-domain">${t(x.domain)}</p>
+          <p class="product-company">${t(x.company)}</p>
+          <ul class="platforms" aria-label="Platforms">${x.platforms.filter(has).map((pl) => `<li>${t(pl)}</li>`).join("")}</ul>
         </li>`,
-      )
-      .join("\n")}</ul>`,
+        )
+        .join("\n")}</ul>
+    </div>`,
   );
 }
 
@@ -322,7 +335,7 @@ function howIWork(c) {
     `<ol class="process">${steps
       .map(
         (x, i) => `<li class="step">
-          <span class="step-num" aria-hidden="true">${i + 1}</span>
+          <span class="step-num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</span>
           <h3>${t(x.title)}</h3>
           <p>${t(x.text)}</p>
         </li>`,
@@ -346,30 +359,26 @@ function projectVisual(kind) {
 }
 
 function caseStudies(c) {
-  const cards = c.caseStudies
+  const rows = c.caseStudies
     .map((cs) => {
       const m = cs.outcome.metrics.find((x) => has(x.value) && has(x.label));
-      const metric = m
-        ? `<div class="cs-metric"><span class="cs-metric-value">${t(m.value)}</span><span class="cs-metric-label">${t(m.label)}</span></div>`
-        : "";
-      return `<li>
-        <article class="cs-card${metric ? " has-metric" : ""}">
-          <div class="cs-main">
-            <p class="cs-area">${esc(cs.area)}</p>
-            <h3><a class="cs-link" href="case-studies/${cs.slug}/">${t(cs.title)}</a></h3>
-            ${has(cs.summary) ? `<p class="cs-summary">${t(cs.summary)}</p>` : ""}
-            <div class="cs-foot">${tags(cs.tags)}<span class="cs-read" aria-hidden="true">Read case study</span></div>
-          </div>
-          ${metric}
-        </article>
+      return `<li class="work-row">
+        <p class="work-area">${esc(cs.area)}</p>
+        <div class="work-main">
+          <h3><a class="cs-link" href="case-studies/${cs.slug}/">${t(cs.title)}</a></h3>
+          ${has(cs.summary) ? `<p class="cs-summary">${t(cs.summary)}</p>` : ""}
+          ${tags(cs.tags)}
+        </div>
+        ${m ? `<p class="work-metric"><span class="work-metric-value">${t(m.value)}</span><span class="work-metric-label">${t(m.label)}</span></p>` : ""}
+        <span class="work-go" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M7 17L17 7M9 7h8v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
       </li>`;
     })
     .join("\n");
   return section(
     "case-studies",
-    "Case studies",
-    "The problem, what I did and what changed.",
-    `<ul class="cs-list">${cards}</ul>`,
+    "Selected work",
+    "Case studies: the problem, what I did and what changed.",
+    `<ol class="work-index">${rows}</ol>`,
   );
 }
 
@@ -618,7 +627,8 @@ function contact(c) {
     "contact",
     esc(c.contact.heading),
     "",
-    `<p class="contact-intro">${t(c.contact.intro)}</p>
+    `${isPending(p.email) ? "" : `<p class="contact-big"><a href="mailto:${esc(p.email)}">${esc(p.email)}</a></p>`}
+      <p class="contact-intro">${t(c.contact.intro)}</p>
       <div class="contact-grid">
         <dl class="contact-direct">
           ${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("\n          ")}

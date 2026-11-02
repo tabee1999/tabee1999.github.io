@@ -43,6 +43,9 @@ export default {
     statement:
       "I build API and UI test automation that helps teams release faster with fewer production bugs.",
     location: "Limassol, Cyprus. Open to relocating within the EU or GCC",
+    // Shown with your local time in the header area. Use an IANA time zone name.
+    city: "Limassol, Cyprus",
+    timezone: "Asia/Nicosia",
     openTo: "Open to new roles",
     // Optional photo, e.g. "images/tabeeda.webp" (put the file in /public/images). Leave "" for no photo.
     photo: "",
@@ -447,7 +450,7 @@ await()
   writing: [],
 
   contact: {
-    heading: "Get in touch",
+    heading: "Let's work together",
     intro:
       "I'm open to Senior QA, SDET and QA Automation roles: remote, hybrid or on-site, and to relocating within the EU or GCC. Full-time or long-term contract, with English-speaking teams.",
   },
