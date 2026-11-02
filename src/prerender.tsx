@@ -308,6 +308,7 @@ export function siteFiles(isoDate: string): Record<string, string> {
       "User-agent: *",
       "Allow: /",
       "Disallow: /report/",
+      "Disallow: /allure/",
       "",
       `Sitemap: ${site.url}/sitemap.xml`,
       "",

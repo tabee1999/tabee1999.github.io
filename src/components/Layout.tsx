@@ -225,10 +225,13 @@ export function Footer({ root, year }: { root: string; year: number }) {
           </p>
           <p className="flex flex-wrap items-center gap-x-4 gap-y-1">
             <span className="inline-flex items-center gap-1.5">
-              <Icon name="check" className="size-3.5 text-ok" /> Tested with Playwright and axe
+              <Icon name="check" className="size-3.5 text-ok" /> Tested with Playwright, axe and Allure
             </span>
             <a href={`${root}${site.qualityReportPath}`} className="underline decoration-brand-400/50 underline-offset-4 hover:text-ink" data-testid="quality-report">
-              Quality report
+              Allure report
+            </a>
+            <a href={`${root}${site.playwrightReportPath}`} className="underline decoration-brand-400/50 underline-offset-4 hover:text-ink">
+              Playwright report
             </a>
             <a href={site.repoUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-brand-400/50 underline-offset-4 hover:text-ink">
               Source code

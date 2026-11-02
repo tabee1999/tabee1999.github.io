@@ -3,6 +3,9 @@ dist/
 .build/
 test-results/
 playwright-report/
+allure-results/
+allure-report/
+allure-history.jsonl
 blob-report/
 .lighthouseci/
 *.log

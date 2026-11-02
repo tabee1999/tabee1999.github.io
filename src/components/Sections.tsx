@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { about, education, faqs, learning, person, process, services } from "../content";
+import { about, education, faqs, learning, person, process, services, site } from "../content";
 import { Reveal, trackSpotlight } from "../lib/motion";
 import { Icon } from "./Icon";
 import { Section } from "./Layout";
@@ -80,6 +80,22 @@ export function About() {
               </p>
               <p className="mt-2 font-semibold text-ink">{learning.join(", ")}</p>
               <p className="text-sm text-mute">To widen my automation toolkit beyond Java and JavaScript.</p>
+            </Reveal>
+            <Reveal className="glass spotlight p-5 sm:col-span-2" delay={260} onPointerMove={trackSpotlight}>
+              <p className="flex items-center gap-2 text-sm font-semibold text-brand-200">
+                <Icon name="chart" className="size-4" /> This site is tested like a product
+              </p>
+              <p className="mt-2 text-ink">
+                230+ automated tests in Chrome, Firefox and mobile Chrome run on every change: navigation, the contact form, the chat, accessibility (WCAG 2.2 AA) and SEO.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <a href={site.qualityReportPath} className="btn btn-primary btn-sm" data-testid="allure-link">
+                  See the Allure report <Icon name="arrowRight" className="arrow size-4" />
+                </a>
+                <a href={site.repoUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
+                  Read the test code <Icon name="arrowUpRight" className="size-4" />
+                </a>
+              </div>
             </Reveal>
           </div>
         </div>

@@ -36,7 +36,9 @@ export type CaseStudy = {
 export const site = {
   url: "https://tabee1999.github.io",
   repoUrl: "https://github.com/tabee1999/tabee1999.github.io",
-  qualityReportPath: "report/",
+  // Test results published with every deploy: an Allure dashboard and the raw Playwright report.
+  qualityReportPath: "allure/",
+  playwrightReportPath: "report/",
   // Formspree endpoint, e.g. "https://formspree.io/f/abcdwxyz". While empty, the form opens the
   // visitor's email app with the message filled in, so it still works.
   formEndpoint: "",
@@ -118,7 +120,7 @@ export const services = [
   {
     icon: "automation",
     title: "Test automation",
-    text: "UI suites in Playwright and Selenium, API suites in RestAssured (Java) with TestNG, running in CI/CD pipelines on GitHub Actions, Jenkins or Azure DevOps.",
+    text: "UI suites in Playwright and Selenium, API suites in RestAssured (Java) with TestNG, running in CI/CD pipelines on GitHub Actions, Jenkins or Azure DevOps, with results published as Allure reports.",
     points: ["Playwright and Selenium", "RestAssured, Java and TestNG", "GitHub Actions, Jenkins, Azure DevOps"],
   },
   {
@@ -320,6 +322,7 @@ export const caseStudies: CaseStudy[] = [
       { decision: "Tested the awkward questions first: tools not on my CV, salary, visas, personal questions and prompt injection", why: "These are the questions that expose an assistant that guesses." },
       { decision: "Mocked the AI service in Playwright to test replies, conversation history, outages and rate limits", why: "Fast, free and repeatable tests, without calling a paid API on every run." },
       { decision: "Unit-tested the server that holds the API key: allowed websites, input limits, rate limiting and hidden error details" },
+      { decision: "Published every test run as an Allure report on this site, grouped by feature and severity, with trends across deploys", why: "So anyone, including recruiters, can check the results instead of taking my word for it." },
       { decision: "Used AI throughout the build, for drafting code, explaining errors and suggesting edge cases, and reviewed every change in CI before it went live", why: "AI makes me faster; review and tests keep it trustworthy." },
     ],
     metrics: [
@@ -433,7 +436,7 @@ export const education = {
 export const skillGroups = [
   { group: "AI-first QA", items: ["AI-assisted test design", "Prompt-based test generation", "LLM and chatbot testing", "AI test data generation", "GitHub Copilot", "ChatGPT and Claude"] },
   { group: "Manual QA", items: ["Manual testing", "Test case design", "Exploratory testing", "Regression and smoke", "UAT", "Cross-browser and responsive", "Bug reporting and triage"] },
-  { group: "Automation", items: ["Playwright", "Selenium", "RestAssured", "TestNG", "JUnit", "Postman", "Newman", "Gherkin (BDD)"] },
+  { group: "Automation", items: ["Playwright", "Selenium", "RestAssured", "TestNG", "JUnit", "Postman", "Newman", "Gherkin (BDD)", "Allure Report"] },
   { group: "Languages and data", items: ["Java", "JavaScript", "SQL"] },
   { group: "CI/CD and tools", items: ["GitHub Actions", "Jenkins", "Azure DevOps", "CI/CD pipelines", "Git", "GitHub", "Jira", "TestRail", "Confluence", "Figma"] },
   { group: "Performance and security", items: ["JMeter", "OWASP ZAP", "Chrome DevTools"] },
@@ -456,6 +459,7 @@ export const skillAliases: Record<string, string[]> = {
   "Cross-browser and responsive": ["cross-browser", "cross browser", "responsive", "browserstack"],
   "Bug reporting and triage": ["bug", "bugs", "defect", "defects", "triage"],
   Playwright: ["playwright"],
+  "Allure Report": ["allure", "allure report", "test reporting"],
   Selenium: ["selenium", "webdriver"],
   RestAssured: ["restassured", "rest assured", "rest-assured", "api testing", "api automation"],
   Postman: ["postman"],

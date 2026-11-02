@@ -2,7 +2,12 @@
 
 Live at **https://tabee1999.github.io**
 
-A portfolio built and tested like a product: React + TypeScript + Tailwind CSS, pre-rendered to static HTML for search engines, and checked on every push by a Playwright suite (desktop Chrome, desktop Firefox, mobile Chrome), axe accessibility scans and Lighthouse. The latest test report is published with the site at [/report/](https://tabee1999.github.io/report/).
+A portfolio built and tested like a product: React + TypeScript + Tailwind CSS, pre-rendered to static HTML for search engines, and checked on every push by a Playwright suite (desktop Chrome, desktop Firefox, mobile Chrome), axe accessibility scans and Lighthouse.
+
+Every deploy publishes the results with the site:
+
+- **[Allure report](https://tabee1999.github.io/allure/)**: tests grouped by feature and severity, with trends that build up across deploys
+- **[Playwright report](https://tabee1999.github.io/report/)**: the raw run, with traces for any retried test
 
 ## What's on the site
 
@@ -69,6 +74,7 @@ npm test               # full suite (builds and starts the server for you)
 npm run test:chrome    # faster: desktop + mobile Chrome only
 npm run test:worker    # unit tests for the AI chat worker
 npm run report         # open the HTML report of the last run
+npm run test:allure    # run the suite and open it as an Allure report
 ```
 
 ## Editing

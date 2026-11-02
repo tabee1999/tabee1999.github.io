@@ -1,5 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
-import { axeViolations, content } from "./helpers";
+import { allureLabels, axeViolations, content } from "./helpers";
+
+test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "AI chat assistant", "normal"));
 
 const { person } = content;
 

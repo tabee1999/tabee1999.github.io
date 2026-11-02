@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { axeViolations, content } from "./helpers";
+import { allureLabels, axeViolations, content } from "./helpers";
+
+test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "Accessibility (WCAG 2.2 AA)", "critical"));
 
 test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
   test("home page", async ({ page }) => {

@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { allPages, content, navLink, openMenuIfCollapsed, watchErrors } from "./helpers";
+import { allureLabels, allPages, content, navLink, openMenuIfCollapsed, watchErrors } from "./helpers";
+
+test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "Navigation and links", "critical"));
 
 test.describe("navigation", () => {
   for (const item of content.nav) {
@@ -27,7 +29,8 @@ test.describe("navigation", () => {
         const url = new URL(href);
         if (url.origin !== new URL(page.url()).origin) continue;
         const target = url.pathname;
-        if (target.startsWith("/report") || checked.has(target)) continue;
+        // Test reports are generated in CI and published with the site, so they don't exist locally.
+        if (target.startsWith("/report") || target.startsWith("/allure") || checked.has(target)) continue;
         checked.add(target);
         const res = await request.get(target);
         expect(res.status(), `${target} (linked from ${path})`).toBe(200);

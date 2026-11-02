@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { allPages } from "./helpers";
+import { allureLabels, allPages } from "./helpers";
+
+test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "Responsive layout", "normal"));
 
 const widths = [360, 768, 1024, 1440];
 

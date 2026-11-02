@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
-import { allPages, content } from "./helpers";
+import { allureLabels, allPages, content } from "./helpers";
+
+test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "SEO and AI search", "normal"));
 
 const { site, person, caseStudies, faqs } = content;
 

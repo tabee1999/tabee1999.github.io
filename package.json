@@ -14,7 +14,8 @@
     "test:worker": "node --test chat-worker/worker.test.mjs",
     "lighthouse": "lhci autorun",
     "test:ui": "playwright test --ui",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "test:allure": "ALLURE=1 playwright test; allure generate ./allure-results && allure open"
   },
   "dependencies": {
     "react": "^19.2.0",
@@ -27,6 +28,9 @@
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "allure": "^3.0.0",
+    "allure-js-commons": "^3.0.0",
+    "allure-playwright": "^3.0.0",
     "esbuild": "^0.25.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0"

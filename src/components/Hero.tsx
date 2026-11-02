@@ -18,6 +18,7 @@ const tools = [
   "OWASP ZAP",
   "Jira",
   "TestRail",
+  "Allure Report",
   "AI-assisted testing",
 ];
 

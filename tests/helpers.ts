@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import type { Page } from "@playwright/test";
+import type { Page, TestInfo } from "@playwright/test";
 import * as content from "../src/content";
 
 export { content };
@@ -33,6 +33,21 @@ export async function axeViolations(page: Page) {
     help: v.help,
     targets: v.nodes.map((n) => n.target.join(" ")).slice(0, 5),
   }));
+}
+
+/**
+ * Groups tests in the Allure report: Portfolio website → feature → story (the describe block),
+ * with a severity. Does nothing unless the Allure reporter is on (ALLURE=1).
+ */
+export async function allureLabels(testInfo: TestInfo, feature: string, severity: "blocker" | "critical" | "normal" | "minor" = "normal") {
+  if (!process.env.ALLURE) return;
+  const allure = await import("allure-js-commons");
+  const path = testInfo.titlePath;
+  await allure.epic("Portfolio website");
+  await allure.feature(feature);
+  await allure.story(path.length > 2 ? path[path.length - 2] : feature);
+  await allure.severity(severity);
+  await allure.owner("Tabeeda Shakir");
 }
 
 /** Collects uncaught errors and console errors (network failures to third parties are ignored). */
