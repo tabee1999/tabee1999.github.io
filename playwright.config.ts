@@ -11,14 +11,12 @@ export default defineConfig({
   // and the retry records a trace so it can be debugged.
   retries: CI ? 1 : 0,
   workers: CI ? 2 : undefined,
-  reporter: CI
-    ? [["html", { open: "never" }], ["github"], ["list"]]
-    : [["html", { open: "never" }], ["list"]],
+  reporter: CI ? [["html", { open: "never" }], ["github"], ["list"]] : [["html", { open: "never" }], ["list"]],
   use: {
     baseURL: `http://localhost:${PORT}/`,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
-    // Makes the hero animation and smooth scrolling instant, so assertions don't race them.
+    // Makes scroll reveals, count-ups and smooth scrolling instant, so assertions don't race them.
     contextOptions: { reducedMotion: "reduce" },
   },
   projects: [
@@ -27,9 +25,9 @@ export default defineConfig({
     { name: "mobile-chrome", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: `node build.mjs && node scripts/serve.mjs --port ${PORT}`,
+    command: `node scripts/build.mjs && node scripts/serve.mjs --port ${PORT} --dir dist`,
     url: `http://localhost:${PORT}/`,
     reuseExistingServer: !CI,
-    timeout: 30_000,
+    timeout: 60_000,
   },
 });

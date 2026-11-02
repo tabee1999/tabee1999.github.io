@@ -1,5 +1,6 @@
+import AxeBuilder from "@axe-core/playwright";
 import type { Page } from "@playwright/test";
-import content from "../content.js";
+import * as content from "../src/content";
 
 export { content };
 
@@ -8,17 +9,38 @@ export const allPages = ["/", ...caseStudyPaths];
 
 /** On small screens the main nav sits behind a menu button. Opens it if needed. */
 export async function openMenuIfCollapsed(page: Page) {
-  const button = page.locator(".menu-btn");
+  const button = page.locator('button[aria-controls="mobile-menu"]');
   if ((await button.isVisible()) && (await button.getAttribute("aria-expanded")) !== "true") {
     await button.click();
   }
 }
 
-/** Relative luminance (WCAG) of a CSS rgb()/rgba() string. */
-export function luminance(rgb: string) {
-  const [r, g, b] = (rgb.match(/[\d.]+/g) ?? ["0", "0", "0"]).slice(0, 3).map((v) => {
-    const c = Number(v) / 255;
-    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+/** Visible navigation (desktop bar or mobile menu). */
+export function navLink(page: Page, label: string, isMobile: boolean) {
+  const nav = page.getByRole("navigation", { name: isMobile ? "Mobile" : "Main" });
+  return nav.getByRole("link", { name: label, exact: true });
+}
+
+// WCAG 2.0, 2.1 and 2.2 at levels A and AA.
+const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
+
+export async function axeViolations(page: Page) {
+  const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
+  // Short, readable summary in the test report instead of a huge JSON dump.
+  return results.violations.map((v: { id: string; impact?: string | null; help: string; nodes: { target: string[] }[] }) => ({
+    rule: v.id,
+    impact: v.impact,
+    help: v.help,
+    targets: v.nodes.map((n) => n.target.join(" ")).slice(0, 5),
+  }));
+}
+
+/** Collects uncaught errors and console errors (network failures to third parties are ignored). */
+export function watchErrors(page: Page) {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
+  page.on("console", (m) => {
+    if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push(`console: ${m.text()}`);
   });
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return errors;
 }

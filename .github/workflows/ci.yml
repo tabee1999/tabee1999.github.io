@@ -32,8 +32,14 @@ jobs:
       - name: Install browsers
         run: npx playwright install --with-deps chromium firefox
 
-      - name: Build site
-        run: node build.mjs
+      - name: Build site (React pre-render + Tailwind)
+        run: npm run build
+
+      # Advisory: esbuild strips types without checking them, so this reports type errors
+      # without blocking a deploy.
+      - name: Type check
+        continue-on-error: true
+        run: npm run typecheck
 
       - name: Run tests (desktop Chrome, desktop Firefox, mobile Chrome)
         run: npx playwright test
@@ -64,8 +70,11 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install dependencies
+        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
       - name: Build site
-        run: node build.mjs
+        run: npm run build
 
       # The site's footer links to /report/: publish the Playwright report from this run there.
       - name: Add the Playwright report to the site

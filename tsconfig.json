@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2020",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
     "strict": true,
-    "allowJs": true,
     "noEmit": true,
     "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "types": ["node"]
   },
-  "include": ["playwright.config.ts", "tests/**/*.ts", "content.js"]
+  "include": ["src", "tests", "playwright.config.ts"]
 }

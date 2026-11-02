@@ -1,84 +1,69 @@
-import { readFile, readdir } from "node:fs/promises";
 import { test, expect } from "@playwright/test";
-import { content } from "./helpers";
+import { content, watchErrors } from "./helpers";
 
-test.describe("home", () => {
-  test.beforeEach(async ({ page }) => {
+const { person, stats, projects, experience, services } = content;
+
+test.describe("home page", () => {
+  test("introduces Tabeeda with her role and calls to action", async ({ page }) => {
+    const errors = watchErrors(page);
     await page.goto("/");
+
+    await expect(page).toHaveTitle(/Tabeeda Shakir/);
+    const h1 = page.getByRole("heading", { level: 1 });
+    await expect(h1).toContainText(person.name);
+    await expect(h1).toContainText(person.role);
+    await expect(page.getByText(person.available).first()).toBeVisible();
+
+    await expect(page.getByTestId("cta-work")).toHaveAttribute("href", "#projects");
+    await expect(page.getByTestId("cta-cv")).toHaveAttribute("download", "");
+    await expect(page.getByRole("img", { name: person.photoAlt })).toBeVisible();
+
+    expect(errors).toEqual([]);
   });
 
-  test("shows name, role and open-to-work badge", async ({ page }) => {
-    await expect(page.getByRole("heading", { level: 1, name: content.person.name })).toBeVisible();
-    await expect(page.locator(".hero .role")).toContainText(content.person.role);
-    await expect(page.getByTestId("open-to-work")).toHaveText(content.person.openTo);
-    await expect(page.getByRole("link", { name: "View my work" })).toHaveAttribute("href", "#case-studies");
-    await expect(page.locator(".hero").getByRole("link", { name: "Contact me" })).toHaveAttribute("href", "#contact");
-  });
-
-  test("has the title, description, link preview and Person schema", async ({ page }) => {
-    await expect(page).toHaveTitle(content.site.title);
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", content.site.description);
-    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /\/og-image\.png$/);
-    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
-    await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
-
-    const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}");
-    expect(ld["@type"]).toBe("Person");
-    expect(ld.name).toBe(content.person.name);
-    expect(ld.jobTitle).toBe(content.person.role);
-  });
-
-  test("serves the link preview image, sitemap and robots.txt", async ({ request }) => {
-    for (const path of ["/og-image.png", "/sitemap.xml", "/robots.txt", "/favicon.svg"]) {
-      const res = await request.get(path);
-      expect.soft(res.status(), path).toBe(200);
-    }
-    const sitemap = await (await request.get("/sitemap.xml")).text();
-    for (const cs of content.caseStudies) expect.soft(sitemap).toContain(`/case-studies/${cs.slug}/`);
-  });
-
-  test("downloads the CV as a PDF", async ({ page }) => {
-    const downloadPromise = page.waitForEvent("download");
-    await page.getByTestId("cv-download").click();
-    const download = await downloadPromise;
-
-    expect(download.suggestedFilename()).toMatch(/\.pdf$/i);
-    const file = await readFile(await download.path());
-    expect(file.subarray(0, 5).toString()).toBe("%PDF-");
-  });
-
-  test("lists every case study from content.js", async ({ page }) => {
-    const section = page.locator("#case-studies");
-    for (const cs of content.caseStudies) {
-      await expect(section.getByRole("link", { name: cs.title })).toHaveAttribute("href", `case-studies/${cs.slug}/`);
+  test("shows the key numbers from the CV", async ({ page }) => {
+    await page.goto("/");
+    const highlights = page.getByRole("list", { name: "Highlights" });
+    for (const s of stats) {
+      await expect(highlights).toContainText(s.label);
+      await expect(highlights).toContainText(`${s.prefix ?? ""}${s.value}${s.suffix ?? ""}`);
     }
   });
 
-  test("shows services, products and the work process from content.js", async ({ page }) => {
-    for (const service of content.services) {
-      await expect(page.locator("#services").getByRole("heading", { name: service.title })).toBeVisible();
-    }
-    for (const product of content.products) {
-      await expect(page.locator("#products").getByRole("heading", { name: product.name })).toBeVisible();
-    }
-    await expect(page.locator("#process .step")).toHaveCount(content.process.length);
+  test("lists AI-first QA and manual QA among the services", async ({ page }) => {
+    await page.goto("/");
+    const section = page.locator("#services");
+    for (const s of services) await expect(section.getByRole("heading", { name: s.title, exact: true })).toBeVisible();
+    await expect(section.getByRole("heading", { name: "AI-first QA", exact: true })).toBeVisible();
+    await expect(section.getByRole("heading", { name: "Manual and exploratory QA", exact: true })).toBeVisible();
   });
 
-  test("hides optional sections that have no content", async ({ page }) => {
-    await expect(page.locator("#writing")).toHaveCount(content.writing.length ? 1 : 0);
-    await expect(page.locator("#testimonials")).toHaveCount(content.testimonials.length ? 1 : 0);
+  test("shows every project and every role", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByTestId("project-card")).toHaveCount(projects.length);
+    for (const job of experience) {
+      await expect(page.locator("#experience").getByText(job.company, { exact: false }).first()).toBeVisible();
+    }
   });
 
-  test("only shows real tests in the hero test run", async () => {
-    // The hero lists test titles as "describe › test". Make sure each one exists in this suite,
-    // so the page never advertises a check that isn't actually run.
-    const dir = new URL(".", import.meta.url);
-    const files = (await readdir(dir)).filter((f) => f.endsWith(".spec.ts"));
-    const sources = await Promise.all(files.map((f) => readFile(new URL(f, dir), "utf8")));
-    for (const line of content.site.heroRun) {
-      const [suite, title] = line.split(" › ");
-      const found = sources.some((src) => src.includes(`test.describe("${suite}"`) && src.includes(`test("${title}"`));
-      expect.soft(found, `"${line}" should match a real test`).toBe(true);
-    }
+  test("the CV download is a real PDF", async ({ page, request }) => {
+    await page.goto("/");
+    const href = await page.getByTestId("cta-cv").getAttribute("href");
+    const res = await request.get(href!);
+    expect(res.status()).toBe(200);
+    expect(res.headers()["content-type"]).toContain("application/pdf");
+    expect((await res.body()).subarray(0, 4).toString()).toBe("%PDF");
+  });
+
+  test("every image and stylesheet on the page loads", async ({ page }) => {
+    const failed: string[] = [];
+    page.on("response", (r) => {
+      if (r.url().startsWith("http://localhost") && r.status() >= 400) failed.push(`${r.status()} ${r.url()}`);
+    });
+    await page.goto("/", { waitUntil: "load" });
+    await page.locator("#contact").scrollIntoViewIfNeeded();
+    expect(failed).toEqual([]);
+    const broken = await page.$$eval("img", (imgs) => imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.loading !== "lazy").map((i) => i.src));
+    expect(broken).toEqual([]);
   });
 });

@@ -29,6 +29,7 @@ const TYPES = {
   ".pdf": "application/pdf",
   ".xml": "application/xml; charset=utf-8",
   ".txt": "text/plain; charset=utf-8",
+  ".webmanifest": "application/manifest+json",
   ".woff2": "font/woff2",
   ".zip": "application/zip",
 };
