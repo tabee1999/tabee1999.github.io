@@ -1007,16 +1007,31 @@ pre {
   display: grid;
 }
 
-.project {
-  display: grid;
-  gap: 14px;
-  padding-block: 28px;
-  border-top: 1px solid var(--line);
+.project-list {
+  gap: 16px;
 }
 
-.project:first-child {
-  padding-top: 0;
-  border-top: 0;
+.project {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.project-info {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: clamp(20px, 3vw, 28px);
+  min-width: 0;
+}
+
+@media (min-width: 760px) {
+  .project.has-visual {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
 }
 
 .project-head {
@@ -1905,6 +1920,298 @@ pre {
 .simple-page p {
   max-width: 60ch;
   color: var(--muted);
+}
+
+/* ── Portfolio sections: services, products, process, project previews ─ */
+
+.service-grid,
+.product-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+}
+
+.service {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 22px 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.service-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 4px;
+  border-radius: 12px;
+  background: var(--accent-wash);
+  color: var(--accent-strong);
+}
+
+.service h3,
+.product h3,
+.step h3 {
+  font-size: var(--fs-base);
+  font-weight: 700;
+}
+
+.service p,
+.step p {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+
+.product {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.product-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--term-bg);
+  color: var(--term-pass);
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.product-text {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.product-domain {
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.product-company {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.platforms li {
+  padding: 1px 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.7;
+}
+
+/* How I work: a real sequence, so numbered */
+.process {
+  display: grid;
+  gap: 16px;
+  counter-reset: step;
+}
+
+@media (min-width: 860px) {
+  .process {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+.step {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding-top: 4px;
+}
+
+.step-num {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 860px) {
+  .step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 24px;
+    left: 52px;
+    right: -12px;
+    border-top: 2px dashed var(--line);
+  }
+}
+
+/* Project previews, drawn in HTML so they stay sharp and theme-aware */
+.pv {
+  position: relative;
+  display: grid;
+  align-content: center;
+  min-height: 180px;
+  padding: 24px;
+  background: var(--accent-wash);
+}
+
+.pv-browser {
+  gap: 8px;
+}
+
+.pv-browser .pv-bar,
+.pv-browser .pv-row,
+.pv-browser .pv-pass {
+  position: relative;
+  z-index: 1;
+}
+
+.pv-browser::before {
+  content: "";
+  position: absolute;
+  inset: 20px;
+  border-radius: 10px;
+  background: var(--term-bg);
+}
+
+.pv-bar {
+  display: block;
+  height: 10px;
+  margin: 0 8px 4px;
+}
+
+.pv-bar i {
+  display: block;
+  width: 40%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--term-line);
+}
+
+.pv-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-inline: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.pv-row b {
+  color: var(--term-pass);
+}
+
+.pv-row i {
+  display: block;
+  width: var(--w);
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(215 229 222 / 0.28);
+}
+
+.pv-pass {
+  margin: 6px 8px 0;
+  color: var(--term-pass);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+.pv-phone {
+  place-items: center;
+}
+
+.pv-screen {
+  position: relative;
+  display: block;
+  width: 96px;
+  height: 150px;
+  overflow: hidden;
+  border: 5px solid var(--term-bg);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.pv-road {
+  position: absolute;
+  background: var(--line);
+}
+
+.pv-road.a {
+  left: -10px;
+  right: -10px;
+  top: 52px;
+  height: 8px;
+  transform: rotate(-18deg);
+}
+
+.pv-road.b {
+  top: -10px;
+  bottom: -10px;
+  left: 54px;
+  width: 7px;
+}
+
+.pv-pin {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50% 50% 50% 0;
+  background: var(--accent);
+  transform: rotate(-45deg);
+}
+
+.pv-card {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  display: grid;
+  gap: 5px;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--accent-wash);
+}
+
+.pv-card i {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--accent);
+  opacity: 0.55;
+}
+
+.pv-card i + i {
+  width: 60%;
+  opacity: 0.3;
 }
 
 /* ── Interactive pieces ──────────────────────────────────────────────── */

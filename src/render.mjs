@@ -50,6 +50,7 @@ function link(href, label, { cls = "", attrs = "" } = {}) {
 }
 
 const NAV_LABELS = {
+  services: "What I do",
   "case-studies": "Case studies",
   projects: "Projects",
   samples: "Work samples",
@@ -258,6 +259,92 @@ function impact(c) {
 </section>`;
 }
 
+const ICONS = {
+  automation: '<path d="M8 6.5v11l9-5.5z" fill="currentColor"/><path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  api: '<path d="M8.5 4.5c-2 0-2.5 1-2.5 2.5v2.5c0 1.2-.8 2-2 2.5 1.2.5 2 1.3 2 2.5V17c0 1.5.5 2.5 2.5 2.5M15.5 4.5c2 0 2.5 1 2.5 2.5v2.5c0 1.2.8 2 2 2.5-1.2.5-2 1.3-2 2.5V17c0 1.5-.5 2.5-2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+  devices: '<rect x="2.5" y="4.5" width="13" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 18.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><rect x="15.5" y="9" width="6" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8"/>',
+  gauge: '<path d="M4 16a8 8 0 1 1 16 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M12 16l4-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="16" r="1.6" fill="currentColor"/>',
+  database: '<ellipse cx="12" cy="6" rx="7" ry="2.8" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 6v12c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6M5 12c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8" fill="none" stroke="currentColor" stroke-width="1.8"/>',
+  flag: '<path d="M5 21V4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M5 4.5h11l-2 3.5 2 3.5H5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>',
+};
+const icon = (name) =>
+  `<svg class="icon" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">${ICONS[name] ?? ICONS.flag}</svg>`;
+
+function services(c) {
+  const items = (c.services ?? []).filter((x) => has(x.title));
+  if (!items.length) return "";
+  return section(
+    "services",
+    "What I do",
+    "The kinds of testing teams bring me in for.",
+    `<ul class="service-grid">${items
+      .map(
+        (x) => `<li class="service">
+          <span class="service-icon">${icon(x.icon)}</span>
+          <h3>${t(x.title)}</h3>
+          <p>${t(x.text)}</p>
+        </li>`,
+      )
+      .join("\n")}</ul>`,
+  );
+}
+
+function products(c) {
+  const items = (c.products ?? []).filter((x) => has(x.name));
+  if (!items.length) return "";
+  return section(
+    "products",
+    "Products I've tested",
+    "Across e-commerce, logistics, travel and fintech.",
+    `<ul class="product-grid">${items
+      .map(
+        (x) => `<li class="product">
+          <span class="product-mark" aria-hidden="true">${esc(strip(x.name).charAt(0))}</span>
+          <div class="product-text">
+            <p class="product-domain">${t(x.domain)}</p>
+            <h3>${t(x.name)}</h3>
+            <p class="product-company">${t(x.company)}</p>
+            <ul class="platforms" aria-label="Platforms">${x.platforms.filter(has).map((pl) => `<li>${t(pl)}</li>`).join("")}</ul>
+          </div>
+        </li>`,
+      )
+      .join("\n")}</ul>`,
+  );
+}
+
+function howIWork(c) {
+  const steps = (c.process ?? []).filter((x) => has(x.title));
+  if (!steps.length) return "";
+  return section(
+    "process",
+    "How I work",
+    "From the first requirement to the release call.",
+    `<ol class="process">${steps
+      .map(
+        (x, i) => `<li class="step">
+          <span class="step-num" aria-hidden="true">${i + 1}</span>
+          <h3>${t(x.title)}</h3>
+          <p>${t(x.text)}</p>
+        </li>`,
+      )
+      .join("\n")}</ol>`,
+  );
+}
+
+// Small drawn previews for project cards.
+function projectVisual(kind) {
+  if (kind === "browser") {
+    const rows = ["home", "navigation", "contact", "a11y"]
+      .map((n, i) => `<span class="pv-row"><b>✓</b><i style="--w:${[62, 78, 54, 70][i]}%"></i></span>`)
+      .join("");
+    return `<div class="pv pv-browser" aria-hidden="true"><span class="pv-bar"><i></i></span>${rows}<span class="pv-pass">All checks passed</span></div>`;
+  }
+  if (kind === "phone") {
+    return `<div class="pv pv-phone" aria-hidden="true"><span class="pv-screen"><span class="pv-road a"></span><span class="pv-road b"></span><span class="pv-pin"></span><span class="pv-card"><i></i><i></i></span></span></div>`;
+  }
+  return "";
+}
+
 function caseStudies(c) {
   const cards = c.caseStudies
     .map((cs) => {
@@ -318,7 +405,9 @@ function projects(c) {
             : "";
       const links = [link(url, "Repository", { cls: "text-link" }), link(report, "Test report", { cls: "text-link" }), ci].filter(Boolean);
       const checks = p.demonstrates.filter(has);
-      return `<li class="project">
+      return `<li class="project${p.visual ? " has-visual" : ""}">
+        ${p.visual ? projectVisual(p.visual) : ""}
+        <div class="project-info">
         <div class="project-head">
           <h3>${t(p.name)}</h3>
           ${repoPath}
@@ -327,6 +416,7 @@ function projects(c) {
         ${tags(p.tags)}
         ${checks.length ? `<ul class="checks" aria-label="What it demonstrates">${checks.map((d) => `<li>${t(d)}</li>`).join("")}</ul>` : ""}
         ${links.length ? `<p class="project-links">${links.join(" ")}</p>` : ""}
+        </div>
       </li>`;
     })
     .join("\n");
@@ -342,8 +432,8 @@ function projects(c) {
   if (!rows && !snippet) return "";
   return section(
     "projects",
-    "Automation projects",
-    "Public repositories with documentation, CI and published test reports.",
+    "Projects",
+    "Things I've built and tested, with code and reports where they're public.",
     `${rows ? `<ul class="project-list">${rows}</ul>` : ""}\n${snippet}`,
   );
 }
@@ -560,7 +650,10 @@ function contact(c) {
 // Content sections in page order, without any that are empty in the current mode.
 function homeSections(c) {
   return [
+    ["services", services(c)],
     ["case-studies", caseStudies(c)],
+    ["products", products(c)],
+    ["process", howIWork(c)],
     ["projects", projects(c)],
     ["samples", workSamples(c)],
     ["skills", skills(c)],
@@ -572,7 +665,11 @@ function homeSections(c) {
   ].filter(([, html]) => html);
 }
 
-const navFor = (c) => homeSections(c).map(([id]) => id).filter((id) => NAV_LABELS[id] && id !== "testimonials");
+const NAV_ORDER = ["services", "case-studies", "projects", "skills", "experience", "contact"];
+const navFor = (c) => {
+  const present = new Set(homeSections(c).map(([id]) => id));
+  return NAV_ORDER.filter((id) => present.has(id));
+};
 
 export function renderHome(c) {
   const sections = homeSections(c).map(([id, html], i) => {

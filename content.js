@@ -67,6 +67,58 @@ export default {
     "I get involved early: turning requirements into test scenarios, bringing shift-left testing into sprints, leading bug triage and giving go/no-go input on releases. I've worked remotely and hybrid with teams in the UAE and Pakistan, so I write things down and keep handoffs clear.",
   ],
 
+  // "What I do": icon is one of automation, api, devices, gauge, database, flag.
+  services: [
+    {
+      icon: "automation",
+      title: "Test automation",
+      text: "UI suites in Playwright and API suites in RestAssured with TestNG, running in GitHub Actions or Jenkins on every change.",
+    },
+    {
+      icon: "api",
+      title: "API testing",
+      text: "Functional, negative and data checks on REST APIs with RestAssured, Postman and Newman.",
+    },
+    {
+      icon: "devices",
+      title: "Web and mobile testing",
+      text: "iOS, Android and web apps, with cross-browser, responsive and exploratory testing.",
+    },
+    {
+      icon: "gauge",
+      title: "Performance and security",
+      text: "JMeter load tests and OWASP ZAP security scans before releases.",
+    },
+    {
+      icon: "database",
+      title: "Data and backend checks",
+      text: "SQL queries that confirm data stays correct across services, not only on screen.",
+    },
+    {
+      icon: "flag",
+      title: "Test strategy and releases",
+      text: "Test plans, regression scope, bug triage and a clear go/no-go call for each release.",
+    },
+  ],
+
+  // Products I've tested. Edit the domain or platforms if anything is off.
+  products: [
+    { name: "Tawla.ae", company: "Epicmetry", domain: "E-commerce", platforms: ["Web", "Mobile", "API"] },
+    { name: "Modon Express", company: "Epicmetry", domain: "Logistics", platforms: ["Web", "Mobile", "API"] },
+    { name: "Alrais Travel", company: "Epicmetry", domain: "Travel", platforms: ["Web", "Mobile", "API"] },
+    { name: "Visa processing platform", company: "Propellus.co", domain: "Travel tech", platforms: ["Web", "Mobile", "API"] },
+    { name: "Trading CRM and CMS", company: "Maleyat Group", domain: "Fintech", platforms: ["Web", "MetaTrader 5"] },
+    { name: "B2B marketplace and logistics apps", company: "Dastgyr", domain: "E-commerce", platforms: ["iOS", "Android", "Web"] },
+  ],
+
+  // How I work: a short, ordered process.
+  process: [
+    { title: "Understand the risk", text: "Turn requirements into test scenarios and agree where a failure would hurt most." },
+    { title: "Automate what matters", text: "API tests for fast, precise feedback and UI tests for key user journeys, all running in CI." },
+    { title: "Explore what scripts miss", text: "Exploratory, cross-browser and responsive testing, plus performance and security checks." },
+    { title: "Release with confidence", text: "Triage bugs with developers and product, then give a clear go/no-go call." },
+  ],
+
   caseStudies: [
     {
       slug: "regression-automation-three-products",
@@ -240,6 +292,17 @@ export default {
       ],
       reportUrl: "SITE_REPORT", // uses site.qualityReportPath
       ciWorkflow: "ci.yml",
+      visual: "browser",
+    },
+    {
+      name: "Wasty",
+      url: "",
+      purpose: "Final year project: a smart waste collection system built as an Android app.",
+      tags: ["Java", "Android", "Firebase", "Google Maps API"],
+      demonstrates: [],
+      reportUrl: "",
+      ciWorkflow: "",
+      visual: "phone",
     },
   ],
 

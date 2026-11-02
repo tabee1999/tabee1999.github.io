@@ -54,6 +54,16 @@ test.describe("home", () => {
     }
   });
 
+  test("shows services, products and the work process from content.js", async ({ page }) => {
+    for (const service of content.services) {
+      await expect(page.locator("#services").getByRole("heading", { name: service.title })).toBeVisible();
+    }
+    for (const product of content.products) {
+      await expect(page.locator("#products").getByRole("heading", { name: product.name })).toBeVisible();
+    }
+    await expect(page.locator("#process .step")).toHaveCount(content.process.length);
+  });
+
   test("hides optional sections that have no content", async ({ page }) => {
     await expect(page.locator("#writing")).toHaveCount(content.writing.length ? 1 : 0);
     await expect(page.locator("#testimonials")).toHaveCount(content.testimonials.length ? 1 : 0);
