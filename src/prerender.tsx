@@ -49,7 +49,7 @@ const personLd = {
   sameAs: [person.linkedin, person.github],
   address: person.countries.map((c) => ({ "@type": "PostalAddress", addressCountry: c })),
   seeks: { "@type": "Demand", description: `${person.targetRoles.join(", ")} roles. ${person.employment}. ${person.openTo}.` },
-  worksFor: { "@type": "Organization", name: experience[0].company },
+  worksFor: { "@type": "Organization", name: experience[0].company, url: experience[0].url, description: experience[0].about },
   alumniOf: { "@type": "CollegeOrUniversity", name: education.school },
   hasOccupation: {
     "@type": "Occupation",
@@ -278,7 +278,7 @@ function llmsTxt() {
     ...services.map((s) => `- ${s.title}: ${s.text}`),
     "",
     "## Experience",
-    ...experience.map((e) => `- ${e.role}, ${e.company} (${e.period}, ${e.location}): ${e.summary}`),
+    ...experience.map((e) => `- ${e.role}, ${e.company} (${e.period}, ${e.location}): ${e.summary}${e.about ? ` About the company: ${e.about}` : ""}${e.url ? ` ${e.url}` : ""}`),
     "",
     "## Projects",
     ...projects.map((p) => `- ${p.name} (${p.company}, ${p.domain}): ${p.summary}`),

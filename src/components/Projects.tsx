@@ -222,6 +222,13 @@ function ProjectDialog({ project, onClose }: { project: Project | null; onClose:
                 Read the case study <Icon name="arrowRight" className="arrow size-4" />
               </a>
             )}
+            {project.url && (
+              <a href={project.url} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
+                Visit {new URL(project.url).hostname.replace(/^(www|app)\./, "")}
+                <Icon name="arrowUpRight" className="size-4" />
+                <span className="sr-only">(opens in a new tab)</span>
+              </a>
+            )}
             <a href="#contact" onClick={onClose} className="btn btn-ghost btn-sm">
               Discuss a similar project
             </a>

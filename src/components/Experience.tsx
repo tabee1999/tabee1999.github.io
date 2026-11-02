@@ -79,6 +79,23 @@ export function Experience() {
                 <div id={`job-panel-${i}`} role="region" aria-labelledby={`job-${i}`} className="expander" data-open={isOpen} inert={!isOpen}>
                   <div>
                     <div className="border-t border-line px-5 py-5 md:px-6">
+                      {(job.about || job.url) && (
+                        <p className="mb-4 text-sm leading-relaxed text-mute">
+                          {job.about}{" "}
+                          {job.url && (
+                            <a
+                              href={job.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-brand-200 underline decoration-brand-400/40 underline-offset-4 hover:text-white"
+                            >
+                              {new URL(job.url).hostname.replace(/^www\./, "")}
+                              <Icon name="arrowUpRight" className="size-3.5" />
+                              <span className="sr-only">(opens in a new tab)</span>
+                            </a>
+                          )}
+                        </p>
+                      )}
                       <ul className="space-y-3">
                         {job.bullets.map((b) => (
                           <li key={b} className="flex gap-3 leading-relaxed text-ink/90">

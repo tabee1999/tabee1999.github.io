@@ -95,8 +95,8 @@ function entityAnswer(q: string): Answer | null {
     const current = job.period.includes("present");
     return {
       topic: "company",
-      text: `${current ? "She is" : "She was"} ${job.role} at ${job.company} (${job.period}, ${job.location}). ${job.summary}\n\n${bullets(job.bullets.slice(0, 3))}`,
-      actions: [section("experience", "See experience")],
+      text: `${current ? "She is" : "She was"} ${job.role} at ${job.company} (${job.period}, ${job.location}). ${job.about ? `${job.about} ` : ""}${job.summary}\n\n${bullets(job.bullets.slice(0, 3))}`,
+      actions: [section("experience", "See experience"), ...(job.url ? [{ label: `${job.company.split(" (")[0]} website`, href: job.url, kind: "external" as const }] : [])],
     };
   }
   const project = projects.find((p) => (projectNames[p.slug] ?? []).some((n) => mentions(q, n)));
@@ -185,7 +185,7 @@ const topics: Topic[] = [
       text: `Yes, she leads QA.\n\n${bullets([
         "Epicmetry: QA lead for travel, logistics and fleet products. She owns test strategy, leads bug triage and gives go/no-go input on 3+ releases a month.",
         "Dastgyr: owned QA for the B2B marketplace apps and led QA for 3 logistics apps.",
-        "Propellus.co: the sole QA engineer, owning testing from planning to release.",
+        "Propellus: the sole QA engineer, owning testing from planning to release.",
       ])}`,
       actions: [section("experience", "See experience"), cv],
     }),

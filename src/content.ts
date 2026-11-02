@@ -11,6 +11,8 @@ export type Project = {
   tags: string[];
   categories: Category[];
   platforms: string[];
+  /** Public website of the product or company, if there is one to link to. */
+  url?: string;
   /** Shown as a small drawn preview on the card. */
   visual: "travel" | "payments" | "fleet" | "visa" | "trading" | "marketplace" | "assistant";
 };
@@ -94,7 +96,7 @@ export const stats = [
 
 export const about = {
   paragraphs: [
-    "I'm a Senior QA Engineer with 5+ years in software testing across SaaS, travel, logistics, e-commerce and fintech, including time as the only QA engineer at a startup. Today I lead QA for travel, logistics and fleet products at Epicmetry, a Dubai-based company.",
+    "I'm a Senior QA Engineer with 5+ years in software testing across SaaS, travel, logistics, e-commerce and fintech, including time as the only QA engineer at a startup. Today I lead QA for travel, logistics, fleet and restaurant products at Epicmetry, a Dubai-based product consultancy.",
     "I combine careful manual and exploratory testing with automation that teams rely on: Playwright and Selenium for UI, RestAssured (Java) and Postman for APIs, all running in CI with GitHub Actions, Jenkins or Azure DevOps. I work AI-first: AI helps me write and debug test code and find edge cases faster, and I review everything it suggests.",
     "I get involved early, write bug reports developers like to receive, and give clear go/no-go calls on releases.",
   ],
@@ -150,13 +152,14 @@ export const projects: Project[] = [
     tags: ["GDS / NDC", "Multi-currency", "WCAG"],
     categories: ["Manual", "Automation", "API"],
     platforms: ["Web", "Mobile", "API"],
+    url: "https://www.alrais.com/",
     visual: "travel",
   },
   {
     slug: "modon-express",
     name: "Modon Express",
     company: "Epicmetry",
-    domain: "Logistics and e-commerce",
+    domain: "Logistics and delivery (GCC)",
     summary: "Buyer and seller portals with secure payments. I tested checkout, KYC and payment flows end to end.",
     highlights: ["Payments with Tabby, cards and Google Pay", "KYC onboarding flows", "Work tracked in Azure DevOps"],
     tags: ["Payments", "KYC", "Azure DevOps"],
@@ -179,13 +182,14 @@ export const projects: Project[] = [
   {
     slug: "visa-platform",
     name: "AI visa processing platform",
-    company: "Propellus.co",
+    company: "Propellus",
     domain: "Travel tech",
     summary: "AI-powered visa processing for travel agents and online travel agencies. As the only QA engineer I owned testing from planning to release.",
     highlights: ["500+ test cases across web and mobile", "RestAssured API suite and the first Playwright UI suite", "SQL checks on visa transactions"],
     tags: ["AI product", "RestAssured", "Playwright"],
     categories: ["AI-first", "Automation", "API", "Manual"],
     platforms: ["Web", "Mobile", "API"],
+    url: "https://propellus.ai/",
     visual: "visa",
   },
   {
@@ -198,6 +202,7 @@ export const projects: Project[] = [
     tags: ["Fintech", "BDD", "MT5"],
     categories: ["Manual", "API"],
     platforms: ["Web", "MetaTrader 5"],
+    url: "https://naqdi.com/",
     visual: "trading",
   },
   {
@@ -210,6 +215,7 @@ export const projects: Project[] = [
     tags: ["Mobile", "Selenium", "Jenkins"],
     categories: ["Mobile", "Automation", "Performance", "Manual"],
     platforms: ["iOS", "Android", "Web"],
+    url: "https://app.dastgyr.com/",
     visual: "marketplace",
   },
   {
@@ -236,7 +242,7 @@ export const caseStudies: CaseStudy[] = [
     summary: "300+ Playwright, RestAssured and Postman/Newman tests in GitHub Actions cut full regression from 2–3 days to under a day.",
     tags: ["Playwright", "RestAssured", "Postman / Newman", "GitHub Actions", "TestRail"],
     context: {
-      product: "Three SaaS products at Epicmetry (Al Rais Travel, Modon Express and Tawla.ae) on web, mobile and API",
+      product: "Three SaaS products at Epicmetry (Al Rais Travel, Modon Express and Tawla) on web, mobile and API",
       team: "Agile product teams",
       role: "QA lead: test strategy, automation, bug triage and release readiness",
     },
@@ -325,15 +331,31 @@ export const caseStudies: CaseStudy[] = [
   },
 ];
 
-export const experience = [
+export type Job = {
+  company: string;
+  /** Company website, linked from the experience timeline. */
+  url?: string;
+  /** One line on what the company does, for recruiters who don't know it. */
+  about?: string;
+  role: string;
+  period: string;
+  location: string;
+  summary: string;
+  bullets: string[];
+  tags: string[];
+};
+
+export const experience: Job[] = [
   {
     company: "Epicmetry",
+    url: "https://www.epicmetry.com/",
+    about: "Dubai-based product consultancy and software house, founded in 2023, building AI-powered web and mobile products.",
     role: "Senior QA Engineer",
     period: "Jun 2025 – present",
     location: "Remote · Dubai, UAE",
-    summary: "QA lead for travel, logistics and fleet products across web, mobile and API.",
+    summary: "QA lead for travel, logistics, fleet and restaurant products across web, mobile and API.",
     bullets: [
-      "Lead QA for Al Rais Travel, Modon Express, Fleetify and Tawla.ae across web, mobile and API.",
+      "Lead QA for Al Rais Travel (travel booking), Modon Express (logistics and delivery), Fleetify (fleet management) and Tawla (restaurant management) across web, mobile and API.",
       "Automated regression with 300+ Playwright, RestAssured and Postman/Newman tests in GitHub Actions, cutting full regression from 2–3 days to under a day.",
       "Designed and ran 700+ functional, API and UI test cases, tracked in TestRail.",
       "Lead bug triage and give go/no-go input on 3+ releases a month; run JMeter performance tests and OWASP ZAP scans before releases.",
@@ -341,7 +363,9 @@ export const experience = [
     tags: ["Playwright", "RestAssured", "Postman", "GitHub Actions", "TestRail"],
   },
   {
-    company: "Propellus.co",
+    company: "Propellus",
+    url: "https://propellus.ai/",
+    about: "Singapore-based travel-tech startup, founded in 2023, building AI infrastructure for visa processing used by travel agents and OTAs.",
     role: "QA Engineer",
     period: "Jun 2024 – May 2025",
     location: "Hybrid · Pakistan",
@@ -356,6 +380,8 @@ export const experience = [
   },
   {
     company: "Maleyat Group (now Naqdi)",
+    url: "https://naqdi.com/",
+    about: "Dubai-based online broker for forex, indices, crypto and precious metals.",
     role: "SQA Specialist",
     period: "Jan 2024 – Jun 2024",
     location: "Remote · UAE",
@@ -369,6 +395,8 @@ export const experience = [
   },
   {
     company: "Dastgyr",
+    url: "https://app.dastgyr.com/",
+    about: "B2B e-commerce marketplace connecting retailers and suppliers, headquartered in London with operations in Pakistan and Kenya.",
     role: "QA Engineer",
     period: "Dec 2021 – Jan 2024",
     location: "Hybrid · Karachi, Pakistan",
