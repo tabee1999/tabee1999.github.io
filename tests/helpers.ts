@@ -27,7 +27,7 @@ const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 export async function axeViolations(page: Page) {
   const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
   // Short, readable summary in the test report instead of a huge JSON dump.
-  return results.violations.map((v: { id: string; impact?: string | null; help: string; nodes: { target: string[] }[] }) => ({
+  return results.violations.map((v) => ({
     rule: v.id,
     impact: v.impact,
     help: v.help,

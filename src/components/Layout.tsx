@@ -37,8 +37,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 export function Logo({ root }: { root: string }) {
   return (
-    <a href={root === "" ? "#top" : root} className="group flex items-center gap-3 rounded-xl" aria-label={`${person.name}, home`}>
-      <span className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-700 text-base font-extrabold tracking-tight text-white shadow-lg shadow-brand-700/40 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
+    <a href={root === "" ? "#top" : root} className="group flex items-center gap-3 rounded-xl">
+      <span aria-hidden="true" className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-brand-400 to-brand-700 text-base font-extrabold tracking-tight text-white shadow-lg shadow-brand-700/40 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
         {person.initials}
       </span>
       <span className="leading-tight">

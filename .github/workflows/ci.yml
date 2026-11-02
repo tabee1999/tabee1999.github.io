@@ -35,10 +35,8 @@ jobs:
       - name: Build site (React pre-render + Tailwind)
         run: npm run build
 
-      # Advisory: esbuild strips types without checking them, so this reports type errors
-      # without blocking a deploy.
+      # esbuild strips types without checking them, so TypeScript checks them here.
       - name: Type check
-        continue-on-error: true
         run: npm run typecheck
 
       - name: Run tests (desktop Chrome, desktop Firefox, mobile Chrome)
