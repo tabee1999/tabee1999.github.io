@@ -1,11 +1,9 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "node scripts/serve.mjs --port 4322",
-      "startServerReadyPattern": "Serving",
       "url": [
-        "http://localhost:4322/",
-        "http://localhost:4322/case-studies/api-automation-framework/"
+        "https://tabee1999.github.io/",
+        "https://tabee1999.github.io/case-studies/regression-automation-three-products/"
       ],
       "numberOfRuns": 3,
       "settings": {
@@ -14,10 +12,30 @@
     },
     "assert": {
       "assertions": {
-        "categories:performance": ["warn", { "minScore": 0.95 }],
-        "categories:accessibility": ["error", { "minScore": 0.95 }],
-        "categories:best-practices": ["error", { "minScore": 0.95 }],
-        "categories:seo": ["error", { "minScore": 0.95 }]
+        "categories:performance": [
+          "warn",
+          {
+            "minScore": 0.95
+          }
+        ],
+        "categories:accessibility": [
+          "error",
+          {
+            "minScore": 0.95
+          }
+        ],
+        "categories:best-practices": [
+          "error",
+          {
+            "minScore": 0.95
+          }
+        ],
+        "categories:seo": [
+          "error",
+          {
+            "minScore": 0.95
+          }
+        ]
       }
     },
     "upload": {

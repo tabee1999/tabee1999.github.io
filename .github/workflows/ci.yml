@@ -46,28 +46,6 @@ jobs:
           path: playwright-report/
           retention-days: 14
 
-  lighthouse:
-    name: Lighthouse
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
-
-      - name: Build site
-        run: node build.mjs
-
-      # Fails on accessibility, best practices or SEO below 95. Performance below 95 is a warning,
-      # because shared CI runners vary. Each run's full report link is printed in the log.
-      - name: Run Lighthouse CI
-        run: npx lhci autorun
-
   deploy:
     name: Deploy to GitHub Pages
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -104,3 +82,28 @@ jobs:
 
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  lighthouse:
+    name: Lighthouse (live site)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Wait for the new version to reach the CDN
+        run: sleep 30
+
+      # Audits the deployed site, so canonical URLs, HTTPS and caching are the real ones.
+      # Fails on accessibility, best practices or SEO below 95; performance below 95 is a warning.
+      # Each run's full report link is printed in the log.
+      - name: Run Lighthouse CI
+        run: npx lhci autorun

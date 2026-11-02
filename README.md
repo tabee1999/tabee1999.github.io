@@ -59,7 +59,7 @@ npm test                         # full suite (starts the server for you)
 npm run test:chrome              # faster: desktop + mobile Chrome only
 npm run report                   # open the HTML report of the last run
 npm run placeholders             # list every [placeholder] left in content.js
-npm run lighthouse               # Lighthouse scores for the home and a case study page
+npm run lighthouse               # Lighthouse scores for the live home and a case study page
 ```
 
 After the first `npm install`, commit the generated `package-lock.json`. CI then uses `npm ci` for repeatable installs.
@@ -111,7 +111,7 @@ Design decisions:
 
 The site uses relative links, so it works both at a domain root and under a `/repo/` path. For a custom domain, add it under **Settings → Pages** and update `site.url`.
 
-The deploy waits for the Playwright tests. Lighthouse runs alongside and shows its own pass or fail; it doesn't block a deploy, because SEO checks will fail until `site.url` is a real address.
+The deploy waits for the Playwright tests. Lighthouse then audits the live site, so it measures the real domain, HTTPS and CDN. If you change `site.url`, update the URLs in `lighthouserc.json` too.
 
 ### Netlify or Vercel
 
