@@ -25,17 +25,17 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
-    "@lhci/cli": "^0.14.0",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.56.0",
-    "@types/node": "^22.10.0",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "allure": "^3.0.0",
     "allure-js-commons": "^3.0.0",
     "allure-playwright": "^3.0.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.28.2",
     "tailwindcss": "^4.1.0",
-    "typescript": "^5.9.0"
+    "typescript": "^7.0.2"
   },
   "engines": {
     "node": ">=20"
