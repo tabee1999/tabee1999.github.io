@@ -101,6 +101,18 @@ test("rejects malformed and oversized conversations", async () => {
   assert.equal(calls.length, 0);
 });
 
+test("rejects oversized requests without calling the API", async () => {
+  const huge = JSON.stringify({ messages: [{ role: "user", content: "x".repeat(LIMITS.bodyBytes) }] });
+  const res = await ask(null, { body: huge });
+  assert.equal(res.status, 413);
+  assert.equal(calls.length, 0);
+});
+
+test("answers are never cached", async () => {
+  const res = await ask([{ role: "user", content: "Skills?" }]);
+  assert.equal(res.headers.get("Cache-Control"), "no-store");
+});
+
 test("drops a leading assistant greeting before sending", () => {
   assert.deepEqual(validateMessages([{ role: "assistant", content: "Hi!" }, { role: "user", content: "Skills?" }]), [{ role: "user", content: "Skills?" }]);
 });

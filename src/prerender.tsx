@@ -186,7 +186,7 @@ function csp(inlineScripts: string[]) {
   ].join("; ");
 }
 
-function document(meta: Meta, body: string, page: PageData, assets: Assets) {
+function renderPage(meta: Meta, body: string, page: PageData, assets: Assets) {
   const url = abs(meta.path);
   const pageScript = `window.__PAGE__=${json({ page, year: assets.buildYear })}`;
   const analytics = site.goatcounterCode
@@ -268,7 +268,7 @@ export function renderRoutes(assets: Assets) {
   ];
   return routes.map(({ file, page, meta }) => ({
     file,
-    html: document(meta, renderToString(<App page={page} year={assets.buildYear} />), page, assets),
+    html: renderPage(meta, renderToString(<App page={page} year={assets.buildYear} />), page, assets),
   }));
 }
 

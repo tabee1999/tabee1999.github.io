@@ -14,6 +14,16 @@ test.describe("navigation", () => {
     });
   }
 
+  test("menu links land the section heading just below the header, not halfway down", async ({ page, isMobile }) => {
+    await page.goto("/");
+    await openMenuIfCollapsed(page);
+    await navLink(page, "Experience", isMobile).click();
+    await expect(page).toHaveURL(/#experience$/);
+    await expect.poll(() => page.locator("#experience-title").evaluate((h) => Math.round(h.getBoundingClientRect().top))).toBeLessThan(200);
+    const top = await page.locator("#experience-title").evaluate((h) => h.getBoundingClientRect().top);
+    expect(top).toBeGreaterThan(72); // not hidden under the fixed header
+  });
+
   test("highlights the section you're reading", async ({ page, isMobile }) => {
     test.skip(isMobile, "The desktop menu shows the active section");
     await page.goto("/#experience");

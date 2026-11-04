@@ -156,6 +156,32 @@ test.describe("team photos", () => {
   });
 });
 
+test.describe("pause animations (WCAG 2.2.2)", () => {
+  // The control only shows when the visitor hasn't asked their OS for reduced motion.
+  test.use({ contextOptions: { reducedMotion: "no-preference" } });
+
+  test("stops the moving content and remembers the choice", async ({ page }) => {
+    await page.goto("/");
+    const toggle = page.getByTestId("motion-toggle").first();
+    await expect(toggle).toHaveText("Pause animations");
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-pressed", "true");
+    await expect(toggle).toHaveText("Play animations");
+    await expect(page.locator("html")).toHaveClass(/motion-paused/);
+
+    const word = page.locator("#top .swap-in").first();
+    const before = await word.textContent();
+    await page.waitForTimeout(3000); // longer than one rotation
+    expect(await word.textContent()).toBe(before);
+    expect(await page.locator(".marquee-track").first().evaluate((el) => getComputedStyle(el).animationPlayState)).toBe("paused");
+
+    await page.reload();
+    await expect(page.locator("html")).toHaveClass(/motion-paused/);
+    await page.getByTestId("motion-toggle").first().click();
+    await expect(page.locator("html")).not.toHaveClass(/motion-paused/);
+  });
+});
+
 test.describe("FAQ", () => {
   test("answers open and close", async ({ page }) => {
     await page.goto("/#faq");

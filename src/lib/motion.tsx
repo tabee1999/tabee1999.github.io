@@ -3,6 +3,7 @@
 // pre-rendered HTML (for search engines, no-JS visitors and print).
 
 import { createElement, useEffect, useRef, useState, type CSSProperties, type ElementType, type PointerEvent, type ReactNode } from "react";
+import { useMotionPaused } from "./motionPref";
 
 const reducedMotion = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -95,11 +96,19 @@ export function CountUp({ value, prefix = "", suffix = "", duration = 1400 }: { 
     };
   }, [value, duration]);
 
+  // Screen readers get the final number once, not every frame of the animation.
   return (
     <span ref={ref} className="tabular-nums">
-      {prefix}
-      {shown.toLocaleString("en-US")}
-      {suffix}
+      <span aria-hidden="true">
+        {prefix}
+        {shown.toLocaleString("en-US")}
+        {suffix}
+      </span>
+      <span className="sr-only">
+        {prefix}
+        {value.toLocaleString("en-US")}
+        {suffix}
+      </span>
     </span>
   );
 }
@@ -114,9 +123,14 @@ export function trackSpotlight(e: PointerEvent<HTMLElement>) {
 /** Moves an element slightly as the page scrolls, for depth. */
 export function useParallax<T extends HTMLElement>(strength = 0.08) {
   const ref = useRef<T | null>(null);
+  const paused = useMotionPaused();
   useEffect(() => {
     const el = ref.current;
-    if (!el || reducedMotion()) return;
+    if (!el) return;
+    if (paused || reducedMotion()) {
+      el.style.transform = "";
+      return;
+    }
     let raf = 0;
     const onScroll = () => {
       cancelAnimationFrame(raf);
@@ -129,17 +143,18 @@ export function useParallax<T extends HTMLElement>(strength = 0.08) {
       window.removeEventListener("scroll", onScroll);
       cancelAnimationFrame(raf);
     };
-  }, [strength]);
+  }, [strength, paused]);
   return ref;
 }
 
 /** Cycles through words on a timer (paused for reduced motion). */
 export function useRotatingIndex(length: number, interval = 2400) {
   const [index, setIndex] = useState(0);
+  const paused = useMotionPaused();
   useEffect(() => {
-    if (reducedMotion() || length < 2) return;
+    if (paused || reducedMotion() || length < 2) return;
     const id = window.setInterval(() => setIndex((i) => (i + 1) % length), interval);
     return () => window.clearInterval(id);
-  }, [length, interval]);
+  }, [length, interval, paused]);
   return index;
 }

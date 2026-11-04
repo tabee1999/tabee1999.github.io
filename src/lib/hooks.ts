@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /** True once the page has scrolled past `offset` pixels. */
 export function useScrolled(offset = 12) {
@@ -12,28 +12,33 @@ export function useScrolled(offset = 12) {
   return scrolled;
 }
 
-/** Scroll position as a 0–1 fraction of the page. */
-export function useScrollProgress() {
-  const [progress, setProgress] = useState(0);
+/**
+ * Scales an element horizontally with how far the page has scrolled (0–1). Writes the style
+ * directly instead of through React state, so scrolling doesn't re-render the header.
+ */
+export function useScrollProgressBar<T extends HTMLElement>() {
+  const ref = useRef<T | null>(null);
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
     let raf = 0;
-    const onScroll = () => {
+    const update = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
         const max = document.documentElement.scrollHeight - window.innerHeight;
-        setProgress(max > 0 ? Math.min(1, window.scrollY / max) : 0);
+        el.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
       });
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
     return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
       cancelAnimationFrame(raf);
     };
   }, []);
-  return progress;
+  return ref;
 }
 
 /** The id of the section currently in the middle of the screen. */
@@ -75,22 +80,4 @@ export function useLocalTimes(timeZones: string[]) {
     return () => window.clearInterval(id);
   }, [key]);
   return times;
-}
-
-/** Local time in a time zone, e.g. "18:42". Empty on the server to avoid hydration mismatches. */
-export function useLocalTime(timeZone: string) {
-  const [time, setTime] = useState("");
-  useEffect(() => {
-    const format = () => {
-      try {
-        setTime(new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", minute: "2-digit" }).format(new Date()));
-      } catch {
-        setTime("");
-      }
-    };
-    format();
-    const id = window.setInterval(format, 30_000);
-    return () => window.clearInterval(id);
-  }, [timeZone]);
-  return time;
 }

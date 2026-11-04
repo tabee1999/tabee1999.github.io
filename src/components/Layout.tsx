@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { nav, person, site } from "../content";
-import { useScrolled, useScrollProgress, useScrollSpy } from "../lib/hooks";
+import { useScrolled, useScrollProgressBar, useScrollSpy } from "../lib/hooks";
 import { Clocks } from "./Clocks";
+import { MotionToggle } from "./MotionToggle";
 import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
 
 // ── Toast ─────────────────────────────────────────────────────────────────
@@ -12,6 +13,7 @@ export const useToast = () => useContext(ToastContext);
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [message, setMessage] = useState("");
   const timer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
   const show = useCallback((m: string) => {
     setMessage(m);
     window.clearTimeout(timer.current);
@@ -55,7 +57,7 @@ const noIds: string[] = [];
 
 export function Header({ root }: { root: string }) {
   const scrolled = useScrolled();
-  const progress = useScrollProgress();
+  const progressBar = useScrollProgressBar<HTMLDivElement>();
   const active = useScrollSpy(root === "" ? navIds : noIds);
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement | null>(null);
@@ -81,8 +83,8 @@ export function Header({ root }: { root: string }) {
       }`}
     >
       <div
-        className="no-print absolute inset-x-0 top-0 h-0.5 origin-left bg-gradient-to-r from-brand-300 via-brand-500 to-indigo-400"
-        style={{ transform: `scaleX(${progress})` }}
+        ref={progressBar}
+        className="no-print absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-brand-300 via-brand-500 to-indigo-400"
         aria-hidden="true"
         data-testid="scroll-progress"
       />
@@ -230,6 +232,7 @@ export function Footer({ root, year }: { root: string; year: number }) {
             <a href={`${root}${site.qualityReportPath}`} className="underline decoration-brand-400/50 underline-offset-4 hover:text-ink" data-testid="quality-report">
               Allure report
             </a>
+            <MotionToggle />
             <a href={`${root}${site.playwrightReportPath}`} className="underline decoration-brand-400/50 underline-offset-4 hover:text-ink">
               Playwright report
             </a>
@@ -283,7 +286,9 @@ export function Section({
   action?: ReactNode;
 }) {
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className={`scroll-mt-24 py-16 md:py-24 ${className}`}>
+    // The negative scroll margin cancels part of the top padding, so menu links land the
+    // heading just under the fixed header instead of leaving a large empty gap.
+    <section id={id} aria-labelledby={`${id}-title`} className={`-scroll-mt-10 py-16 md:-scroll-mt-14 md:py-24 ${className}`}>
       <div className="wrap">
         <div className="mb-10 flex flex-col gap-4 md:mb-14 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl space-y-3">

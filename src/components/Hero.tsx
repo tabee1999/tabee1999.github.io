@@ -1,7 +1,8 @@
 import { person, stats } from "../content";
 import { CountUp, Reveal, trackSpotlight, useParallax, useRotatingIndex } from "../lib/motion";
 import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
-import { useToast } from "./Layout";
+import { CopyEmailButton } from "./CopyEmail";
+import { MotionToggle } from "./MotionToggle";
 
 const tools = [
   "Playwright",
@@ -21,28 +22,6 @@ const tools = [
   "Allure Report",
   "AI-assisted testing",
 ];
-
-export function CopyEmailButton({ className = "" }: { className?: string }) {
-  const toast = useToast();
-  return (
-    <button
-      type="button"
-      className={className}
-      data-testid="copy-email"
-      aria-label={`Copy email address ${person.email}`}
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(person.email);
-          toast("Email address copied");
-        } catch {
-          window.location.href = `mailto:${person.email}`;
-        }
-      }}
-    >
-      <Icon name="copy" className="size-5" />
-    </button>
-  );
-}
 
 function RotatingWord() {
   const index = useRotatingIndex(person.rotating.length, 2600);
@@ -299,7 +278,9 @@ export function Hero() {
           ))}
         </div>
       </div>
-
+      <div className="wrap mt-4 flex justify-end">
+        <MotionToggle />
+      </div>
     </section>
   );
 }

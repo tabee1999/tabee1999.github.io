@@ -3,7 +3,7 @@ import { person, site } from "../content";
 import { Clocks } from "./Clocks";
 import { Reveal } from "../lib/motion";
 import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
-import { CopyEmailButton } from "./Hero";
+import { CopyEmailButton } from "./CopyEmail";
 
 type Fields = { name: string; email: string; company: string; topic: string; message: string };
 type Errors = Partial<Record<keyof Fields, string>>;
@@ -124,7 +124,7 @@ export function Contact() {
   const done = status === "sent" || status === "mailto" || status === "failed";
 
   return (
-    <section id="contact" aria-labelledby="contact-title" className="scroll-mt-24 py-16 md:py-24">
+    <section id="contact" aria-labelledby="contact-title" className="-scroll-mt-10 py-16 md:-scroll-mt-14 md:py-24">
       <div className="wrap">
         <div className="glass relative overflow-hidden p-6 md:p-10 lg:p-12">
           <div className="pointer-events-none absolute -top-32 -left-24 size-80 rounded-full bg-brand-600/30 blur-3xl" aria-hidden="true" />

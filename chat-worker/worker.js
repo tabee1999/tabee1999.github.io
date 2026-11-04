@@ -16,6 +16,7 @@ const DEFAULTS = {
 };
 
 export const LIMITS = {
+  bodyBytes: 16 * 1024, // reject anything bigger before parsing it
   messages: 12, // conversation turns sent per request
   messageChars: 1000,
   totalChars: 6000,
@@ -48,7 +49,10 @@ ${profile}
 // ── Helpers ───────────────────────────────────────────────────────────────
 
 function json(body, status, headers = {}) {
-  return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8", ...headers } });
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store", ...headers },
+  });
 }
 
 function corsHeaders(origin) {
@@ -133,9 +137,12 @@ export default {
     const visitor = request.headers.get("CF-Connecting-IP") ?? "unknown";
     if (isRateLimited(visitor)) return json({ error: "Too many messages. Please try again in a few minutes." }, 429, { ...cors, "Retry-After": "600" });
 
+    if (Number(request.headers.get("Content-Length") ?? 0) > LIMITS.bodyBytes) return json({ error: "Request too large" }, 413, cors);
     let body;
     try {
-      body = await request.json();
+      const text = await request.text();
+      if (text.length > LIMITS.bodyBytes) return json({ error: "Request too large" }, 413, cors);
+      body = JSON.parse(text);
     } catch {
       return json({ error: "Invalid request" }, 400, cors);
     }

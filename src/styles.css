@@ -135,7 +135,8 @@
 
 @layer base {
   html {
-    scroll-padding-top: 88px;
+    /* Fixed header (72px) + a little air. Sections add their own top padding. */
+    scroll-padding-top: 80px;
     -webkit-text-size-adjust: 100%;
     background: var(--color-night-950);
   }
@@ -429,6 +430,13 @@
   .hand {
     font-family: var(--font-hand);
   }
+}
+
+/* "Pause animations" button: freeze every running animation where it is. */
+.motion-paused *,
+.motion-paused *::before,
+.motion-paused *::after {
+  animation-play-state: paused !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

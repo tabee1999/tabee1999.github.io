@@ -4,7 +4,7 @@
 
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
-import { extname, join, normalize, resolve } from "node:path";
+import { extname, join, normalize, resolve, sep } from "node:path";
 
 const args = process.argv.slice(2);
 const opt = (name, fallback) => {
@@ -35,9 +35,15 @@ const TYPES = {
 };
 
 async function resolveFile(urlPath) {
-  const clean = normalize(decodeURIComponent(urlPath.split("?")[0])).replace(/^(\.\.[/\\])+/, "");
+  let decoded;
+  try {
+    decoded = decodeURIComponent(urlPath.split("?")[0]);
+  } catch {
+    return null; // malformed %-encoding
+  }
+  const clean = normalize(decoded).replace(/^(\.\.[/\\])+/, "");
   let file = join(dir, clean);
-  if (!file.startsWith(dir)) return null;
+  if (file !== dir && !file.startsWith(dir + sep)) return null;
   try {
     const s = await stat(file);
     if (s.isDirectory()) file = join(file, "index.html");

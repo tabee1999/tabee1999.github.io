@@ -34,6 +34,14 @@ test.describe("home page", () => {
     await expect(page.locator("#top")).not.toContainText("5+ years in AI-first QA");
   });
 
+  test("screen readers hear each stat once, as its final value", async ({ page }) => {
+    await page.goto("/");
+    const highlights = page.getByRole("list", { name: "Highlights" });
+    for (const s of stats) {
+      await expect(highlights.locator(".sr-only", { hasText: `${s.prefix ?? ""}${s.value}${s.suffix ?? ""}` })).toHaveCount(1);
+    }
+  });
+
   test("shows the key numbers from the CV", async ({ page }) => {
     await page.goto("/");
     const highlights = page.getByRole("list", { name: "Highlights" });
