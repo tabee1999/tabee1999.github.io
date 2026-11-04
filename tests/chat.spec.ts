@@ -90,6 +90,9 @@ test.describe("chat (built-in answers)", () => {
 });
 
 test.describe("chat (AI mode, with the AI service mocked)", () => {
+  // The mock service isn't in the site's Content Security Policy (the real one is added from
+  // site.chatEndpoint at build time), so these tests switch CSP off.
+  test.use({ bypassCSP: true });
   const endpoint = "https://chat.example.test/";
   const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 

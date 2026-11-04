@@ -38,6 +38,14 @@ The motion layer is in `src/lib/motion.tsx` (about 150 lines, no dependencies). 
 - `sitemap.xml`, `robots.txt` that welcomes search and AI crawlers (Googlebot, Bingbot, OAI-SearchBot, PerplexityBot, ClaudeBot and others) and `llms.txt`, a plain-text profile for AI assistants
 - all generated from `src/content.ts`, so they never drift from what the page says
 
+## Monitoring, security and stats
+
+- **Daily live-site monitor** (`.github/workflows/monitor.yml`): smoke tests against https://tabee1999.github.io and a check that every external link still works and hasn't been hacked with spam. GitHub emails you if it fails.
+- **CodeQL** code scanning on every push and weekly; results under the repository's Security tab.
+- **Dependabot** opens weekly update pull requests for npm packages and GitHub Actions; each runs the full test suite.
+- **Content Security Policy** on every page: only the site's own scripts (inline ones are hash-pinned), Google Fonts and configured services.
+- **Visitor stats (optional):** set `site.goatcounterCode` to a free [GoatCounter](https://www.goatcounter.com) code to see visits by country, referrer, device and page, plus clicks on the CV, email, LinkedIn, chat and Allure report. No cookies and no personal data. Share the site as `https://tabee1999.github.io/?ref=company-name` in each application to see which company opened it.
+
 ## Project structure
 
 ```

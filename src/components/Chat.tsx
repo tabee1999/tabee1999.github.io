@@ -152,6 +152,7 @@ export function Chat() {
         aria-controls={open ? "chat-panel" : undefined}
         className="no-print group fixed right-4 bottom-4 z-40 flex h-14 min-w-14 cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 px-4 font-semibold text-white shadow-xl shadow-brand-700/40 transition hover:scale-105 active:scale-95 sm:right-6 sm:bottom-6 sm:px-5"
         data-testid="chat-launcher"
+        data-track={open ? undefined : "chat-open"}
       >
         {!open && <span className="chat-ping absolute inset-0 rounded-full" aria-hidden="true" />}
         <Icon name={open ? "close" : "chat"} className="relative size-6" />
@@ -251,7 +252,7 @@ export function Chat() {
                 <ul className="flex flex-wrap gap-2">
                   {suggestions.map((s) => (
                     <li key={s}>
-                      <button type="button" onClick={() => void ask(s)} className="chip cursor-pointer text-left !text-xs hover:border-brand-400/60 hover:bg-brand-500/15 hover:text-white active:scale-95">
+                      <button type="button" data-track="chat-question" onClick={() => void ask(s)} className="chip cursor-pointer text-left !text-xs hover:border-brand-400/60 hover:bg-brand-500/15 hover:text-white active:scale-95">
                         {s}
                       </button>
                     </li>
@@ -281,6 +282,7 @@ export function Chat() {
                 disabled={!input.trim() || thinking}
                 className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white transition hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
                 aria-label="Send question"
+                data-track="chat-question"
               >
                 <Icon name="send" className="size-4.5" />
               </button>

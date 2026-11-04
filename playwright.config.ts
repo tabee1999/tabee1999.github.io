@@ -2,6 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 const PORT = Number(process.env.PORT ?? 4321);
 const CI = !!process.env.CI;
+// BASE_URL=https://tabee1999.github.io runs the suite against the live site (daily monitor).
+const LIVE = process.env.BASE_URL;
 // ALLURE=1 also writes Allure results (CI turns it on; the report is published at /allure/).
 const ALLURE = !!process.env.ALLURE;
 const allure: [string, Record<string, unknown>][] = ALLURE
@@ -26,7 +28,7 @@ export default defineConfig({
   workers: CI ? 2 : undefined,
   reporter: CI ? [["html", { open: "never" }], ["github"], ["list"], ...allure] : [["html", { open: "never" }], ["list"], ...allure],
   use: {
-    baseURL: `http://localhost:${PORT}/`,
+    baseURL: LIVE ?? `http://localhost:${PORT}/`,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
     // Makes scroll reveals, count-ups and smooth scrolling instant, so assertions don't race them.
@@ -37,7 +39,7 @@ export default defineConfig({
     { name: "desktop-firefox", use: { ...devices["Desktop Firefox"] } },
     { name: "mobile-chrome", use: { ...devices["Pixel 7"] } },
   ],
-  webServer: {
+  webServer: LIVE ? undefined : {
     command: `node scripts/build.mjs && node scripts/serve.mjs --port ${PORT} --dir dist`,
     url: `http://localhost:${PORT}/`,
     reuseExistingServer: !CI,

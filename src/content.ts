@@ -45,6 +45,9 @@ export const site = {
   // Address of the AI chat worker (see chat-worker/README.md), e.g.
   // "https://tabeeda-chat.your-name.workers.dev". While empty, the chat answers from this file.
   chatEndpoint: "",
+  // GoatCounter site code for visitor stats (free, no cookies): for "tabeeda.goatcounter.com"
+  // enter "tabeeda". While empty, no analytics script loads at all.
+  goatcounterCode: "",
   // Paste the codes from Google Search Console and Bing Webmaster Tools (meta-tag method).
   googleSiteVerification: "",
   bingSiteVerification: "",

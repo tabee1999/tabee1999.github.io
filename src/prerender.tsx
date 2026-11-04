@@ -1,6 +1,7 @@
 // Runs at build time in Node: renders every route to static HTML with full SEO metadata,
 // then React hydrates it in the browser. Also generates sitemap.xml, robots.txt and llms.txt.
 
+import { createHash } from "node:crypto";
 import { renderToString } from "react-dom/server";
 import { App, type PageData } from "./App";
 import { caseStudies, education, experience, faqs, person, projects, services, site, skillGroups, stats } from "./content";
@@ -153,8 +154,44 @@ function caseMeta(slug: string): Meta {
   };
 }
 
+const origin = (u: string) => {
+  try {
+    return u ? new URL(u).origin : "";
+  } catch {
+    return "";
+  }
+};
+const sha256 = (s: string) => `'sha256-${createHash("sha256").update(s).digest("base64")}'`;
+
+/** GoatCounter visitor stats. Links shared as ?ref=company (or utm_source) show up as that referrer. */
+const analyticsConfig = `window.goatcounter={referrer:function(){var q=new URLSearchParams(location.search);return q.get("ref")||q.get("utm_source")||q.get("utm_campaign")||document.referrer}};`;
+
+/**
+ * Content Security Policy: only this site's own scripts (plus exact hashes of the two inline
+ * ones), Google Fonts, and the services the site is configured to talk to.
+ */
+function csp(inlineScripts: string[]) {
+  const gc = site.goatcounterCode ? `https://${site.goatcounterCode}.goatcounter.com` : "";
+  const connect = ["'self'", origin(site.formEndpoint), origin(site.chatEndpoint), gc].filter(Boolean).join(" ");
+  return [
+    "default-src 'self'",
+    `script-src 'self' ${inlineScripts.map(sha256).join(" ")}${gc ? " https://gc.zgo.at" : ""}`,
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    `img-src 'self' data:${gc ? ` ${gc}` : ""}`,
+    `connect-src ${connect}`,
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+  ].join("; ");
+}
+
 function document(meta: Meta, body: string, page: PageData, assets: Assets) {
   const url = abs(meta.path);
+  const pageScript = `window.__PAGE__=${json({ page, year: assets.buildYear })}`;
+  const analytics = site.goatcounterCode
+    ? `<script>${analyticsConfig}</script><script data-goatcounter="https://${esc(site.goatcounterCode)}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>`
+    : "";
   const preloadPhoto = page.route === "home" ? `<link rel="preload" as="image" href="/${person.photo}.webp" type="image/webp" fetchpriority="high">` : "";
   const verify = [
     site.googleSiteVerification && `<meta name="google-site-verification" content="${esc(site.googleSiteVerification)}">`,
@@ -167,6 +204,8 @@ function document(meta: Meta, body: string, page: PageData, assets: Assets) {
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="${csp(site.goatcounterCode ? [pageScript, analyticsConfig] : [pageScript])}">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${esc(meta.title)}</title>
 <meta name="description" content="${esc(meta.description)}">
@@ -208,8 +247,9 @@ ${meta.jsonLd ? `<script type="application/ld+json">${json(meta.jsonLd)}</script
 <body>
 <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-full focus:bg-brand-600 focus:px-5 focus:py-3 focus:font-semibold focus:text-white">Skip to content</a>
 <div id="root">${body}</div>
-<script>window.__PAGE__=${json({ page, year: assets.buildYear })}</script>
+<script>${pageScript}</script>
 <script type="module" src="/assets/${assets.js}"></script>
+${analytics}
 </body>
 </html>
 `
@@ -281,7 +321,7 @@ function llmsTxt() {
     ...experience.map((e) => `- ${e.role}, ${e.company} (${e.period}, ${e.location}): ${e.summary}${e.about ? ` About the company: ${e.about}` : ""}${e.url ? ` ${e.url}` : ""}`),
     "",
     "## Projects",
-    ...projects.map((p) => `- ${p.name} (${p.company}, ${p.domain}): ${p.summary}`),
+    ...projects.map((p) => `- ${p.name} (${p.company}, ${p.domain}): ${p.summary}${p.url ? ` ${p.url}` : ""}`),
     "",
     "## Case studies",
     ...caseStudies.map((c) => `- [${c.title}](${abs(`/case-studies/${c.slug}/`)}): ${c.summary}`),

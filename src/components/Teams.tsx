@@ -104,6 +104,7 @@ export function Teams() {
                 setOpen(i);
               }}
               aria-haspopup="dialog"
+              data-track="team-photo"
               className="group absolute inset-0 cursor-pointer overflow-hidden rounded-[var(--radius-card)] border border-line bg-night-800 text-left shadow-xl shadow-black/30 focus-visible:outline-offset-4"
             >
               <picture>

@@ -60,6 +60,24 @@ test.describe("SEO", () => {
     expect(missing).toEqual([]);
   });
 
+  test("pages send a strict Content Security Policy that the site itself obeys", async ({ page }) => {
+    const violations: string[] = [];
+    page.on("console", (m) => {
+      if (/Content Security Policy/i.test(m.text())) violations.push(m.text());
+    });
+    await page.goto("/");
+    const policy = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
+    expect(policy).toContain("default-src 'self'");
+    expect(policy).toContain("object-src 'none'");
+    expect(policy).not.toContain("'unsafe-eval'");
+    expect(policy).not.toMatch(/script-src[^;]*'unsafe-inline'/);
+    // Use the page: open the chat and a project so lazy parts load too.
+    await page.getByTestId("chat-launcher").click();
+    await page.getByRole("button", { name: "What is AI-first QA?" }).click();
+    await expect(page.getByTestId("chat-answer")).toHaveCount(1);
+    expect(violations).toEqual([]);
+  });
+
   test("the 404 page is not indexed", async ({ page }) => {
     await page.goto("/nothing-here");
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);

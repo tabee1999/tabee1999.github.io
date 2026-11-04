@@ -1,0 +1,60 @@
+name: Live site monitor
+
+# Every day: smoke tests against the live site, and a check that every external link still
+# works and hasn't been hacked with spam. GitHub emails you if this fails.
+on:
+  schedule:
+    - cron: "17 2 * * *" # 02:17 UTC (07:17 in Pakistan, 04:17/05:17 in Cyprus)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monitor
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Smoke tests (live site)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Smoke tests on https://tabee1999.github.io
+        run: npx playwright test --grep @smoke --project=desktop-chrome --project=mobile-chrome
+        env:
+          BASE_URL: https://tabee1999.github.io/
+
+      - name: Upload report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitor-report
+          path: playwright-report/
+          retention-days: 14
+
+  links:
+    name: External links and spam check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check every external link on the live site
+        run: node scripts/check-links.mjs --site https://tabee1999.github.io

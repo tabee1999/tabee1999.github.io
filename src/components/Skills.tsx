@@ -63,7 +63,7 @@ function JobMatch() {
               </p>
             )}
             <div className="flex flex-wrap gap-3">
-              <button type="submit" className="btn btn-primary btn-sm">
+              <button type="submit" className="btn btn-primary btn-sm" data-track="job-match">
                 Check my fit <Icon name="arrowRight" className="arrow size-4" />
               </button>
               {(text || result) && (
