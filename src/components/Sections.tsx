@@ -92,9 +92,6 @@ export function About() {
                 <a href={site.qualityReportPath} className="btn btn-primary btn-sm" data-testid="allure-link">
                   See the Allure report <Icon name="arrowRight" className="arrow size-4" />
                 </a>
-                <a href={site.repoUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
-                  Read the test code <Icon name="arrowUpRight" className="size-4" />
-                </a>
               </div>
             </Reveal>
           </div>

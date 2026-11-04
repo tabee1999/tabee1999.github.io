@@ -233,9 +233,6 @@ export function Footer({ root, year }: { root: string; year: number }) {
             <a href={`${root}${site.playwrightReportPath}`} className="underline decoration-brand-400/50 underline-offset-4 hover:text-ink">
               Playwright report
             </a>
-            <a href={site.repoUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-brand-400/50 underline-offset-4 hover:text-ink">
-              Source code
-            </a>
           </p>
         </div>
       </div>
