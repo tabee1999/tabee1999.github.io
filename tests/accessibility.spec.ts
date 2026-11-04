@@ -28,6 +28,13 @@ test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
     expect(await axeViolations(page)).toEqual([]);
   });
 
+  test("with a team photo open full size", async ({ page }) => {
+    await page.goto("/#teams");
+    await page.getByTestId("team-gallery").getByRole("button").first().click();
+    await expect(page.getByTestId("team-lightbox")).toBeVisible();
+    expect(await axeViolations(page)).toEqual([]);
+  });
+
   test("with contact form errors showing", async ({ page }) => {
     await page.goto("/#contact");
     await page.getByTestId("contact-submit").click();

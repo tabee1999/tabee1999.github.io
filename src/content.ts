@@ -426,6 +426,41 @@ export const experience: Job[] = [
   },
 ];
 
+/**
+ * "Teams I've worked with" gallery. Files live in public/images/team as <file>-960.webp,
+ * <file>-1600.webp and <file>-1600.jpg; width and height are the large version's size.
+ */
+export const teamPhotos = [
+  {
+    file: "team-company",
+    width: 1600,
+    height: 1066,
+    caption: "A company get-together with the whole team",
+    alt: "Large group photo of around 60 colleagues outside a restaurant after a company get-together",
+  },
+  {
+    file: "team-booth",
+    width: 1200,
+    height: 1600,
+    caption: "Team day out",
+    alt: "Group of colleagues posing together in a neon-lit photo booth at an event",
+  },
+  {
+    file: "team-women",
+    width: 1600,
+    height: 1066,
+    caption: "With the women of the team",
+    alt: "Group photo of the women on the team outside a restaurant",
+  },
+  {
+    file: "team-evening",
+    width: 1600,
+    height: 900,
+    caption: "An evening with the team",
+    alt: "Colleagues sitting together in the evening at an outdoor spot lit with fairy lights",
+  },
+];
+
 export const education = {
   degree: "Bachelor of Computer Science",
   school: "PAF-Karachi Institute of Economics and Technology (PAF-KIET)",

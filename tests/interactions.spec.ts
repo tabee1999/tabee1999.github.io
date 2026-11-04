@@ -3,7 +3,7 @@ import { allureLabels, content } from "./helpers";
 
 test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "Interactive features", "normal"));
 
-const { projects, caseStudies, experience, faqs, person } = content;
+const { projects, caseStudies, experience, faqs, person, teamPhotos } = content;
 
 test.describe("projects", () => {
   test("filters projects by type of testing", async ({ page }) => {
@@ -127,6 +127,32 @@ test.describe("skills", () => {
     await page.getByRole("button", { name: "Check my fit" }).click();
     await expect(page.getByText("Paste at least a few lines")).toBeVisible();
     await expect(page.getByLabel("Job description")).toHaveAttribute("aria-invalid", "true");
+  });
+});
+
+test.describe("team photos", () => {
+  test("open full size, move between photos and close with Escape", async ({ page, isMobile }) => {
+    await page.goto("/#teams");
+    const gallery = page.getByTestId("team-gallery");
+    await expect(gallery.getByRole("button")).toHaveCount(teamPhotos.length);
+    for (const p of teamPhotos) await expect(gallery.getByRole("img", { name: p.alt })).toHaveCount(1);
+
+    const opener = gallery.getByRole("button", { name: teamPhotos[1].caption });
+    await opener.click();
+    const lightbox = page.getByTestId("team-lightbox");
+    await expect(lightbox).toBeVisible();
+    await expect(lightbox).toContainText(`2 / ${teamPhotos.length}`);
+
+    await lightbox.getByRole("button", { name: "Next photo" }).click();
+    await expect(lightbox).toContainText(teamPhotos[2].caption);
+    if (!isMobile) {
+      await page.keyboard.press("ArrowLeft");
+      await expect(lightbox).toContainText(teamPhotos[1].caption);
+    }
+
+    await page.keyboard.press("Escape");
+    await expect(lightbox).toBeHidden();
+    await expect(opener).toBeFocused();
   });
 });
 

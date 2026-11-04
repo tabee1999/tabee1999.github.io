@@ -9,6 +9,7 @@ import { BackToTop, Footer, Header, ToastProvider } from "./components/Layout";
 import { Projects } from "./components/Projects";
 import { About, Faq, Services } from "./components/Sections";
 import { Skills } from "./components/Skills";
+import { Teams } from "./components/Teams";
 
 export type PageData = { route: "home" } | { route: "case-study"; slug: string } | { route: "404" };
 
@@ -49,6 +50,7 @@ export function App({ page, year }: { page: PageData; year: number }) {
             <Hero />
             <About />
             <Experience />
+            <Teams />
             <Projects />
             <CaseStudies />
             <Services />
