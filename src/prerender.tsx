@@ -212,8 +212,8 @@ function renderPage(meta: Meta, body: string, page: PageData, assets: Assets) {
 <meta name="robots" content="${meta.noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"}">
 ${meta.noindex ? "" : `<link rel="canonical" href="${url}">`}
 <meta name="author" content="${esc(person.name)}">
-<meta name="theme-color" content="#07061a">
-<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#f2f6f4">
+<meta name="color-scheme" content="light">
 <meta name="format-detection" content="telephone=no">
 ${verify}
 <meta property="og:type" content="${meta.type}">
@@ -239,13 +239,13 @@ ${meta.type === "profile" ? `<meta property="profile:first_name" content="${esc(
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 ${preloadPhoto}
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="/assets/${assets.css}">
 <link rel="modulepreload" href="/assets/${assets.js}">
 ${meta.jsonLd ? `<script type="application/ld+json">${json(meta.jsonLd)}</script>` : ""}
 </head>
 <body>
-<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-full focus:bg-brand-600 focus:px-5 focus:py-3 focus:font-semibold focus:text-white">Skip to content</a>
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-full focus:bg-accent-700 focus:px-5 focus:py-3 focus:font-semibold focus:text-white">Skip to content</a>
 <div id="root">${body}</div>
 <script>${pageScript}</script>
 <script type="module" src="/assets/${assets.js}"></script>
@@ -378,8 +378,8 @@ ${urls
         short_name: person.name,
         start_url: "/",
         display: "browser",
-        background_color: "#07061a",
-        theme_color: "#07061a",
+        background_color: "#f2f6f4",
+        theme_color: "#f2f6f4",
         icons: [
           { src: "/favicon.svg", sizes: "any", type: "image/svg+xml" },
           { src: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },

@@ -30,25 +30,19 @@ test.describe("home page", () => {
     for (const text of ["SDET", "QA Automation Engineer", person.location, person.workAuthorisation, person.openTo, person.employment, "English (professional)", "UTC+5"]) {
       await expect(facts).toContainText(text);
     }
-    // No claim of "5+ years" of AI-first QA: the rotating line is about specialisms, not years.
+    // No claim of "5+ years" of AI-first QA.
     await expect(page.locator("#top")).not.toContainText("5+ years in AI-first QA");
   });
 
-  test("screen readers hear each stat once, as its final value", async ({ page }) => {
+  test("shows the key numbers from the CV as a passing test run", async ({ page }) => {
     await page.goto("/");
     const highlights = page.getByRole("list", { name: "Highlights" });
+    await expect(highlights.getByRole("listitem")).toHaveCount(stats.length);
     for (const s of stats) {
-      await expect(highlights.locator(".sr-only", { hasText: `${s.prefix ?? ""}${s.value}${s.suffix ?? ""}` })).toHaveCount(1);
-    }
-  });
-
-  test("shows the key numbers from the CV", async ({ page }) => {
-    await page.goto("/");
-    const highlights = page.getByRole("list", { name: "Highlights" });
-    for (const s of stats) {
-      await expect(highlights).toContainText(s.label);
+      await expect(highlights).toContainText(s.label, { ignoreCase: true });
       await expect(highlights).toContainText(`${s.prefix ?? ""}${s.value}${s.suffix ?? ""}`);
     }
+    await expect(page.getByTestId("hero-report")).toHaveAttribute("href", "allure/");
   });
 
   test("lists AI-first QA and manual QA among the services", async ({ page }) => {

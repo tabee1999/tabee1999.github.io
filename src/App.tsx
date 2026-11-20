@@ -4,7 +4,6 @@ import { Chat } from "./components/Chat";
 import { Contact } from "./components/Contact";
 import { Experience } from "./components/Experience";
 import { Hero } from "./components/Hero";
-import { Icon } from "./components/Icon";
 import { BackToTop, Footer, Header, ToastProvider } from "./components/Layout";
 import { Projects } from "./components/Projects";
 import { About, Faq, Services } from "./components/Sections";
@@ -15,18 +14,18 @@ export type PageData = { route: "home" } | { route: "case-study"; slug: string }
 
 function NotFound() {
   return (
-    <section className="wrap grid min-h-[70vh] place-items-center pt-28 pb-16 text-center" aria-labelledby="nf-title">
-      <div className="max-w-lg">
-        <p className="text-gradient animate-rise text-8xl font-extrabold tracking-tight">404</p>
-        <h1 id="nf-title" className="animate-rise mt-4 text-3xl font-bold" style={{ animationDelay: "80ms" }}>
+    <section className="wrap grid min-h-[70vh] place-items-center pt-28 pb-16" aria-labelledby="nf-title">
+      <div className="w-full max-w-xl">
+        <p className="font-mono text-sm font-bold text-rose-700" aria-hidden="true">
+          ✕ 1 failed
+        </p>
+        <h1 id="nf-title" className="mt-3 text-[clamp(2.25rem,6vw,3.5rem)] leading-[1.05] font-extrabold tracking-[-0.035em]">
           This page didn't pass QA
         </h1>
-        <p className="animate-rise mt-3 text-lg text-mute" style={{ animationDelay: "160ms" }}>
-          The link may be old or mistyped. Here's where you can go instead.
-        </p>
-        <div className="animate-rise mt-8 flex flex-wrap justify-center gap-3" style={{ animationDelay: "240ms" }}>
+        <p className="mt-4 text-lg text-mute">The link may be old or mistyped (error 404). Here's where you can go instead.</p>
+        <div className="mt-8 flex flex-wrap gap-3">
           <a href="/" className="btn btn-primary">
-            Go to the home page <Icon name="arrowRight" className="arrow size-4" />
+            Go to the home page
           </a>
           <a href="/#projects" className="btn btn-ghost">
             See my projects

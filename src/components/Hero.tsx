@@ -1,124 +1,50 @@
-import { person, stats } from "../content";
-import { CountUp, Reveal, trackSpotlight, useParallax, useRotatingIndex } from "../lib/motion";
-import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
+import { person, site, stats } from "../content";
 import { CopyEmailButton } from "./CopyEmail";
-import { MotionToggle } from "./MotionToggle";
+import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
 
-const tools = [
-  "Playwright",
-  "Selenium",
-  "RestAssured",
-  "Postman",
-  "TestNG",
-  "Java",
-  "SQL",
-  "GitHub Actions",
-  "Azure DevOps",
-  "Jenkins",
-  "JMeter",
-  "OWASP ZAP",
-  "Jira",
-  "TestRail",
-  "Allure Report",
-  "AI-assisted testing",
-];
+const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
-function RotatingWord() {
-  const index = useRotatingIndex(person.rotating.length, 2600);
-  const word = person.rotating[index];
+/**
+ * The hero's signature piece: her highlights written as a passing Playwright run.
+ * Each line ticks in once on load (static for reduced motion and without JS it still shows).
+ */
+function TestRun() {
+  const step = 200;
+  const first = 350;
   return (
-    <span className="relative inline-flex min-w-[11ch] text-brand-200" aria-live="off">
-      <span key={word} className="swap-in font-semibold">
-        {word}
-      </span>
-    </span>
-  );
-}
-
-function HeroPhoto() {
-  const parallax = useParallax<HTMLDivElement>(-0.06);
-  return (
-    <div className="relative mx-auto w-full max-w-[22rem] sm:max-w-[25rem] lg:mx-0 lg:ml-auto">
-      {/* Decorative rings and glow behind the photo */}
-      <div className="pointer-events-none absolute -inset-10 -z-10" aria-hidden="true">
-        <div className="absolute inset-8 rounded-full bg-brand-600/30 blur-3xl" />
-        <svg viewBox="0 0 400 400" className="animate-spin-slow absolute inset-0 size-full opacity-60">
-          <circle cx="200" cy="200" r="192" fill="none" stroke="url(#ring)" strokeWidth="1.5" strokeDasharray="4 10" />
-          <defs>
-            <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stopColor="#c4b5fd" />
-              <stop offset="1" stopColor="#6d28d9" stopOpacity="0.2" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      <div ref={parallax} className="relative">
-        {/* Gradient arch with the photo inside */}
-        <div className="hero-photo-frame relative bg-gradient-to-b from-brand-400 via-brand-600 to-indigo-700 p-[3px] shadow-2xl shadow-brand-900/50">
-          <div className="hero-photo-frame relative overflow-hidden bg-night-800">
-            <picture>
-              <source srcSet={`/${person.photo}.webp`} type="image/webp" />
-              <img
-                src={`/${person.photo}.jpg`}
-                alt={person.photoAlt}
-                width={480}
-                height={720}
-                fetchPriority="high"
-                decoding="async"
-                className="aspect-[2/3] w-full object-cover"
-              />
-            </picture>
-            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-night-950/80 to-transparent" aria-hidden="true" />
-          </div>
-        </div>
-
-        {/* Floating chips */}
-        <div className="animate-float float-card absolute top-[14%] -left-6 flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 shadow-xl sm:-left-12" aria-hidden="true">
-          <span className="grid size-8 place-items-center rounded-lg bg-ok/15 text-ok">
-            <Icon name="check" className="size-4.5" />
-          </span>
-          <span className="text-left leading-tight">
-            <span className="block text-sm font-bold text-ink">300+ tests</span>
-            <span className="block text-xs text-mute">passing in CI</span>
-          </span>
-        </div>
-        <div
-          className="animate-float-slow float-card absolute top-[46%] -right-4 flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 shadow-xl sm:-right-10"
-          style={{ animationDelay: "1.2s" }}
-          aria-hidden="true"
+    <div className="rounded-2xl bg-pine text-pine-text shadow-[0_24px_48px_-20px_rgb(8_54_44/0.55)]" data-testid="test-run">
+      <p className="border-b border-white/10 px-5 py-3 font-mono text-[0.8rem] text-pine-dim" aria-hidden="true">
+        <span className="text-pine-tick">$</span> npx playwright test
+      </p>
+      <ul aria-label="Highlights" className="space-y-3 px-5 py-4">
+        {stats.map((s, i) => (
+          <li key={s.label} className="run-line flex gap-3" style={{ animationDelay: `${first + i * step}ms` }}>
+            <span className="mt-[0.1rem] font-mono text-[0.95rem] leading-6 font-bold text-pine-tick" aria-hidden="true">
+              ✓
+            </span>
+            <span className="leading-snug">
+              <span className="block font-semibold text-white">
+                {s.prefix ?? ""}
+                {s.value}
+                {s.suffix ?? ""} {lowerFirst(s.label)}
+              </span>
+              <span className="block text-sm text-pine-dim">{s.detail}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-t border-white/10 px-5 py-3">
+        <p className="run-line font-mono text-[0.8rem] font-bold text-pine-tick" style={{ animationDelay: `${first + stats.length * step}ms` }} aria-hidden="true">
+          {stats.length} passed
+        </p>
+        <a
+          href={site.qualityReportPath}
+          className="inline-flex min-h-11 items-center text-sm font-semibold text-white underline decoration-pine-tick/60 underline-offset-4 hover:decoration-pine-tick"
+          data-testid="hero-report"
         >
-          <span className="grid size-8 place-items-center rounded-lg bg-brand-500/20 text-brand-200">
-            <Icon name="sparkles" className="size-4.5" />
-          </span>
-          <span className="text-left leading-tight">
-            <span className="block text-sm font-bold text-ink">AI-first QA</span>
-            <span className="block text-xs text-mute">faster test design</span>
-          </span>
-        </div>
-        <div
-          className="animate-float float-card absolute bottom-[10%] -left-4 hidden items-center gap-2.5 rounded-2xl px-3.5 py-2.5 shadow-xl sm:flex sm:-left-14"
-          style={{ animationDelay: "2.4s" }}
-          aria-hidden="true"
-        >
-          <span className="grid size-8 place-items-center rounded-lg bg-rose-400/15 text-rose-300">
-            <Icon name="bug" className="size-4.5" />
-          </span>
-          <span className="text-left leading-tight">
-            <span className="block text-sm font-bold text-ink">Bugs caught</span>
-            <span className="block text-xs text-mute">before your users</span>
-          </span>
-        </div>
+          Open the live test report
+        </a>
       </div>
-
-      {/* Handwritten quote */}
-      <figure className="relative mt-6 flex items-start justify-end gap-2 pr-2 lg:-mr-4">
-        <svg viewBox="0 0 80 50" className="mt-1 h-10 w-16 shrink-0 text-brand-300" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-          <path d="M76 40C52 44 22 36 10 10" />
-          <path d="M4 18L10 9l9 4" />
-        </svg>
-        <blockquote className="hand max-w-[15rem] -rotate-3 text-[1.65rem] leading-[1.05] text-brand-200">“{person.quote}”</blockquote>
-      </figure>
     </div>
   );
 }
@@ -126,30 +52,25 @@ function HeroPhoto() {
 /** The facts recruiters check first, in one place near the top. */
 function QuickFacts() {
   const facts = [
-    { icon: "briefcase", label: "Roles", value: person.targetRoles.join(" · ") },
-    { icon: "check", label: "Experience", value: "5+ years · Senior QA Engineer at Epicmetry" },
-    { icon: "mapPin", label: "Based in", value: person.location },
-    { icon: "passport", label: "Work authorisation", value: person.workAuthorisation },
-    { icon: "globe", label: "Open to", value: person.openTo },
-    { icon: "clipboard", label: "Employment", value: person.employment },
-    { icon: "quote", label: "Languages", value: person.languages },
-    { icon: "clock", label: "Time zones", value: person.timezones.map((t) => `${t.label} ${t.offset}`).join(" · ") },
+    { label: "Roles", value: person.targetRoles.join(", ") },
+    { label: "Experience", value: "5+ years, now Senior QA Engineer at Epicmetry" },
+    { label: "Based in", value: person.location },
+    { label: "Work authorisation", value: person.workAuthorisation },
+    { label: "Open to", value: person.openTo },
+    { label: "Employment", value: person.employment },
+    { label: "Languages", value: person.languages },
+    { label: "Time zones", value: person.timezones.map((t) => `${t.label} ${t.offset}`).join("; ") },
   ];
   return (
-    <section aria-labelledby="facts-title" className="animate-rise order-2 lg:order-3 lg:col-span-2" style={{ animationDelay: "440ms" }}>
+    <section aria-labelledby="facts-title" className="wrap mt-16 md:mt-20">
       <h2 id="facts-title" className="sr-only">
         Quick facts
       </h2>
-      <dl className="glass grid gap-x-8 gap-y-5 p-5 sm:grid-cols-2 md:p-6 lg:grid-cols-4" data-testid="quick-facts">
+      <dl className="grid gap-x-10 gap-y-6 border-t border-line pt-8 sm:grid-cols-2 lg:grid-cols-4" data-testid="quick-facts">
         {facts.map((f) => (
-          <div key={f.label} className="relative min-h-9 pl-12">
-            <dt className="text-xs font-semibold tracking-wide text-mute uppercase">
-              <span className="absolute top-0.5 left-0 grid size-9 place-items-center rounded-xl bg-brand-500/15 text-brand-200">
-                <Icon name={f.icon} className="size-4.5" />
-              </span>
-              {f.label}
-            </dt>
-            <dd className="mt-0.5 text-sm leading-snug text-ink">{f.value}</dd>
+          <div key={f.label}>
+            <dt className="text-sm font-semibold text-mute">{f.label}</dt>
+            <dd className="mt-1 leading-snug text-ink">{f.value}</dd>
           </div>
         ))}
       </dl>
@@ -157,130 +78,68 @@ function QuickFacts() {
   );
 }
 
-export function Hero() {
-  return (
-    <section id="top" aria-labelledby="hero-title" className="relative overflow-hidden pt-28 pb-10 md:pt-36 lg:pb-16">
-      {/* Background grid and glow */}
-      <div
-        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.35] [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_75%)]"
-        style={{
-          backgroundImage:
-            "linear-gradient(to right, rgb(167 139 250 / 0.08) 1px, transparent 1px), linear-gradient(to bottom, rgb(167 139 250 / 0.08) 1px, transparent 1px)",
-          backgroundSize: "56px 56px",
-        }}
-        aria-hidden="true"
-      />
+const iconLink =
+  "grid size-11 cursor-pointer place-items-center rounded-xl border border-line bg-surface text-mute transition-colors hover:border-accent-600 hover:text-accent-800";
 
-      <div className="wrap grid items-center gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-x-10 lg:gap-y-14">
-        <div className="order-1 max-w-[44rem]">
-          <p className="animate-rise inline-flex items-center gap-2.5 rounded-full border border-line bg-white/[0.04] py-1.5 pr-4 pl-2 text-sm text-mute">
-            <span className="relative flex size-2.5">
-              <span className="animate-pulse-dot absolute inline-flex size-full rounded-full bg-ok" />
-              <span className="relative inline-flex size-2.5 rounded-full bg-ok" />
-            </span>
-            <span>
-              <strong className="font-semibold text-ink">{person.available}</strong> · {person.rolesShort}
-            </span>
+export function Hero() {
+  const [first, ...rest] = person.name.split(" ");
+  return (
+    <section id="top" aria-labelledby="hero-title" className="pt-28 pb-16 md:pt-36 md:pb-20">
+      <div className="wrap grid items-start gap-14 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-12">
+        <div className="lg:pt-8">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold text-accent-700">
+            <span className="size-2 rounded-full bg-accent-500" aria-hidden="true" />
+            {person.available}
           </p>
 
-          <h1 id="hero-title" className="mt-6 font-extrabold tracking-[-0.035em]">
-            <span className="animate-rise block text-[clamp(2rem,4.2vw,3.25rem)] leading-[1.1] text-ink" style={{ animationDelay: "80ms" }}>
-              Hi, I'm {person.name}
-            </span>
-            <span className="animate-rise text-gradient block pb-1 text-[clamp(2.5rem,5.4vw,3.75rem)] leading-[1.05]" style={{ animationDelay: "160ms" }}>
-              {person.role}
-            </span>
+          <h1 id="hero-title" className="mt-5">
+            <span className="block text-[clamp(3.75rem,10vw,6.5rem)] leading-[0.92] font-extrabold tracking-[-0.045em] text-ink">
+              <span className="block">{first}</span> <span className="block">{rest.join(" ")}</span>
+            </span>{" "}
+            <span className="mt-5 block text-[clamp(1.375rem,2.6vw,1.875rem)] leading-tight font-semibold tracking-[-0.02em] text-accent-700">{person.role}</span>
           </h1>
 
-          <p className="animate-rise mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-lg text-mute" style={{ animationDelay: "240ms" }}>
-            <span className="font-mono text-sm tracking-wide text-brand-300 uppercase">{person.tagline}</span>
-            <span className="hidden h-4 w-px bg-line sm:block" aria-hidden="true" />
-            <span>
-              {person.rotatingLead} <RotatingWord />
-            </span>
-          </p>
+          <p className="mt-5 max-w-xl text-lg leading-relaxed text-mute md:text-xl md:leading-relaxed">{person.heroLead}</p>
 
-          <p className="animate-rise mt-5 max-w-xl text-lg leading-relaxed text-mute" style={{ animationDelay: "320ms" }}>
-            {person.heroLead}
-          </p>
-
-          <div className="animate-rise mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: "400ms" }}>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
             <a href={person.cv} download className="btn btn-primary" data-testid="cta-cv">
               <Icon name="download" className="size-4" /> Download CV
             </a>
             <a href={`mailto:${person.email}`} className="btn btn-ghost" data-testid="cta-email">
               <Icon name="mail" className="size-4" /> Email me
             </a>
-            <div className="flex items-center gap-2 sm:ml-2">
-              <a
-                href={person.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn profile (opens in a new tab)"
-                className="grid size-11 place-items-center rounded-full border border-line text-mute transition hover:-translate-y-0.5 hover:border-brand-400 hover:text-ink"
-              >
+            <span className="flex items-center gap-2 sm:ml-1">
+              <a href={person.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn profile (opens in a new tab)" className={iconLink}>
                 <LinkedInIcon className="size-[1.1rem]" />
               </a>
-              <a
-                href={person.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub profile (opens in a new tab)"
-                className="grid size-11 place-items-center rounded-full border border-line text-mute transition hover:-translate-y-0.5 hover:border-brand-400 hover:text-ink"
-              >
+              <a href={person.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub profile (opens in a new tab)" className={iconLink}>
                 <GitHubIcon className="size-[1.1rem]" />
               </a>
-              <CopyEmailButton className="grid size-11 cursor-pointer place-items-center rounded-full border border-line text-mute transition hover:-translate-y-0.5 hover:border-brand-400 hover:text-ink" />
-            </div>
+              <CopyEmailButton className={iconLink} />
+            </span>
           </div>
-
         </div>
 
-        <div className="animate-rise order-3 lg:order-2" style={{ animationDelay: "200ms" }}>
-          <HeroPhoto />
-        </div>
-
-        <QuickFacts />
-      </div>
-
-      {/* Stat cards */}
-      <div className="wrap mt-14 md:mt-20">
-        <ul className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-4" aria-label="Highlights">
-          {stats.map((s, i) => (
-            <Reveal as="li" key={s.label} delay={i * 90} className="glass spotlight p-5 md:p-6" onPointerMove={trackSpotlight}>
-              <p className="text-gradient text-3xl font-extrabold tracking-tight md:text-4xl">
-                <CountUp value={s.value} prefix={s.prefix} suffix={s.suffix} />
-              </p>
-              <p className="mt-2 font-semibold text-ink">{s.label}</p>
-              <p className="mt-1 text-sm text-mute">{s.detail}</p>
-            </Reveal>
-          ))}
-        </ul>
-      </div>
-
-      {/* Tool marquee */}
-      <div className="mt-14 border-y border-line bg-white/[0.02] py-5 md:mt-20">
-        <div className="marquee group relative flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
-          {[0, 1].map((copy) => (
-            <ul
-              key={copy}
-              className="marquee-track flex shrink-0 items-center gap-10 pr-10"
-              aria-label={copy === 0 ? "Tools I use" : undefined}
-              aria-hidden={copy === 1 ? true : undefined}
-            >
-              {tools.map((t) => (
-                <li key={t} className="flex items-center gap-2.5 text-sm font-semibold whitespace-nowrap text-mute">
-                  <span className="size-1.5 rounded-full bg-brand-400" aria-hidden="true" />
-                  {t}
-                </li>
-              ))}
-            </ul>
-          ))}
+        <div className="relative mx-auto w-full max-w-[25rem] sm:max-w-[26rem] lg:mr-0 lg:ml-auto lg:max-w-[24rem]">
+          <picture>
+            <source srcSet={`/${person.photo}.webp`} type="image/webp" />
+            <img
+              src={`/${person.photo}.jpg`}
+              alt={person.photoAlt}
+              width={480}
+              height={720}
+              fetchPriority="high"
+              decoding="async"
+              className="aspect-[4/5] w-full rounded-[1.75rem] bg-accent-100 object-cover object-top"
+            />
+          </picture>
+          <div className="relative mx-3 -mt-24 sm:mx-6 lg:mx-0 lg:-mt-32 lg:-ml-28 lg:w-[21.5rem]">
+            <TestRun />
+          </div>
         </div>
       </div>
-      <div className="wrap mt-4 flex justify-end">
-        <MotionToggle />
-      </div>
+
+      <QuickFacts />
     </section>
   );
 }

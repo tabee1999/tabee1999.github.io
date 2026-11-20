@@ -11,8 +11,8 @@ Every deploy publishes the results with the site:
 
 ## What's on the site
 
-- **Hero** with photo, availability, rotating focus areas (AI-first QA, manual QA, automation, API testing), CV download and quick links
-- **Animated stats** from the CV (5+ years, 300+ automated tests, regression in under a day, 700+ test cases) and a tool marquee
+- **Hero** with photo, availability, CV download, quick links and the facts recruiters check first (roles, work authorisation, time zones, languages)
+- **Test-run card:** the key numbers from the CV (5+ years, 300+ automated tests, regression in under a day, 700+ test cases) shown as a passing Playwright run, linking to the live Allure report
 - **Services:** AI-first QA, manual and exploratory QA, test automation, API testing, web and mobile, performance and security
 - **Projects** with filters (Automation, Manual, AI-first, API, Mobile, Performance) and a details dialog for each
 - **Interactive case studies:** keyboard-accessible tabs on the home page, plus a full page for each
@@ -21,13 +21,9 @@ Every deploy publishes the results with the site:
 - **FAQ** written for recruiters and for AI search engines
 - **Chat assistant** ("Ask about me") on every page: answers recruiter questions about experience, skills, projects, availability and contact. It works today with answers built from `src/content.ts`, and switches to Claude AI once the chat worker is set up ([chat-worker/README.md](chat-worker/README.md))
 
-## Motion
+## Design
 
-Subtle animations, all disabled automatically for people who set "reduce motion":
-
-- sections and cards fade up as you scroll (content is always in the HTML, so nothing is hidden from search engines or if JavaScript fails)
-- numbers count up, the hero photo has a gentle parallax, cards follow the pointer with a soft glow, buttons and chips respond to hover and press
-- scroll progress bar, active-section highlight in the menu, back-to-top button
+Light mint-grey paper, deep pine text and an emerald accent, set in Schibsted Grotesk. The one dark element is the hero's test-run card, and the one piece of motion that plays on its own is its results ticking in once on page load (shown instantly for people who set "reduce motion"). Everything else moves only in response to the visitor: menus, accordions, dialogs, the chat. Also: scroll progress bar, active-section highlight in the menu, back-to-top button.
 
 The motion layer is in `src/lib/motion.tsx` (about 150 lines, no dependencies). It does what the Framer Motion features used here would do: `Reveal` ≈ `whileInView`, `CountUp` ≈ `animate` on a motion value, `useParallax` ≈ `useScroll` + `useTransform`.
 
@@ -53,9 +49,8 @@ The motion layer is in `src/lib/motion.tsx` (about 150 lines, no dependencies). 
 │  ├─ content.ts              ← all site text: edit this
 │  ├─ App.tsx                 ← page layout (home, case study, 404)
 │  ├─ components/             ← Hero, Projects, CaseStudies, Experience, Skills, Contact…
-│  ├─ lib/motion.tsx          ← scroll reveals, count-up, parallax, pointer glow
 │  ├─ lib/hooks.ts            ← scroll spy, scroll progress, local time
-│  ├─ styles.css              ← Tailwind v4 theme: colours, fonts, glass cards, animations
+│  ├─ styles.css              ← Tailwind v4 theme: colours, fonts, buttons, cards
 │  ├─ client.tsx              ← hydrates the pre-rendered HTML in the browser
 │  └─ prerender.tsx           ← renders every page + SEO tags, sitemap, robots.txt, llms.txt
 ├─ public/                    ← photo, CV, favicon, link-preview image (copied as-is)

@@ -31,7 +31,7 @@ export default defineConfig({
     baseURL: LIVE ?? `http://localhost:${PORT}/`,
     trace: "on-first-retry",
     screenshot: "only-on-failure",
-    // Makes scroll reveals, count-ups and smooth scrolling instant, so assertions don't race them.
+    // Makes the hero's test-run animation and smooth scrolling instant, so assertions don't race them.
     contextOptions: { reducedMotion: "reduce" },
   },
   projects: [

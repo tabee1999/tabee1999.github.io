@@ -62,11 +62,7 @@ export const person = {
   firstName: "Tabeeda",
   initials: "TS",
   role: "Senior QA Engineer",
-  tagline: "Test · Improve · Deliver",
-  rotatingLead: "Specialising in",
-  rotating: ["test automation", "API testing", "manual QA", "AI-first QA"],
   targetRoles: ["Senior QA Engineer", "SDET", "QA Automation Engineer"],
-  rolesShort: "Senior QA · SDET · QA Automation",
   intro:
     "Tabeeda Shakir is a Senior QA Engineer with 5+ years in test automation, manual and AI-first testing, open to Senior QA, SDET and QA Automation roles. She owns quality from test strategy to release sign-off for web, mobile and API products.",
   heroLead:

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { teamPhotos } from "../content";
-import { Reveal } from "../lib/motion";
 import { Icon } from "./Icon";
 import { Section } from "./Layout";
 
@@ -42,7 +41,7 @@ function Lightbox({ index, onClose, onMove }: { index: number | null; onClose: (
         if (e.key === "ArrowLeft") go(-1);
       }}
       aria-label={photo ? photo.caption : "Team photo"}
-      className="m-auto max-h-[calc(100dvh-2rem)] w-[min(72rem,calc(100vw-2rem))] overflow-hidden rounded-[1.5rem] border border-line bg-night-950 p-0 text-ink shadow-2xl backdrop:bg-night-950/85 backdrop:backdrop-blur-sm"
+      className="m-auto max-h-[calc(100dvh-2rem)] w-[min(72rem,calc(100vw-2rem))] overflow-hidden rounded-[1.25rem] border border-line bg-surface p-0 text-ink shadow-2xl backdrop:bg-ink/70"
       data-testid="team-lightbox"
     >
       {photo && (
@@ -55,7 +54,7 @@ function Lightbox({ index, onClose, onMove }: { index: number | null; onClose: (
               alt={photo.alt}
               width={photo.width}
               height={photo.height}
-              className="max-h-[calc(100dvh-8rem)] w-full bg-night-900 object-contain"
+              className="max-h-[calc(100dvh-8rem)] w-full bg-ink object-contain"
             />
           </picture>
           <figcaption className="flex items-center justify-between gap-3 border-t border-line px-4 py-3 sm:px-5">
@@ -90,13 +89,12 @@ export function Teams() {
   return (
     <Section
       id="teams"
-      eyebrow="People"
       title="Teams I've worked with"
       lead="Quality is a team sport. A few moments with the developers, designers and product people I've shipped with."
     >
       <ul className="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-3" data-testid="team-gallery">
         {teamPhotos.map((p, i) => (
-          <Reveal as="li" key={p.file} delay={i * 90} className={`relative ${layout[i] ?? "aspect-[3/2]"}`}>
+          <li key={p.file} className={`relative ${layout[i] ?? "aspect-[3/2]"}`}>
             <button
               type="button"
               onClick={(e) => {
@@ -105,7 +103,7 @@ export function Teams() {
               }}
               aria-haspopup="dialog"
               data-track="team-photo"
-              className="group absolute inset-0 cursor-pointer overflow-hidden rounded-[var(--radius-card)] border border-line bg-night-800 text-left shadow-xl shadow-black/30 focus-visible:outline-offset-4"
+              className="group absolute inset-0 cursor-pointer overflow-hidden rounded-[var(--radius-card)] bg-accent-100 text-left focus-visible:outline-offset-4"
             >
               <picture>
                 <source srcSet={srcSet(p)} sizes={i === 0 ? "(min-width: 1024px) 50vw, 100vw" : "(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"} type="image/webp" />
@@ -116,17 +114,14 @@ export function Teams() {
                   height={p.height}
                   loading="lazy"
                   decoding="async"
-                  className="size-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  className="size-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                 />
               </picture>
-              <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-night-950/90 via-night-950/50 to-transparent px-4 pt-12 pb-3.5">
+              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/85 via-ink/45 to-transparent px-4 pt-12 pb-3.5">
                 <span className="text-sm font-semibold text-white">{p.caption}</span>
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-white/10 text-white opacity-0 backdrop-blur transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100" aria-hidden="true">
-                  <Icon name="arrowUpRight" className="size-4" />
-                </span>
               </span>
             </button>
-          </Reveal>
+          </li>
         ))}
       </ul>
 

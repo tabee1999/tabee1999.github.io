@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { experience } from "../content";
-import { Reveal, trackSpotlight } from "../lib/motion";
 import { Icon } from "./Icon";
 import { Section } from "./Layout";
 
@@ -19,7 +18,6 @@ export function Experience() {
   return (
     <Section
       id="experience"
-      eyebrow="Experience"
       title="5+ years across SaaS, travel, logistics and fintech"
       action={
         <button
@@ -28,67 +26,55 @@ export function Experience() {
           onClick={() => setOpen(allOpen ? new Set() : new Set(experience.map((_, i) => i)))}
           data-testid="expand-all"
         >
-          <Icon name="chevronDown" className={`size-4 transition-transform duration-300 ${allOpen ? "rotate-180" : ""}`} />
+          <Icon name="chevronDown" className={`size-4 transition-transform duration-200 ${allOpen ? "rotate-180" : ""}`} />
           {allOpen ? "Collapse all" : "Expand all"}
         </button>
       }
     >
-      <ol className="relative space-y-5 before:absolute before:top-3 before:bottom-3 before:left-[1.05rem] before:w-px before:bg-gradient-to-b before:from-brand-400 before:via-brand-600/50 before:to-transparent before:content-[''] md:before:left-[1.3rem]">
+      <ol className="border-t border-line">
         {experience.map((job, i) => {
           const isOpen = open.has(i);
           return (
-            <Reveal as="li" key={job.company} delay={i * 70} className="relative pl-12 md:pl-16">
-              <span
-                className={`absolute top-6 left-1.5 grid size-5 place-items-center rounded-full ring-4 ring-night-950 transition-colors md:left-2.5 ${
-                  i === 0 ? "bg-ok" : isOpen ? "bg-brand-400" : "bg-night-700 ring-offset-0"
-                }`}
-                aria-hidden="true"
-              >
-                {i === 0 && <span className="animate-pulse-dot size-5 rounded-full" />}
-              </span>
-              <div className={`glass spotlight transition-colors ${isOpen ? "border-brand-400/40" : ""}`} onPointerMove={trackSpotlight}>
-                <h3>
-                  <button
-                    type="button"
-                    id={`job-${i}`}
-                    aria-expanded={isOpen}
-                    aria-controls={`job-panel-${i}`}
-                    onClick={() => toggle(i)}
-                    className="flex w-full cursor-pointer flex-col gap-3 p-5 text-left md:flex-row md:items-center md:justify-between md:p-6"
+            <li key={job.company} className="border-b border-line">
+              <h3>
+                <button
+                  type="button"
+                  id={`job-${i}`}
+                  aria-expanded={isOpen}
+                  aria-controls={`job-panel-${i}`}
+                  onClick={() => toggle(i)}
+                  className="group grid w-full cursor-pointer grid-cols-[minmax(0,1fr)_auto] gap-x-4 gap-y-1 pt-6 pb-3 text-left md:grid-cols-[11rem_minmax(0,1fr)_auto] md:gap-x-8"
+                >
+                  <span className="col-span-2 flex items-center gap-2 text-sm font-semibold text-mute tabular-nums md:col-span-1 md:pt-1.5">
+                    {i === 0 && <span className="size-2 shrink-0 rounded-full bg-accent-500" aria-hidden="true" />}
+                    {job.period}
+                  </span>
+                  <span>
+                    <span className="block text-xl font-bold tracking-[-0.01em] text-ink group-hover:text-accent-800 md:text-[1.375rem]">{job.role}</span>
+                    <span className="mt-0.5 block font-semibold text-accent-700">
+                      {job.company}
+                      <span className="font-normal text-mute">, {job.location}</span>
+                    </span>
+                  </span>
+                  <span
+                    className={`grid size-9 place-items-center self-start rounded-lg border transition-transform duration-200 md:mt-0.5 ${
+                      isOpen ? "rotate-180 border-accent-600 bg-accent-50 text-accent-700" : "border-line text-mute"
+                    }`}
                   >
-                    <span>
-                      <span className="block text-lg font-bold text-ink md:text-xl">{job.role}</span>
-                      <span className="mt-0.5 block text-brand-200">
-                        {job.company}
-                        <span className="text-mute"> · {job.location}</span>
-                      </span>
-                    </span>
-                    <span className="flex items-center gap-3">
-                      <span className={`chip !text-xs ${i === 0 ? "!border-ok/40 !text-ok" : ""}`}>{job.period}</span>
-                      <span
-                        className={`grid size-8 place-items-center rounded-full border border-line transition-transform duration-300 ${
-                          isOpen ? "rotate-180 bg-brand-500/20 text-brand-200" : "text-mute"
-                        }`}
-                      >
-                        <Icon name="chevronDown" className="size-4" />
-                      </span>
-                    </span>
-                  </button>
-                </h3>
-                <p className="-mt-2 px-5 pb-5 text-mute md:px-6">{job.summary}</p>
+                    <Icon name="chevronDown" className="size-4" />
+                  </span>
+                </button>
+              </h3>
+              <div className="md:ml-[13rem]">
+                <p className="pb-6 leading-relaxed text-mute md:max-w-3xl">{job.summary}</p>
                 <div id={`job-panel-${i}`} role="region" aria-labelledby={`job-${i}`} className="expander" data-open={isOpen} inert={!isOpen}>
                   <div>
-                    <div className="border-t border-line px-5 py-5 md:px-6">
+                    <div className="pb-8 md:max-w-3xl">
                       {(job.about || job.url) && (
-                        <p className="mb-4 text-sm leading-relaxed text-mute">
+                        <p className="mb-5 text-sm leading-relaxed text-mute">
                           {job.about}{" "}
                           {job.url && (
-                            <a
-                              href={job.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 font-semibold whitespace-nowrap text-brand-200 underline decoration-brand-400/40 underline-offset-4 hover:text-white"
-                            >
+                            <a href={job.url} target="_blank" rel="noopener noreferrer" className="link inline-flex items-center gap-1 whitespace-nowrap">
                               {new URL(job.url).hostname.replace(/^www\./, "")}
                               <Icon name="arrowUpRight" className="size-3.5" />
                               <span className="sr-only">(opens in a new tab)</span>
@@ -98,15 +84,15 @@ export function Experience() {
                       )}
                       <ul className="space-y-3">
                         {job.bullets.map((b) => (
-                          <li key={b} className="flex gap-3 leading-relaxed text-ink/90">
-                            <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand-400" aria-hidden="true" />
+                          <li key={b} className="flex gap-3 leading-relaxed text-ink">
+                            <span className="mt-[0.7rem] h-0.5 w-3 shrink-0 rounded-full bg-accent-400" aria-hidden="true" />
                             {b}
                           </li>
                         ))}
                       </ul>
                       <ul className="mt-5 flex flex-wrap gap-2" aria-label="Tools">
                         {job.tags.map((t) => (
-                          <li key={t} className="chip !text-xs">
+                          <li key={t} className="chip">
                             {t}
                           </li>
                         ))}
@@ -115,7 +101,7 @@ export function Experience() {
                   </div>
                 </div>
               </div>
-            </Reveal>
+            </li>
           );
         })}
       </ol>

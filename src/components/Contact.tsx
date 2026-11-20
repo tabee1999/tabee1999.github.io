@@ -1,7 +1,6 @@
 import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import { person, site } from "../content";
 import { Clocks } from "./Clocks";
-import { Reveal } from "../lib/motion";
 import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
 import { CopyEmailButton } from "./CopyEmail";
 
@@ -48,7 +47,7 @@ function Field({
       </label>
       {children}
       {error && (
-        <p id={`${id}-error`} className="mt-1.5 flex items-center gap-1.5 text-sm text-rose-300">
+        <p id={`${id}-error`} className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-rose-700">
           <Icon name="close" className="size-3.5" /> {error}
         </p>
       )}
@@ -57,7 +56,7 @@ function Field({
 }
 
 const inputClass =
-  "w-full rounded-xl border bg-night-950/60 px-4 py-3 text-ink placeholder:text-mute/60 transition-colors focus:border-brand-400 focus:outline-none aria-[invalid=true]:border-rose-400/70";
+  "w-full rounded-xl border bg-surface px-4 py-3 text-ink placeholder:text-mute/80 transition-colors focus:border-accent-600 focus:outline-none aria-[invalid=true]:border-rose-700";
 
 export function Contact() {
   const [fields, setFields] = useState<Fields>({ name: "", email: "", company: "", topic: topics[0], message: "" });
@@ -126,42 +125,37 @@ export function Contact() {
   return (
     <section id="contact" aria-labelledby="contact-title" className="-scroll-mt-10 py-16 md:-scroll-mt-14 md:py-24">
       <div className="wrap">
-        <div className="glass relative overflow-hidden p-6 md:p-10 lg:p-12">
-          <div className="pointer-events-none absolute -top-32 -left-24 size-80 rounded-full bg-brand-600/30 blur-3xl" aria-hidden="true" />
-          <div className="pointer-events-none absolute -right-24 -bottom-32 size-80 rounded-full bg-indigo-600/25 blur-3xl" aria-hidden="true" />
-
-          <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:gap-14">
-            <Reveal>
-              <p className="eyebrow">Contact</p>
-              <h2 id="contact-title" className="mt-2 text-[clamp(2.2rem,5vw,3.5rem)] leading-[1.05] font-extrabold tracking-[-0.03em]">
-                Let's work <span className="text-gradient">together</span>
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-14">
+            <div>
+              <h2 id="contact-title" className="text-[clamp(2.4rem,5.5vw,4rem)] leading-[1] font-extrabold tracking-[-0.04em]">
+                Let's work together
               </h2>
               <p className="mt-4 max-w-md text-lg leading-relaxed text-mute">
                 Hiring a QA engineer, or need someone to take quality off your plate? Send me a message about the role or project.
               </p>
 
               <ul className="mt-8 space-y-3">
-                <li className="flex items-center gap-3 rounded-2xl border border-line bg-white/[0.03] p-3 pr-2">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-500/20 text-brand-200">
+                <li className="flex items-center gap-3 rounded-xl border border-line bg-surface p-2.5 pr-2">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accent-50 text-accent-700">
                     <Icon name="mail" className="size-5" />
                   </span>
-                  <a href={`mailto:${person.email}`} className="min-w-0 flex-1 truncate font-semibold text-ink hover:text-brand-200" data-testid="contact-email">
+                  <a href={`mailto:${person.email}`} className="min-w-0 flex-1 truncate font-semibold text-ink hover:text-accent-800" data-testid="contact-email">
                     {person.email}
                   </a>
-                  <CopyEmailButton className="grid size-10 shrink-0 cursor-pointer place-items-center rounded-xl text-mute transition hover:bg-white/5 hover:text-ink" />
+                  <CopyEmailButton className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-lg text-mute transition-colors hover:bg-accent-50 hover:text-accent-800" />
                 </li>
                 <li>
                   <a
                     href={person.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center gap-3 rounded-2xl border border-line bg-white/[0.03] p-3 transition hover:border-brand-400/50"
+                    className="group flex items-center gap-3 rounded-xl border border-line bg-surface p-2.5 transition-colors hover:border-accent-400"
                   >
-                    <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-brand-500/20 text-brand-200">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-accent-50 text-accent-700">
                       <LinkedInIcon className="size-5" />
                     </span>
                     <span className="flex-1 font-semibold text-ink">Connect on LinkedIn</span>
-                    <Icon name="arrowUpRight" className="mr-2 size-4 text-mute transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    <Icon name="arrowUpRight" className="mr-2 size-4 text-mute" />
                   </a>
                 </li>
                 <li className="grid grid-cols-2 gap-3">
@@ -169,39 +163,39 @@ export function Contact() {
                     href={person.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 rounded-2xl border border-line bg-white/[0.03] p-3 font-semibold text-ink transition hover:border-brand-400/50"
+                    className="flex min-h-[3.75rem] items-center gap-3 rounded-xl border border-line bg-surface px-4 font-semibold text-ink transition-colors hover:border-accent-400"
                   >
-                    <GitHubIcon className="size-5 text-brand-200" /> GitHub
+                    <GitHubIcon className="size-5 text-accent-700" /> GitHub
                   </a>
                   <a
                     href={person.cv}
                     download
-                    className="flex items-center gap-3 rounded-2xl border border-line bg-white/[0.03] p-3 font-semibold text-ink transition hover:border-brand-400/50"
+                    className="flex min-h-[3.75rem] items-center gap-3 rounded-xl border border-line bg-surface px-4 font-semibold text-ink transition-colors hover:border-accent-400"
                     data-testid="contact-cv"
                   >
-                    <Icon name="download" className="size-5 text-brand-200" /> CV (PDF)
+                    <Icon name="download" className="size-5 text-accent-700" /> CV (PDF)
                   </a>
                 </li>
               </ul>
 
               <p className="mt-6 flex items-start gap-2.5 text-sm leading-relaxed text-mute">
-                <span className="mt-1.5 size-2 shrink-0 rounded-full bg-ok" aria-hidden="true" />
+                <span className="mt-1.5 size-2 shrink-0 rounded-full bg-accent-500" aria-hidden="true" />
                 <span>
                   {person.available}: {person.targetRoles.join(", ")}. {person.openTo}. Local time: <Clocks />.
                 </span>
               </p>
-            </Reveal>
+            </div>
 
-            <Reveal delay={120}>
+            <div className="card p-6 md:p-8">
               {done ? (
                 <div
                   ref={resultRef}
                   tabIndex={-1}
-                  className="panel-in flex h-full flex-col justify-center rounded-2xl border border-line bg-night-950/40 p-6 md:p-8"
+                  className="panel-in flex h-full flex-col justify-center py-4"
                   data-testid="contact-result"
                   role="status"
                 >
-                  <span className={`grid size-14 place-items-center rounded-full ${status === "failed" ? "bg-rose-400/15 text-rose-300" : "bg-ok/15 text-ok"}`}>
+                  <span className={`grid size-14 place-items-center rounded-full ${status === "failed" ? "bg-rose-50 text-rose-700" : "bg-accent-50 text-ok"}`}>
                     <Icon name={status === "failed" ? "close" : "check"} className="size-7" />
                   </span>
                   <h3 className="mt-5 text-2xl font-bold text-ink">
@@ -274,7 +268,7 @@ export function Contact() {
                       {topics.map((t) => (
                         <label key={t} className="cursor-pointer">
                           <input type="radio" name="topic" value={t} checked={fields.topic === t} onChange={set("topic")} className="peer sr-only" />
-                          <span className="chip !px-4 !py-2 !text-sm font-semibold peer-checked:!border-brand-400 peer-checked:!bg-brand-500/25 peer-checked:!text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-300 hover:border-brand-400/60">
+                          <span className="chip min-h-11 !px-4 !text-sm font-semibold peer-checked:!border-accent-700 peer-checked:!bg-accent-700 peer-checked:!text-white peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent-600 hover:border-accent-600">
                             {t}
                           </span>
                         </label>
@@ -309,13 +303,12 @@ export function Contact() {
                     </p>
                     <button type="submit" className="btn btn-primary" disabled={status === "sending"} data-testid="contact-submit">
                       {status === "sending" ? "Sending…" : "Send message"}
-                      <Icon name="send" className="arrow size-4" />
+                      <Icon name="send" className="size-4" />
                     </button>
                   </div>
                 </form>
               )}
-            </Reveal>
-          </div>
+            </div>
         </div>
       </div>
     </section>

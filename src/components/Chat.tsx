@@ -23,14 +23,14 @@ function linkify(text: string): ReactNode[] {
   return text.split(/(https?:\/\/[^\s)]+|[\w.+-]+@[\w-]+\.[\w.]+\w)/g).map((part, i) => {
     if (/^https?:\/\//.test(part)) {
       return (
-        <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="break-all text-brand-200 underline underline-offset-2">
+        <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="break-all font-semibold text-accent-700 underline underline-offset-2">
           {part}
         </a>
       );
     }
     if (/@/.test(part) && /^[\w.+-]+@[\w-]+\.[\w.]+$/.test(part)) {
       return (
-        <a key={i} href={`mailto:${part}`} className="text-brand-200 underline underline-offset-2">
+        <a key={i} href={`mailto:${part}`} className="font-semibold text-accent-700 underline underline-offset-2">
           {part}
         </a>
       );
@@ -150,11 +150,10 @@ export function Chat() {
         onClick={() => (open ? close() : setOpen(true))}
         aria-expanded={open}
         aria-controls={open ? "chat-panel" : undefined}
-        className="no-print group fixed right-4 bottom-4 z-40 flex h-14 min-w-14 cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-to-br from-brand-500 to-brand-700 px-4 font-semibold text-white shadow-xl shadow-brand-700/40 transition hover:scale-105 active:scale-95 sm:right-6 sm:bottom-6 sm:px-5"
+        className="no-print fixed right-4 bottom-4 z-40 flex h-14 min-w-14 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-accent-700 px-4 font-semibold text-white shadow-[0_12px_28px_-12px_rgb(8_54_44/0.7)] transition-colors hover:bg-accent-800 sm:right-6 sm:bottom-6 sm:px-5"
         data-testid="chat-launcher"
         data-track={open ? undefined : "chat-open"}
       >
-        {!open && <span className="chat-ping absolute inset-0 rounded-full" aria-hidden="true" />}
         <Icon name={open ? "close" : "chat"} className="relative size-6" />
         <span className="sr-only sm:not-sr-only sm:relative">{open ? "Close chat" : "Ask about me"}</span>
       </button>
@@ -168,16 +167,16 @@ export function Chat() {
           onKeyDown={(e) => {
             if (e.key === "Escape") close();
           }}
-          className="panel-in fixed inset-x-3 top-20 bottom-3 z-50 flex flex-col overflow-hidden rounded-[1.5rem] border border-line bg-night-900/95 shadow-2xl shadow-black/60 backdrop-blur-xl sm:inset-x-auto sm:top-auto sm:right-6 sm:bottom-24 sm:h-[min(36rem,calc(100dvh-8rem))] sm:w-[24rem]"
+          className="panel-in fixed inset-x-3 top-20 bottom-3 z-50 flex flex-col overflow-hidden rounded-[1.25rem] border border-line bg-surface shadow-[0_24px_60px_-20px_rgb(8_54_44/0.45)] sm:inset-x-auto sm:top-auto sm:right-6 sm:bottom-24 sm:h-[min(36rem,calc(100dvh-8rem))] sm:w-[24rem]"
           data-testid="chat-panel"
         >
-          <div className="flex items-center gap-3 border-b border-line bg-white/[0.03] px-4 py-3">
+          <div className="flex items-center gap-3 border-b border-line bg-paper px-4 py-3">
             <span className="relative shrink-0">
               <picture>
                 <source srcSet={`/${person.avatar}.webp`} type="image/webp" />
-                <img src={`/${person.avatar}.jpg`} alt="" width={40} height={40} className="size-10 rounded-full object-cover ring-2 ring-brand-400/50" />
+                <img src={`/${person.avatar}.jpg`} alt="" width={40} height={40} className="size-10 rounded-full object-cover" />
               </picture>
-              <span className="absolute -right-0.5 -bottom-0.5 size-3 rounded-full bg-ok ring-2 ring-night-900" aria-hidden="true" />
+              <span className="absolute -right-0.5 -bottom-0.5 size-3 rounded-full bg-accent-500 ring-2 ring-paper" aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">
               <h2 id="chat-title" className="truncate text-base font-bold text-ink">
@@ -186,14 +185,14 @@ export function Chat() {
               <p className="flex items-center gap-1.5 text-xs text-mute" data-testid="chat-mode">
                 {ai ? (
                   <>
-                    <Icon name="sparkles" className="size-3.5 text-brand-300" /> AI assistant · answers from her CV
+                    <Icon name="sparkles" className="size-3.5 text-accent-600" /> AI assistant, answers from her CV
                   </>
                 ) : (
                   "Quick answers from her CV"
                 )}
               </p>
             </div>
-            <button type="button" onClick={close} className="grid size-10 cursor-pointer place-items-center rounded-full text-mute transition hover:bg-white/5 hover:text-ink" aria-label="Close chat">
+            <button type="button" onClick={close} className="grid size-11 cursor-pointer place-items-center rounded-lg text-mute transition-colors hover:bg-accent-50 hover:text-ink" aria-label="Close chat">
               <Icon name="close" className="size-5" />
             </button>
           </div>
@@ -202,15 +201,15 @@ export function Chat() {
             {messages.map((m) =>
               m.role === "user" ? (
                 <div key={m.id} className="flex justify-end">
-                  <p className="max-w-[85%] rounded-2xl rounded-br-md bg-gradient-to-br from-brand-500 to-brand-700 px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line text-white">
+                  <p className="max-w-[85%] rounded-2xl rounded-br-md bg-accent-700 px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line text-white">
                     <span className="sr-only">You: </span>
                     {m.text}
                   </p>
                 </div>
               ) : (
-                <div key={m.id} className="swap-in block max-w-[92%]" data-testid={m.id === 0 ? undefined : "chat-answer"}>
+                <div key={m.id} className="panel-in block max-w-[92%]" data-testid={m.id === 0 ? undefined : "chat-answer"}>
                   {m.note && <p className="mb-1.5 text-xs text-mute">{m.note}</p>}
-                  <div className="rounded-2xl rounded-bl-md border border-line bg-white/[0.05] px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line text-ink">
+                  <div className="rounded-2xl rounded-bl-md bg-paper px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line text-ink">
                     <span className="sr-only">Assistant: </span>
                     {linkify(m.text)}
                   </div>
@@ -220,7 +219,7 @@ export function Chat() {
                         <a
                           key={a.href + a.label}
                           href={a.href}
-                          className="chip !text-xs font-semibold hover:border-brand-400/60 hover:bg-brand-500/15 hover:text-white"
+                          className="chip min-h-9 !bg-surface !text-xs font-semibold text-accent-800 hover:!border-accent-600"
                           {...(a.kind === "download" ? { download: "" } : {})}
                           {...(a.kind === "external" ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                           onClick={() => {
@@ -238,10 +237,10 @@ export function Chat() {
             )}
 
             {thinking && (
-              <div className="flex w-fit items-center gap-1.5 rounded-2xl rounded-bl-md border border-line bg-white/[0.05] px-4 py-3" data-testid="chat-typing">
+              <div className="flex w-fit items-center gap-1.5 rounded-2xl rounded-bl-md bg-paper px-4 py-3" data-testid="chat-typing">
                 <span className="sr-only">Assistant is typing</span>
                 {[0, 1, 2].map((i) => (
-                  <span key={i} className="typing-dot size-1.5 rounded-full bg-brand-300" style={{ animationDelay: `${i * 150}ms` }} aria-hidden="true" />
+                  <span key={i} className="typing-dot size-1.5 rounded-full bg-accent-600" style={{ animationDelay: `${i * 150}ms` }} aria-hidden="true" />
                 ))}
               </div>
             )}
@@ -252,7 +251,7 @@ export function Chat() {
                 <ul className="flex flex-wrap gap-2">
                   {suggestions.map((s) => (
                     <li key={s}>
-                      <button type="button" data-track="chat-question" onClick={() => void ask(s)} className="chip cursor-pointer text-left !text-xs hover:border-brand-400/60 hover:bg-brand-500/15 hover:text-white active:scale-95">
+                      <button type="button" data-track="chat-question" onClick={() => void ask(s)} className="chip min-h-9 cursor-pointer !bg-surface text-left !text-xs hover:!border-accent-600 hover:text-accent-800">
                         {s}
                       </button>
                     </li>
@@ -262,7 +261,7 @@ export function Chat() {
             )}
           </div>
 
-          <form onSubmit={onSubmit} className="border-t border-line bg-night-950/40 p-3">
+          <form onSubmit={onSubmit} className="border-t border-line bg-surface p-3">
             <div className="flex items-center gap-2">
               <label htmlFor="chat-input" className="sr-only">
                 Your question
@@ -275,12 +274,12 @@ export function Chat() {
                 maxLength={MAX_LENGTH}
                 autoComplete="off"
                 placeholder="Ask a question…"
-                className="min-w-0 flex-1 rounded-full border border-line bg-night-950/70 px-4 py-3 text-sm text-ink placeholder:text-mute/70 focus:border-brand-400 focus:outline-none"
+                className="min-w-0 flex-1 rounded-xl border border-field bg-surface px-4 py-3 text-sm text-ink placeholder:text-mute/80 focus:border-accent-600 focus:outline-none"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || thinking}
-                className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-white transition hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+                className="grid size-11 shrink-0 cursor-pointer place-items-center rounded-xl bg-accent-700 text-white transition-colors hover:bg-accent-800 disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Send question"
                 data-track="chat-question"
               >

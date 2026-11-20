@@ -3,7 +3,7 @@ import { allureLabels, allPages, content } from "./helpers";
 
 test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "SEO and AI search", "normal"));
 
-const { site, person, caseStudies, faqs } = content;
+const { site, person, caseStudies, faqs, stats } = content;
 
 type Node = { "@type": string; [key: string]: unknown };
 async function jsonLd(page: import("@playwright/test").Page): Promise<Node[]> {
@@ -55,7 +55,9 @@ test.describe("SEO", () => {
 
   test("the main content is in the HTML before JavaScript runs", async ({ request }) => {
     const html = (await (await request.get("/")).text()).replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/<!-- -->/g, "");
-    const expected = [`Hi, I'm ${person.name}`, "AI-first QA", "Manual and exploratory QA", ...faqs.map((f) => f.q), ...faqs.map((f) => f.a)];
+    const h1 = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? "").replace(/<[^>]+>/g, "");
+    expect(h1).toBe(`${person.name} ${person.role}`);
+    const expected = ["AI-first QA", "Manual and exploratory QA", ...stats.map((s) => s.detail), ...faqs.map((f) => f.q), ...faqs.map((f) => f.a)];
     const missing = expected.filter((text) => !html.includes(text));
     expect(missing).toEqual([]);
   });
