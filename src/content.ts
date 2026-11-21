@@ -110,7 +110,7 @@ export const services = [
   {
     icon: "sparkles",
     title: "AI-first QA",
-    text: "AI is part of my daily workflow. I use ChatGPT, Claude and GitHub Copilot to draft and debug Playwright and RestAssured code, explain unfamiliar errors and APIs, and suggest edge cases I might have missed, then I review and run everything before it's merged. I also test AI features, like the chat assistant on this site, for honesty, accuracy and safety.",
+    text: "AI is part of my daily workflow. I use Claude, ChatGPT, Claude Code, OpenAI Codex, GitHub Copilot and Cursor to draft and debug Playwright and RestAssured code, explain unfamiliar errors and APIs, and suggest edge cases I might have missed, then I review and run everything before it's merged. I also test AI features, like the chat assistant on this site, for honesty, accuracy and safety.",
     points: ["AI pair-programming for test code", "AI-suggested edge cases, human-reviewed", "Testing AI and LLM features"],
   },
   {
@@ -458,8 +458,40 @@ export const education = {
   note: "Final year project: Wasty, a smart waste collection Android app (Java, Firebase, Google Maps API).",
 };
 
+/** The AI tools she uses every day, shown on the home page and the skills page. */
+export const aiTools: { group: string; tools: { name: string; icon: string; use: string }[] }[] = [
+  {
+    group: "Assistants",
+    tools: [
+      { name: "Claude", icon: "chat", use: "Thinking through test scenarios, edge cases and tricky bugs, and reviewing test code." },
+      { name: "ChatGPT", icon: "sparkles", use: "Quick answers when I'm stuck, test data ideas and explanations of unfamiliar errors." },
+      { name: "Perplexity", icon: "globe", use: "Researching tools, error messages and documentation, with the sources linked." },
+    ],
+  },
+  {
+    group: "Coding agents and editors",
+    tools: [
+      { name: "Claude Code", icon: "code", use: "Writing and refactoring Playwright and RestAssured tests across a repo." },
+      { name: "OpenAI Codex", icon: "code", use: "Generating test code blocks and fixing failing tests." },
+      { name: "GitHub Copilot", icon: "sparkles", use: "Inline suggestions while I write test code in VS Code." },
+      { name: "Cursor", icon: "pointer", use: "An AI code editor for changes that span a whole test suite." },
+    ],
+  },
+  {
+    group: "AI inside my testing tools",
+    tools: [
+      { name: "Playwright MCP", icon: "automation", use: "Letting an AI agent drive a real browser to explore flows and draft UI tests." },
+      { name: "Postman Postbot", icon: "api", use: "Drafting API tests and assertions for Postman collections." },
+      { name: "Applitools Eyes", icon: "eye", use: "Visual AI that catches layout and visual regressions across screens." },
+    ],
+  },
+];
+
 export const skillGroups = [
-  { group: "AI-first QA", items: ["AI-assisted test design", "Prompt-based test generation", "LLM and chatbot testing", "AI test data generation", "GitHub Copilot", "ChatGPT and Claude"] },
+  {
+    group: "AI-first QA",
+    items: ["AI-assisted test design", "Prompt-based test generation", "LLM and chatbot testing", "AI test data generation", ...aiTools.flatMap((g) => g.tools.map((t) => t.name))],
+  },
   { group: "Manual QA", items: ["Manual testing", "Test case design", "Exploratory testing", "Regression and smoke", "UAT", "Cross-browser and responsive", "Bug reporting and triage"] },
   { group: "Automation", items: ["Playwright", "Selenium", "RestAssured", "TestNG", "JUnit", "Postman", "Newman", "Gherkin (BDD)", "Allure Report"] },
   { group: "Languages and data", items: ["Java", "JavaScript", "SQL"] },
@@ -474,8 +506,16 @@ export const skillAliases: Record<string, string[]> = {
   "Prompt-based test generation": ["prompt", "prompt engineering"],
   "LLM and chatbot testing": ["llm", "llms", "chatbot", "machine learning"],
   "AI test data generation": ["test data"],
-  "GitHub Copilot": ["copilot"],
-  "ChatGPT and Claude": ["chatgpt", "claude", "openai"],
+  Claude: ["claude", "anthropic"],
+  ChatGPT: ["chatgpt", "openai", "gpt"],
+  Perplexity: ["perplexity"],
+  "Claude Code": ["claude code"],
+  "OpenAI Codex": ["codex", "openai codex"],
+  "GitHub Copilot": ["copilot", "github copilot"],
+  Cursor: ["cursor", "cursor ai", "cursor ide"],
+  "Playwright MCP": ["mcp", "playwright mcp", "model context protocol"],
+  "Postman Postbot": ["postbot"],
+  "Applitools Eyes": ["applitools", "visual ai", "visual testing"],
   "Manual testing": ["manual", "manual testing", "functional testing"],
   "Test case design": ["test cases", "test case", "test design"],
   "Exploratory testing": ["exploratory"],
@@ -539,7 +579,7 @@ export const faqs = [
   },
   {
     q: "How does she use AI in testing?",
-    a: "Every day: as a coding partner for Playwright and RestAssured test code, to explain errors and unfamiliar APIs, and to suggest edge cases. She reviews and runs everything before it is merged, and she tests AI features too, like the chat assistant on this site.",
+    a: "Every day, with Claude, ChatGPT, Claude Code, OpenAI Codex, GitHub Copilot and Cursor: as a coding partner for Playwright and RestAssured test code, to explain errors and unfamiliar APIs, and to suggest edge cases. She also uses AI inside her testing tools (Playwright MCP, Postman Postbot and Applitools Eyes). She reviews and runs everything before it is merged, and she tests AI features too, like the chat assistant on this site.",
   },
   {
     q: "How can I contact Tabeeda?",

@@ -58,6 +58,14 @@ test.describe("chat (built-in answers)", () => {
     await expect(reply).not.toContainText("hands-on experience with Cypress");
   });
 
+  test("knows which AI tools she uses and what for", async ({ page }) => {
+    await openChat(page);
+    const reply = await ask(page, "Does she use Codex or Claude Code?");
+    await expect(reply).toContainText("OpenAI Codex");
+    await expect(reply).toContainText("Claude Code");
+    await expect(reply).toContainText("Playwright and RestAssured tests");
+  });
+
   test("links to the page that has the details", async ({ page }) => {
     await openChat(page);
     const reply = await ask(page, "What tools does she use?");

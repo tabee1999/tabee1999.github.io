@@ -121,6 +121,14 @@ test.describe("skills", () => {
     await expect(page.getByTestId("job-result").getByText("Playwright", { exact: true })).toBeVisible();
   });
 
+  test("job match recognises the AI tools she uses", async ({ page }) => {
+    await page.goto("/skills/");
+    await page.getByLabel("Job description").fill("QA Automation Engineer using AI coding tools like Claude Code, Codex and Copilot, plus Playwright MCP for agent testing.");
+    await page.getByRole("button", { name: "Check my fit" }).click();
+    const result = page.getByTestId("job-result");
+    for (const tool of ["Claude Code", "OpenAI Codex", "GitHub Copilot", "Playwright MCP"]) await expect(result.getByText(tool, { exact: true })).toBeVisible();
+  });
+
   test("job match asks for more text when the box is nearly empty", async ({ page }) => {
     await page.goto("/skills/");
     await page.getByLabel("Job description").fill("QA");

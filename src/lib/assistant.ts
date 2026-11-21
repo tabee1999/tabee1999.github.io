@@ -2,7 +2,7 @@
 // works out what it's about and answers from src/content.ts, so it never says anything the
 // site doesn't. When site.chatEndpoint is set, Claude answers instead and this is the fallback.
 
-import { caseStudies, education, experience, person, process, projects, sectionPaths, services, skillGroups, stats } from "../content";
+import { aiTools, caseStudies, education, experience, person, process, projects, sectionPaths, services, skillGroups, stats } from "../content";
 import { matchJob, mentions, nameOf, notOnCv, termsFor } from "./match";
 
 export type ChatAction = { label: string; href: string; kind: "download" | "external" | "internal" | "mail" };
@@ -32,7 +32,8 @@ const inHerWords = (text: string) => `In her words: “${text}”`;
 
 /** Tools, as opposed to broad practices: these get a direct "yes, she uses it" answer. */
 const toolGroups = ["Automation", "Languages and data", "CI/CD and tools", "Performance and security"];
-const tools = new Set([...skillGroups.filter((g) => toolGroups.includes(g.group)).flatMap((g) => g.items), "GitHub Copilot", "ChatGPT and Claude"]);
+const aiUse = new Map(aiTools.flatMap((g) => g.tools.map((t) => [t.name, t.use] as const)));
+const tools = new Set([...skillGroups.filter((g) => toolGroups.includes(g.group)).flatMap((g) => g.items), ...aiUse.keys()]);
 
 /** Broad phrases that also map to a tool; on their own they get a topic answer, not a tool answer. */
 const generic = new Set(["api testing", "api automation", "load testing", "performance testing", "security testing", "ci/cd", "ci / cd", "ci-cd", "continuous integration", "continuous delivery", "pipeline", "pipelines", "database", "test data", "release"]);
@@ -64,7 +65,7 @@ function skillAnswer(q: string): Answer | null {
   const parts: string[] = [];
   if (known.length) {
     parts.push(`Yes. Tabeeda has hands-on experience with ${listOf(known)} in her QA work.`);
-    const seen = evidence(known);
+    const seen = [...evidence(known), ...known.filter((k) => aiUse.has(k)).map((k) => `${k}: ${aiUse.get(k)}`)];
     if (seen.length) parts.push(bullets(seen));
   }
   for (const l of learningHits) parts.push(`She's currently learning ${l}.`);

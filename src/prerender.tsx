@@ -32,7 +32,7 @@ const knowsAbout = [
   "Performance testing",
   "Security testing",
   "Accessibility testing (WCAG)",
-  ...skillGroups.flatMap((g) => g.items).filter((s) => ["Playwright", "Selenium", "RestAssured", "TestNG", "Postman", "Java", "SQL", "JMeter", "OWASP ZAP", "GitHub Actions", "Azure DevOps", "Jenkins", "Jira", "TestRail"].includes(s)),
+  ...skillGroups.flatMap((g) => g.items).filter((s) => ["Playwright", "Selenium", "RestAssured", "TestNG", "Postman", "Java", "SQL", "JMeter", "OWASP ZAP", "GitHub Actions", "Azure DevOps", "Jenkins", "Jira", "TestRail", "Claude Code", "OpenAI Codex", "GitHub Copilot", "Playwright MCP", "Applitools Eyes"].includes(s)),
 ];
 
 const personLd = {

@@ -1,5 +1,5 @@
 import { useRef, type CSSProperties, type RefObject } from "react";
-import { experience, pages, person, process, projects, caseStudies } from "../content";
+import { aiTools, experience, pages, person, process, projects, caseStudies } from "../content";
 import { seg, segment, span, useScrollProgress } from "../lib/scroll";
 import { Icon } from "./Icon";
 import { ProjectVisual } from "./Projects";
@@ -235,6 +235,66 @@ function Phone({ route, driver }: { route: RefObject<SVGPathElement | null>; dri
       {/* Floor shadow */}
       <span className="absolute bottom-0 left-1/2 h-6 w-[55%] -translate-x-1/2 rounded-[50%] bg-ink/25 blur-xl" />
     </div>
+  );
+}
+
+// ── AI tools ──────────────────────────────────────────────────────────────
+
+export function AITools() {
+  let n = 0;
+  return (
+    <section id="ai-tools" aria-labelledby="ai-tools-title" className="relative overflow-hidden bg-pine py-16 text-pine-text md:py-20">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.16] [mask-image:radial-gradient(ellipse_70%_80%_at_70%_30%,#000_20%,transparent_75%)]"
+        style={{ backgroundImage: "radial-gradient(#5fd3a6 1.2px, transparent 1.5px)", backgroundSize: "24px 24px" }}
+        aria-hidden="true"
+      />
+      <div className="pointer-events-none absolute -top-40 right-[-10%] size-[40rem] rounded-full bg-[radial-gradient(circle,rgb(46_168_131/0.28),transparent_62%)]" aria-hidden="true" />
+      <div className="wrap relative">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between" data-reveal="">
+          <div className="max-w-2xl">
+            <h2 id="ai-tools-title" className="text-[clamp(2rem,3.6vw,2.75rem)] leading-[1.08] font-bold tracking-[-0.03em] text-white">
+              AI-first QA: the AI tools I use every day
+            </h2>
+            <p className="mt-4 text-pine-dim md:text-lg">
+              AI makes me faster at writing tests, finding edge cases and getting unstuck. I review and run everything it produces before it's merged.
+            </p>
+          </div>
+          <a href={pages.skills.path} className="btn self-start border-white/25 text-white hover:border-pine-tick lg:self-auto">
+            See all my skills
+          </a>
+        </div>
+
+        <div className="mt-10 grid gap-8 lg:grid-cols-3 lg:gap-6">
+          {aiTools.map((g) => (
+            <div key={g.group}>
+              <h3 className="flex items-center gap-2 text-sm font-semibold text-pine-tick" data-reveal="">
+                <span className="h-px w-6 bg-pine-tick/60" aria-hidden="true" />
+                {g.group}
+              </h3>
+              <ul className="mt-4 grid gap-3">
+                {g.tools.map((t) => (
+                  <li
+                    key={t.name}
+                    data-reveal=""
+                    style={{ "--reveal-delay": `${(n++ % 4) * 80}ms` } as Vars}
+                    className="group flex gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 transition-[border-color,background-color,transform] duration-300 hover:-translate-y-0.5 hover:border-pine-tick/50 hover:bg-white/[0.07]"
+                  >
+                    <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-pine-tick/15 text-pine-tick ring-1 ring-pine-tick/25 transition-shadow group-hover:shadow-[0_0_24px_-4px_rgb(95_211_166/0.7)]">
+                      <Icon name={t.icon} className="size-5" />
+                    </span>
+                    <span>
+                      <span className="block font-bold text-white">{t.name}</span>
+                      <span className="mt-0.5 block text-sm leading-relaxed text-pine-dim">{t.use}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 

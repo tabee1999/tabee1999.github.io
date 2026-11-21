@@ -54,6 +54,13 @@ test.describe("home page", () => {
     await expect(explore.getByRole("link", { name: "Contact me" })).toHaveAttribute("href", "/contact/");
   });
 
+  test("lists the AI tools she uses every day", async ({ page }) => {
+    await page.goto("/");
+    const section = page.locator("#ai-tools");
+    await expect(section.getByRole("heading", { level: 2 })).toContainText("AI tools I use every day");
+    for (const t of content.aiTools.flatMap((g) => g.tools)) await expect(section).toContainText(t.name);
+  });
+
   test("shows how she works in four steps", async ({ page }) => {
     await page.goto("/");
     const steps = page.locator("#how-i-work").getByRole("listitem");
