@@ -36,10 +36,10 @@ export function HowIWork() {
       id="how-i-work"
       aria-labelledby="how-title"
       className="scrolly overflow-x-clip border-y border-line bg-surface"
-      style={{ "--pin": "320vh" } as Vars}
+      style={{ "--runway": "190vh" } as Vars}
     >
       <div className="scrolly-stage">
-        <div className="wrap grid items-center gap-6 py-8 md:py-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
+        <div className="wrap grid items-center gap-6 py-8 md:py-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
           <div>
             <h2 id="how-title" className="section-title">
               How I work
@@ -63,6 +63,7 @@ export function HowIWork() {
           <Phone route={route} driver={driver} />
         </div>
       </div>
+      <div className="scrolly-runway" aria-hidden="true" />
     </section>
   );
 }
@@ -244,7 +245,7 @@ const featured = ["al-rais-travel", "visa-platform", "trading-platforms"];
 export function FeaturedProjects() {
   const picks = featured.map((slug) => projects.find((p) => p.slug === slug)!).filter(Boolean);
   return (
-    <section id="featured" aria-labelledby="featured-title" className="py-16 md:py-24">
+    <section id="featured" aria-labelledby="featured-title" className="pt-14 pb-6 md:pt-20 md:pb-8">
       <div className="wrap">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between" data-reveal="">
           <div className="max-w-2xl">
@@ -291,7 +292,7 @@ export function Explore() {
     { page: pages.about, text: "My story, my education and the teams I've shipped products with.", icon: "sparkles" },
   ];
   return (
-    <section id="explore" aria-labelledby="explore-title" className="py-16 md:py-24">
+    <section id="explore" aria-labelledby="explore-title" className="py-12 md:py-16">
       <div className="wrap">
         <h2 id="explore-title" className="section-title" data-reveal="">
           Explore my work

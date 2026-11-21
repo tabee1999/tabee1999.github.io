@@ -324,7 +324,7 @@ export function Section({
   level?: 1 | 2;
 }) {
   const Heading = level === 1 ? "h1" : "h2";
-  const pad = level === 1 ? "pt-28 pb-16 md:pt-36 md:pb-24" : "-scroll-mt-10 py-16 md:-scroll-mt-14 md:py-24";
+  const pad = level === 1 ? "pt-28 pb-14 md:pt-32 md:pb-16" : "-scroll-mt-10 py-14 md:-scroll-mt-12 md:py-16";
   return (
     // The negative scroll margin cancels part of the top padding, so links to a section land
     // its heading just under the fixed header instead of leaving a large empty gap.
@@ -335,7 +335,7 @@ export function Section({
             <Breadcrumb items={[{ label: "Home", href: "/" }, { label: labelFor(id) }]} />
           </div>
         )}
-        <div className={`mb-10 flex flex-col gap-5 md:mb-12 md:flex-row md:items-end md:justify-between ${level === 1 ? "hero-in" : ""}`} data-reveal="">
+        <div className={`mb-8 flex flex-col gap-5 md:mb-10 md:flex-row md:items-end md:justify-between ${level === 1 ? "hero-in" : ""}`} data-reveal="">
           <div className="max-w-3xl">
             <Heading id={`${id}-title`} className={level === 1 ? "text-[clamp(2.5rem,5.5vw,4.25rem)] leading-[1.02] font-extrabold tracking-[-0.04em]" : "section-title"}>
               {title}

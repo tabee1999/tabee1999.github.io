@@ -9,14 +9,20 @@
 import { useEffect, type RefObject } from "react";
 
 export type ScrollMode =
-  /** A tall section with a sticky stage: 0 when its top reaches the top of the screen, 1 when its bottom does. */
+  /**
+   * A section whose `.scrolly-stage` sticks, centred on screen, while you scroll through the
+   * section's extra bottom space (its "runway"): 0 when the stage starts sticking, 1 when it lets go.
+   */
   | { kind: "pin" }
   /** Plays while the element's top travels from `from` to `to` (fractions of the screen height). */
   | { kind: "view"; from: number; to: number }
   /** How much of the element a line at `anchor` (fraction of the screen height) has passed. */
   | { kind: "track"; anchor: number };
 
-type Sub = { el: HTMLElement; mode: ScrollMode; onProgress?: (p: number, el: HTMLElement) => void; last: number };
+type Sub = { el: HTMLElement; mode: ScrollMode; onProgress?: (p: number, el: HTMLElement) => void; last: number; stick?: number };
+
+/** Header height plus a little air: the stage never tucks under the fixed header. */
+const HEADER = 84;
 
 const subs = new Set<Sub>();
 let frame = 0;
@@ -25,11 +31,22 @@ const clamp01 = (n: number) => (n < 0 ? 0 : n > 1 ? 1 : n);
 
 export const motionAllowed = () => typeof document !== "undefined" && document.documentElement.classList.contains("motion");
 
+/** Centres a pinned stage in the space below the header (measured on resize, not every frame). */
+function placeStage(s: Sub, vh: number) {
+  const stage = s.el.querySelector<HTMLElement>(".scrolly-stage");
+  if (!stage) return;
+  const h = stage.offsetHeight;
+  s.stick = Math.round(Math.max(HEADER, HEADER + (vh - HEADER - h) / 2));
+  stage.style.top = `${s.stick}px`;
+}
+
 function progressOf(s: Sub, vh: number) {
   const r = s.el.getBoundingClientRect();
   if (s.mode.kind === "pin") {
-    const range = r.height - vh;
-    return range > 0 ? clamp01(-r.top / range) : r.top <= 0 ? 1 : 0;
+    const stage = s.el.querySelector<HTMLElement>(".scrolly-stage");
+    const runway = r.height - (stage?.offsetHeight ?? 0);
+    const stick = s.stick ?? HEADER;
+    return runway > 0 ? clamp01((stick - r.top) / runway) : r.top <= stick ? 1 : 0;
   }
   if (s.mode.kind === "track") return r.height > 0 ? clamp01((vh * s.mode.anchor - r.top) / r.height) : 0;
   const { from, to } = s.mode;
@@ -40,6 +57,7 @@ function update(force = false) {
   frame = 0;
   const vh = window.innerHeight;
   for (const s of subs) {
+    if (s.mode.kind === "pin" && (force || s.stick === undefined)) placeStage(s, vh);
     const p = progressOf(s, vh);
     if (!force && Math.abs(p - s.last) < 0.0005) continue;
     s.last = p;

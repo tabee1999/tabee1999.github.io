@@ -65,7 +65,7 @@ function QuickFacts() {
     { label: "Time zones", value: person.timezones.map((t) => `${t.label} ${t.offset}`).join("; ") },
   ];
   return (
-    <section aria-labelledby="facts-title" className="wrap relative mt-12 md:mt-14">
+    <section aria-labelledby="facts-title" className="wrap relative mt-8 md:mt-10">
       <h2 id="facts-title" className="sr-only">
         Quick facts
       </h2>
@@ -80,6 +80,9 @@ function QuickFacts() {
     </section>
   );
 }
+
+/** The core stack, first thing recruiters scan for (and the keywords they search). */
+const heroTools = ["Playwright", "Selenium", "RestAssured", "Java", "Postman", "API testing", "GitHub Actions", "Jenkins", "JMeter", "SQL", "Jira", "AI-first QA"];
 
 const iconLink =
   "grid size-11 cursor-pointer place-items-center rounded-xl border border-line bg-surface/80 text-mute backdrop-blur-sm transition-colors hover:border-accent-600 hover:text-accent-800";
@@ -158,7 +161,7 @@ function TestedFor() {
     </ul>
   );
   return (
-    <section aria-labelledby="tested-title" className="relative mt-14 border-y border-line bg-surface/60 py-6 md:mt-16">
+    <section aria-labelledby="tested-title" className="relative mt-12 border-y border-line bg-surface/60 py-5 md:mt-14">
       <div className="wrap">
         <h2 id="tested-title" className="text-sm font-semibold text-mute">
           Companies and products I've tested
@@ -177,7 +180,7 @@ function TestedFor() {
 export function Hero() {
   const [first, ...rest] = person.name.split(" ");
   return (
-    <section id="top" aria-labelledby="hero-title" className="relative overflow-x-clip pb-14 md:pb-16">
+    <section id="top" aria-labelledby="hero-title" className="relative overflow-x-clip pb-4 md:pb-6">
       <div className="relative pt-28 md:pt-32">
       <div
         className="pointer-events-none absolute top-[48%] left-1/2 size-[34rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgb(95_194_159/0.30),transparent_62%)] lg:top-[-6%] lg:right-[-8%] lg:left-auto lg:size-[46rem] lg:translate-x-0"
@@ -243,6 +246,17 @@ export function Hero() {
               </a>
               <CopyEmailButton className={iconLink} />
             </span>
+          </div>
+
+          <div className="hero-in mt-10 max-w-xl border-t border-line pt-6" style={{ animationDelay: "950ms" }}>
+            <h2 className="text-sm font-semibold text-mute">Tools I test with every day</h2>
+            <ul className="mt-3 flex flex-wrap gap-2" data-testid="hero-tools">
+              {heroTools.map((t) => (
+                <li key={t} className="chip !bg-surface/80 !px-3 !py-1 !text-sm font-semibold backdrop-blur-sm">
+                  {t}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 

@@ -6,13 +6,15 @@ import { allureLabels, content } from "./helpers";
 
 test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "Scroll animations", "normal"));
 
-/** Scrolls so that a pinned section is `progress` (0–1) of the way through. */
+/** Scrolls so that a pinned section is `progress` (0–1) of the way through its runway. */
 async function scrollPinned(page: Page, selector: string, progress: number) {
   await page.evaluate(
     ([sel, p]) => {
       const el = document.querySelector(sel as string) as HTMLElement;
+      const stage = el.querySelector(".scrolly-stage") as HTMLElement;
+      const stick = parseFloat(getComputedStyle(stage).top);
       const top = window.scrollY + el.getBoundingClientRect().top;
-      window.scrollTo(0, top + (p as number) * (el.offsetHeight - window.innerHeight));
+      window.scrollTo(0, top - stick + (p as number) * (el.offsetHeight - stage.offsetHeight));
     },
     [selector, progress],
   );

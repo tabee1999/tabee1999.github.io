@@ -76,9 +76,9 @@ export function TestRunShow() {
   });
 
   return (
-    <section ref={ref} id="test-run" aria-labelledby="test-run-title" className="scrolly" style={{ "--pin": "260vh" } as Vars}>
+    <section ref={ref} id="test-run" aria-labelledby="test-run-title" className="scrolly" style={{ "--runway": "150vh" } as Vars}>
       <div className="scrolly-stage">
-        <div className="wrap py-6 md:py-8">
+        <div className="wrap pt-10 pb-4 md:pt-14 md:pb-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-10">
             <div className="max-w-2xl">
               <h2 id="test-run-title" className="text-[clamp(1.9rem,3.4vw,2.6rem)] leading-[1.08] font-bold tracking-[-0.03em]">
@@ -132,6 +132,7 @@ export function TestRunShow() {
           </div>
         </div>
       </div>
+      <div className="scrolly-runway" aria-hidden="true" />
     </section>
   );
 }

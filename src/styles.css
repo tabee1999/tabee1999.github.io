@@ -525,20 +525,16 @@ html:not(.motion) .marquee {
    Only when motion is allowed (class set in <head>): the section grows tall and its stage
    sticks to the screen while you scroll through it. Otherwise it's an ordinary section
    showing its finished state. */
-.motion .scrolly {
-  height: var(--pin, 250vh);
+/* The extra space below the stage is the scroll "runway" the animation plays over; the stage
+   itself sticks, centred below the header (its top is set in lib/scroll.ts). */
+.motion .scrolly-runway {
+  /* A spacer, not padding: sticky elements only travel within their parent's content box. */
+  height: var(--runway, 150vh);
 }
 
 .motion .scrolly-stage {
   position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
-  /* Centre the content in the part of the screen below the fixed header. */
-  padding-top: 4.5rem;
-  display: grid;
-  align-items: center;
-  overflow: hidden;
+  top: 5.25rem;
 }
 
 /* How I work: steps light up one at a time */
