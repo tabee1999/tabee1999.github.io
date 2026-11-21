@@ -29,7 +29,7 @@ const soft = "#5fc29f";
 const bar = "#9db8b1";
 const box = { fill: "#ffffff", stroke: "#98d9c0" };
 
-function ProjectVisual({ kind }: { kind: Project["visual"] }) {
+export function ProjectVisual({ kind }: { kind: Project["visual"] }) {
   return (
     <div className="relative h-36 overflow-hidden rounded-xl bg-accent-50" aria-hidden="true">
       <div

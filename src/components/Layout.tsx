@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { nav, pages, person, sectionPaths, site, type PageKey } from "../content";
 import { useScrolled, useScrollProgressBar } from "../lib/hooks";
 import { Clocks } from "./Clocks";
@@ -330,8 +330,12 @@ export function Section({
     // its heading just under the fixed header instead of leaving a large empty gap.
     <section id={id} aria-labelledby={`${id}-title`} className={`${pad} ${className}`}>
       <div className="wrap">
-        {level === 1 && <Breadcrumb items={[{ label: "Home", href: "/" }, { label: labelFor(id) }]} />}
-        <div className="mb-10 flex flex-col gap-5 md:mb-12 md:flex-row md:items-end md:justify-between">
+        {level === 1 && (
+          <div className="hero-in">
+            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: labelFor(id) }]} />
+          </div>
+        )}
+        <div className={`mb-10 flex flex-col gap-5 md:mb-12 md:flex-row md:items-end md:justify-between ${level === 1 ? "hero-in" : ""}`} data-reveal="">
           <div className="max-w-3xl">
             <Heading id={`${id}-title`} className={level === 1 ? "text-[clamp(2.5rem,5.5vw,4.25rem)] leading-[1.02] font-extrabold tracking-[-0.04em]" : "section-title"}>
               {title}
@@ -340,7 +344,9 @@ export function Section({
           </div>
           {action}
         </div>
-        {children}
+        <div data-reveal="" className={level === 1 ? "hero-in" : undefined} style={{ "--reveal-delay": "120ms", animationDelay: "120ms" } as CSSProperties}>
+          {children}
+        </div>
       </div>
     </section>
   );

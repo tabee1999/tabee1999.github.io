@@ -5,7 +5,7 @@ import { Chat } from "./components/Chat";
 import { Contact } from "./components/Contact";
 import { Experience } from "./components/Experience";
 import { Hero } from "./components/Hero";
-import { Explore, HowIWork, TestRunShow } from "./components/Home";
+import { Explore, FeaturedProjects, HowIWork, TestRunShow } from "./components/Home";
 import { BackToTop, Footer, Header, ToastProvider } from "./components/Layout";
 import { Projects } from "./components/Projects";
 import { About, Faq, Services } from "./components/Sections";
@@ -22,6 +22,7 @@ const pageBody: Record<PageKey, () => ReactNode> = {
       <Hero />
       <TestRunShow />
       <HowIWork />
+      <FeaturedProjects />
       <Explore />
     </>
   ),

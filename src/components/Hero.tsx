@@ -1,5 +1,8 @@
-import { person, site, stats } from "../content";
+import { useEffect, useRef } from "react";
+import { person, site, stats, testCount } from "../content";
+import { motionAllowed } from "../lib/scroll";
 import { CopyEmailButton } from "./CopyEmail";
+import { HeroBackdrop } from "./HeroBackdrop";
 import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
 
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
@@ -62,11 +65,11 @@ function QuickFacts() {
     { label: "Time zones", value: person.timezones.map((t) => `${t.label} ${t.offset}`).join("; ") },
   ];
   return (
-    <section aria-labelledby="facts-title" className="wrap mt-16 md:mt-20">
+    <section aria-labelledby="facts-title" className="wrap relative mt-12 md:mt-14">
       <h2 id="facts-title" className="sr-only">
         Quick facts
       </h2>
-      <dl className="grid gap-x-10 gap-y-6 border-t border-line pt-8 sm:grid-cols-2 lg:grid-cols-4" data-testid="quick-facts">
+      <dl className="grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4" data-testid="quick-facts">
         {facts.map((f) => (
           <div key={f.label}>
             <dt className="text-sm font-semibold text-mute">{f.label}</dt>
@@ -79,30 +82,153 @@ function QuickFacts() {
 }
 
 const iconLink =
-  "grid size-11 cursor-pointer place-items-center rounded-xl border border-line bg-surface text-mute transition-colors hover:border-accent-600 hover:text-accent-800";
+  "grid size-11 cursor-pointer place-items-center rounded-xl border border-line bg-surface/80 text-mute backdrop-blur-sm transition-colors hover:border-accent-600 hover:text-accent-800";
+
+/**
+ * The photo, framed like a visual-regression check: viewfinder corners, a scan line that
+ * passes over it, and the results. It tilts towards the pointer.
+ */
+function PhotoScan() {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !motionAllowed() || !window.matchMedia("(pointer: fine)").matches) return;
+    const onMove = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      el.style.setProperty("--tilt-x", `${(-y * 8).toFixed(2)}deg`);
+      el.style.setProperty("--tilt-y", `${(x * 10).toFixed(2)}deg`);
+    };
+    const onLeave = () => {
+      el.style.setProperty("--tilt-x", "0deg");
+      el.style.setProperty("--tilt-y", "0deg");
+    };
+    el.addEventListener("pointermove", onMove);
+    el.addEventListener("pointerleave", onLeave);
+    return () => {
+      el.removeEventListener("pointermove", onMove);
+      el.removeEventListener("pointerleave", onLeave);
+    };
+  }, []);
+
+  return (
+    <div ref={ref} className="photo-tilt relative" data-testid="photo-scan">
+      {/* Viewfinder corners */}
+      {["top-0 left-0 border-t-2 border-l-2 rounded-tl-xl", "top-0 right-0 border-t-2 border-r-2 rounded-tr-xl", "bottom-0 left-0 border-b-2 border-l-2 rounded-bl-xl", "bottom-0 right-0 border-b-2 border-r-2 rounded-br-xl"].map((c) => (
+        <span key={c} className={`absolute z-10 size-9 border-accent-500 ${c} -m-3`} aria-hidden="true" />
+      ))}
+      <div className="relative overflow-hidden rounded-[1.75rem] bg-accent-100">
+        <picture>
+          <source srcSet={`/${person.photo}.webp`} type="image/webp" />
+          <img
+            src={`/${person.photo}.jpg`}
+            alt={person.photoAlt}
+            width={480}
+            height={720}
+            fetchPriority="high"
+            decoding="async"
+            className="aspect-[4/5] w-full object-cover object-top"
+          />
+        </picture>
+        <span className="photo-scan" aria-hidden="true" />
+      </div>
+      <span className="hero-chip absolute top-[9%] -right-3 sm:-right-8" style={{ animationDelay: "1.5s" }} aria-hidden="true">
+        <span className="hero-chip-tick">✓</span> Visual check: 0 px diff
+      </span>
+      <span className="hero-chip absolute top-[30%] -left-3 sm:-left-10" style={{ animationDelay: "1.9s" }} aria-hidden="true">
+        <span className="hero-chip-tick">✓</span> WCAG 2.2 AA: 0 issues
+      </span>
+    </div>
+  );
+}
+
+/** The service lines and the companies and products she has tested, as a slow ticker. */
+function TestedFor() {
+  const names = ["Epicmetry", "Al Rais Travel", "Modon Express", "Fleetify", "Tawla", "Propellus", "Naqdi", "Dastgyr"];
+  const row = (hidden: boolean) => (
+    <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
+      {names.map((n) => (
+        <li key={n} className="flex items-center gap-10 pr-10 text-xl font-bold tracking-[-0.01em] whitespace-nowrap text-mute md:text-2xl">
+          {n}
+          <span className="size-1.5 rotate-45 bg-accent-400" aria-hidden="true" />
+        </li>
+      ))}
+    </ul>
+  );
+  return (
+    <section aria-labelledby="tested-title" className="relative mt-14 border-y border-line bg-surface/60 py-6 md:mt-16">
+      <div className="wrap">
+        <h2 id="tested-title" className="text-sm font-semibold text-mute">
+          Companies and products I've tested
+        </h2>
+      </div>
+      <div className="marquee mt-4 flex overflow-hidden" data-testid="tested-for">
+        <div className="marquee-track flex">
+          {row(false)}
+          {row(true)}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export function Hero() {
   const [first, ...rest] = person.name.split(" ");
   return (
-    <section id="top" aria-labelledby="hero-title" className="pt-28 pb-16 md:pt-36 md:pb-20">
-      <div className="wrap grid items-start gap-14 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-12">
-        <div className="lg:pt-8">
-          <p className="inline-flex items-center gap-2 text-sm font-semibold text-accent-700">
-            <span className="size-2 rounded-full bg-accent-500" aria-hidden="true" />
-            {person.available}
-          </p>
+    <section id="top" aria-labelledby="hero-title" className="relative overflow-x-clip pb-14 md:pb-16">
+      <div className="relative pt-28 md:pt-32">
+      <div
+        className="pointer-events-none absolute top-[48%] left-1/2 size-[34rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgb(95_194_159/0.30),transparent_62%)] lg:top-[-6%] lg:right-[-8%] lg:left-auto lg:size-[46rem] lg:translate-x-0"
+        aria-hidden="true"
+      />
+      <HeroBackdrop />
+      <div className="wrap relative grid items-start gap-14 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-12">
+        <div className="lg:pt-6">
+          <div className="hero-in flex flex-wrap items-center gap-2" style={{ animationDelay: "0ms" }}>
+            <p className="inline-flex min-h-11 items-center gap-2 rounded-full border border-accent-200 bg-surface/80 px-4 text-sm font-semibold text-accent-700 backdrop-blur-sm">
+              <span className="relative flex size-2" aria-hidden="true">
+                <span className="live-dot absolute inset-0 rounded-full bg-accent-500" />
+                <span className="relative size-2 rounded-full bg-accent-500" />
+              </span>
+              {person.available}
+            </p>
+            <a
+              href={`/${site.qualityReportPath}`}
+              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-surface/80 px-4 text-sm font-semibold text-ink backdrop-blur-sm transition-colors hover:border-accent-600"
+            >
+              <span className="text-accent-600" aria-hidden="true">
+                ✓
+              </span>
+              {testCount} tests passing
+            </a>
+          </div>
 
-          <h1 id="hero-title" className="mt-5">
-            <span className="block text-[clamp(3.75rem,10vw,6.5rem)] leading-[0.92] font-extrabold tracking-[-0.045em] text-ink">
-              <span className="block">{first}</span> <span className="block">{rest.join(" ")}</span>
+          <h1 id="hero-title" className="mt-6">
+            <span className="block text-[clamp(3.6rem,9vw,6.25rem)] leading-[0.92] font-extrabold tracking-[-0.045em] text-ink">
+              <span className="word-mask">
+                <span className="word" style={{ animationDelay: "120ms" }}>
+                  {first}
+                </span>
+              </span>{" "}
+              <span className="word-mask">
+                <span className="word" style={{ animationDelay: "240ms" }}>
+                  {rest.join(" ")}
+                </span>
+              </span>
             </span>{" "}
-            <span className="mt-5 block text-[clamp(1.375rem,2.6vw,1.875rem)] leading-tight font-semibold tracking-[-0.02em] text-accent-700">{person.role}</span>
+            <span className="mt-5 block text-[clamp(1.375rem,2.6vw,1.875rem)] leading-tight font-semibold tracking-[-0.02em] text-accent-700">
+              <span className="type-in">{person.role}</span>
+            </span>
           </h1>
 
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-mute md:text-xl md:leading-relaxed">{person.heroLead}</p>
+          <p className="hero-in mt-5 max-w-xl text-lg leading-relaxed text-mute md:text-xl md:leading-relaxed" style={{ animationDelay: "650ms" }}>
+            {person.heroLead}
+          </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a href={`/${person.cv}`} download className="btn btn-primary" data-testid="cta-cv">
+          <div className="hero-in mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: "800ms" }}>
+            <a href={`/${person.cv}`} download className="btn btn-primary btn-glow" data-testid="cta-cv">
               <Icon name="download" className="size-4" /> Download CV
             </a>
             <a href={`mailto:${person.email}`} className="btn btn-ghost" data-testid="cta-email">
@@ -120,25 +246,16 @@ export function Hero() {
           </div>
         </div>
 
-        <div className="relative mx-auto w-full max-w-[25rem] sm:max-w-[26rem] lg:mr-0 lg:ml-auto lg:max-w-[24rem]">
-          <picture>
-            <source srcSet={`/${person.photo}.webp`} type="image/webp" />
-            <img
-              src={`/${person.photo}.jpg`}
-              alt={person.photoAlt}
-              width={480}
-              height={720}
-              fetchPriority="high"
-              decoding="async"
-              className="aspect-[4/5] w-full rounded-[1.75rem] bg-accent-100 object-cover object-top"
-            />
-          </picture>
-          <div className="relative mx-3 -mt-24 sm:mx-6 lg:mx-0 lg:-mt-32 lg:-ml-28 lg:w-[21.5rem]">
+        <div className="relative mx-auto w-full max-w-[24rem] sm:max-w-[25rem] lg:mr-0 lg:ml-auto lg:max-w-[23rem]">
+          <PhotoScan />
+          <div className="relative z-10 mx-3 -mt-24 sm:mx-6 lg:mx-0 lg:-mt-32 lg:-ml-28 lg:w-[21.5rem]">
             <TestRun />
           </div>
         </div>
       </div>
+      </div>
 
+      <TestedFor />
       <QuickFacts />
     </section>
   );

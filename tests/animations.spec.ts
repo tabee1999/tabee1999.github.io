@@ -28,6 +28,16 @@ const opacity = (page: Page, text: string) => page.getByText(text, { exact: true
 test.describe("animations", () => {
   test.use({ reducedMotion: "no-preference" });
 
+  test("the hero's test grid scans for bugs", async ({ page }) => {
+    await page.goto("/");
+    const grid = page.getByTestId("hero-grid");
+    const frame = () => grid.evaluate((c) => (c as HTMLCanvasElement).toDataURL());
+    const first = await frame();
+    await page.waitForTimeout(400);
+    expect(await frame()).not.toBe(first);
+    await expect(page.getByTestId("tested-for")).toContainText("Fleetify");
+  });
+
   test("the test run plays as you scroll", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("html")).toHaveClass(/\bmotion\b/);
@@ -90,5 +100,10 @@ test.describe("animations with reduced motion", () => {
     }
     await expect(page.locator("#test-run").getByText(/passed$/)).toHaveText(`${content.testCount} passed`);
     await expect.poll(() => opacity(page, "Released v2.4")).toBeGreaterThan(0.9);
+    // The hero grid is drawn once and stays still.
+    const grid = page.getByTestId("hero-grid");
+    const first = await grid.evaluate((c) => (c as HTMLCanvasElement).toDataURL());
+    await page.waitForTimeout(400);
+    expect(await grid.evaluate((c) => (c as HTMLCanvasElement).toDataURL())).toBe(first);
   });
 });

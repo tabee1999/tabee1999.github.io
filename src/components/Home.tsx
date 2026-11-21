@@ -2,6 +2,7 @@ import { useRef, type CSSProperties, type RefObject } from "react";
 import { experience, pages, person, process, projects, caseStudies, site, testCount } from "../content";
 import { seg, segment, span, useScrollProgress } from "../lib/scroll";
 import { Icon } from "./Icon";
+import { ProjectVisual } from "./Projects";
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
@@ -398,6 +399,50 @@ function Phone({ route, driver }: { route: RefObject<SVGPathElement | null>; dri
   );
 }
 
+// ── Featured projects ─────────────────────────────────────────────────────
+
+const featured = ["al-rais-travel", "visa-platform", "trading-platforms"];
+
+export function FeaturedProjects() {
+  const picks = featured.map((slug) => projects.find((p) => p.slug === slug)!).filter(Boolean);
+  return (
+    <section id="featured" aria-labelledby="featured-title" className="py-16 md:py-24">
+      <div className="wrap">
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between" data-reveal="">
+          <div className="max-w-2xl">
+            <h2 id="featured-title" className="section-title">
+              QA work across travel, AI and fintech
+            </h2>
+            <p className="mt-4 text-mute md:text-lg">
+              Test automation, API testing and manual QA for products used by travellers, drivers, traders and visa applicants across the GCC and beyond.
+            </p>
+          </div>
+          <a href={pages.projects.path} className="btn btn-ghost btn-sm self-start md:self-auto">
+            See all {projects.length} projects
+          </a>
+        </div>
+        <ul className="mt-10 grid gap-5 md:grid-cols-3">
+          {picks.map((p, i) => (
+            <li key={p.slug} data-reveal="" style={{ "--reveal-delay": `${i * 110}ms` } as Vars}>
+              <a href={pages.projects.path} className="card group flex h-full flex-col p-3 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-accent-400 hover:shadow-[0_18px_40px_-24px_rgb(8_54_44/0.45)]">
+                <ProjectVisual kind={p.visual} />
+                <span className="flex flex-1 flex-col px-3 pt-5 pb-3">
+                  <span className="text-sm font-semibold text-accent-700">
+                    {p.company}
+                    <span className="font-normal text-mute">, {p.domain}</span>
+                  </span>
+                  <span className="mt-1 text-xl font-bold tracking-[-0.01em] text-ink group-hover:text-accent-800">{p.name}</span>
+                  <span className="mt-2 leading-relaxed text-mute">{p.summary}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  );
+}
+
 // ── Explore and hire ──────────────────────────────────────────────────────
 
 export function Explore() {
@@ -410,12 +455,12 @@ export function Explore() {
   return (
     <section id="explore" aria-labelledby="explore-title" className="py-16 md:py-24">
       <div className="wrap">
-        <h2 id="explore-title" className="section-title">
+        <h2 id="explore-title" className="section-title" data-reveal="">
           Explore my work
         </h2>
         <ul className="mt-10 grid gap-4 sm:grid-cols-2">
-          {cards.map((c) => (
-            <li key={c.page.path}>
+          {cards.map((c, i) => (
+            <li key={c.page.path} data-reveal="" style={{ "--reveal-delay": `${i * 90}ms` } as Vars}>
               <a
                 href={c.page.path}
                 className="card group flex h-full items-start gap-4 p-6 transition-colors hover:border-accent-400 focus-visible:border-accent-600 md:p-7"
@@ -432,7 +477,7 @@ export function Explore() {
           ))}
         </ul>
 
-        <div className="mt-14 flex flex-col gap-6 rounded-[1.25rem] bg-pine p-7 text-pine-text md:flex-row md:items-center md:justify-between md:p-10">
+        <div className="mt-14 flex flex-col gap-6 rounded-[1.25rem] bg-pine p-7 text-pine-text md:flex-row md:items-center md:justify-between md:p-10" data-reveal="">
           <div>
             <p className="text-2xl font-bold tracking-[-0.015em] text-white md:text-3xl">Hiring a QA engineer?</p>
             <p className="mt-2 max-w-xl text-pine-dim">

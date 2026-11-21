@@ -259,6 +259,243 @@
   }
 }
 
+/* ── Hero ───────────────────────────────────────────────────────────────────
+   One orchestrated entrance on load (only when motion is allowed), plus the live parts:
+   the test-point grid, the photo scan and the ticker. */
+@keyframes word-up {
+  from {
+    transform: translateY(105%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes type-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes caret {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+@keyframes photo-scan {
+  0% {
+    transform: translateY(-30%);
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  38% {
+    transform: translateY(560%);
+    opacity: 1;
+  }
+  44%,
+  100% {
+    transform: translateY(560%);
+    opacity: 0;
+  }
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.hero-grid {
+  -webkit-mask-image: radial-gradient(ellipse 75% 95% at 72% 45%, #000 35%, transparent 85%);
+  mask-image: radial-gradient(ellipse 75% 95% at 72% 45%, #000 35%, transparent 85%);
+}
+
+@media (max-width: 1023px) {
+  .hero-grid {
+    -webkit-mask-image: radial-gradient(ellipse 90% 45% at 50% 62%, #000 20%, transparent 80%);
+    mask-image: radial-gradient(ellipse 90% 45% at 50% 62%, #000 20%, transparent 80%);
+  }
+}
+
+.word-mask {
+  display: block;
+  overflow: hidden;
+  /* Room for descenders inside the mask */
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+
+.word {
+  display: block;
+}
+
+.motion .word {
+  animation: word-up 0.85s cubic-bezier(0.2, 0.75, 0.15, 1) both;
+}
+
+.type-in {
+  position: relative;
+  display: inline-block;
+}
+
+.motion .type-in {
+  animation: type-in 0.9s steps(18, end) 0.55s both;
+}
+
+.motion .type-in::after {
+  content: "";
+  position: absolute;
+  top: 0.12em;
+  right: -0.35em;
+  width: 0.09em;
+  height: 0.95em;
+  border-radius: 1px;
+  background: var(--color-accent-500);
+  animation: caret 1s steps(1) 1.45s 4 both;
+}
+
+.motion .hero-in {
+  animation: fade-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.motion .live-dot {
+  animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.photo-tilt {
+  transform: perspective(1100px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+
+.photo-scan {
+  display: none;
+}
+
+.motion .photo-scan {
+  display: block;
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 18%;
+  background: linear-gradient(to bottom, rgb(95 211 166 / 0), rgb(95 211 166 / 0.28));
+  border-bottom: 2px solid rgb(95 211 166 / 0.95);
+  box-shadow: 0 6px 18px rgb(46 168 131 / 0.45);
+  animation: photo-scan 5.5s cubic-bezier(0.45, 0, 0.3, 1) 0.9s infinite;
+  pointer-events: none;
+}
+
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  background: rgb(255 255 255 / 0.92);
+  color: var(--color-ink);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 12px 28px -14px rgb(8 54 44 / 0.5);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+}
+
+.motion .hero-chip {
+  animation: fade-up 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.hero-chip-tick {
+  display: grid;
+  place-items: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  background: var(--color-accent-600);
+  color: #fff;
+  font-size: 0.7rem;
+}
+
+.btn-glow {
+  box-shadow: 0 10px 30px -10px rgb(11 95 74 / 0.6);
+}
+
+.motion .marquee-track {
+  animation: marquee 38s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+html:not(.motion) .marquee-track > ul {
+  flex-wrap: wrap;
+  flex-shrink: 1;
+  row-gap: 0.75rem;
+  padding-inline: max(1rem, (100vw - 76rem) / 2 + 2rem);
+}
+
+html:not(.motion) .marquee-track > ul + ul {
+  display: none;
+}
+
+html:not(.motion) .marquee {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.marquee {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Sections fade up the first time they scroll into view. client.tsx adds "reveal-ready" only
+   after marking what's already on screen as shown, so nothing visible ever blinks, and
+   without JavaScript everything simply stays visible. */
+.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.75s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-ready [data-reveal][data-shown] {
+  opacity: 1;
+  transform: none;
+}
+
 /* ── Scroll-driven sections ─────────────────────────────────────────────────
    Only when motion is allowed (class set in <head>): the section grows tall and its stage
    sticks to the screen while you scroll through it. Otherwise it's an ordinary section
