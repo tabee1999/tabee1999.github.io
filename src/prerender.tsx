@@ -116,9 +116,12 @@ const webPage = (key: PageKey, type: string, extra: object = {}) => ({
   ...extra,
 });
 
+/** When this build ran, as Google wants it in structured data: date, time and time zone. */
+const builtAt = new Date().toISOString().replace(/\.\d{3}Z$/, "+00:00");
+
 /** Extra structured data for each page, on top of the Person and WebSite every page carries. */
 const pageGraph: Record<PageKey, () => object[]> = {
-  home: () => [webPage("home", "ProfilePage", { mainEntity: { "@id": personId }, dateModified: new Date().toISOString().slice(0, 10) })],
+  home: () => [webPage("home", "ProfilePage", { mainEntity: { "@id": personId }, dateModified: builtAt })],
   about: () => [webPage("about", "AboutPage", { mainEntity: { "@id": personId } }), breadcrumbs([{ name: "About", path: pages.about.path }])],
   experience: () => [webPage("experience", "WebPage"), breadcrumbs([{ name: "Experience", path: pages.experience.path }])],
   projects: () => [

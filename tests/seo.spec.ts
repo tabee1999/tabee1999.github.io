@@ -40,7 +40,10 @@ test.describe("SEO", () => {
     expect(p.sameAs).toEqual(expect.arrayContaining([person.linkedin, person.github]));
     expect(p.knowsAbout).toEqual(expect.arrayContaining(["Manual testing", "AI-first QA", "Playwright"]));
 
-    expect(graph.find((n) => n["@type"] === "ProfilePage")).toBeTruthy();
+    const profile = graph.find((n) => n["@type"] === "ProfilePage");
+    expect(profile).toBeTruthy();
+    // Google's Rich Results check wants a full ISO 8601 date-time with a time zone, not just a date
+    expect(profile!.dateModified).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|[+-]\d{2}:\d{2})$/);
   });
 
   test("every page has its own title and description", async ({ page }) => {
