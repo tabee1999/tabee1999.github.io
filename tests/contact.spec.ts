@@ -19,7 +19,7 @@ test.describe("contact form", () => {
         (window as unknown as { __mail: string }).__mail = h;
       };
     });
-    await page.goto("/#contact");
+    await page.goto("/contact/");
   });
 
   test("shows an error for each empty required field", async ({ page }) => {

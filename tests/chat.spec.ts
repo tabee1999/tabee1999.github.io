@@ -51,6 +51,21 @@ test.describe("chat (built-in answers)", () => {
     await expect(page.getByTestId("chat-answer")).toHaveCount(3);
   });
 
+  test("is honest about skills that aren't on her CV", async ({ page }) => {
+    await openChat(page);
+    const reply = await ask(page, "Does she know Cypress?");
+    await expect(reply).toContainText("Cypress isn't on her CV");
+    await expect(reply).not.toContainText("hands-on experience with Cypress");
+  });
+
+  test("links to the page that has the details", async ({ page }) => {
+    await openChat(page);
+    const reply = await ask(page, "What tools does she use?");
+    await expect(reply.getByRole("link", { name: "See all skills" })).toHaveAttribute("href", content.sectionPaths.skills);
+    await reply.getByRole("link", { name: "See all skills" }).click();
+    await expect(page).toHaveURL(/\/skills\/#skills$/);
+  });
+
   test("answers work authorisation, start date and leadership questions", async ({ page }) => {
     await openChat(page);
     await expect(await ask(page, "Does she have the right to work in the EU?")).toContainText("authorised to work in Pakistan and Cyprus");

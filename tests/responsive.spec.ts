@@ -35,8 +35,8 @@ test.describe("responsive layout", () => {
 
     await page.getByRole("button", { name: "Open menu" }).click();
     await menu.getByRole("link", { name: "Skills" }).click();
-    await expect(menu).toBeHidden();
-    await expect(page.locator("#skills")).toBeInViewport();
+    await expect(page).toHaveURL(/\/skills\/$/);
+    await expect(page.getByRole("heading", { level: 1 })).toBeInViewport();
   });
 
   test("the desktop menu is shown on large screens", async ({ page }) => {
@@ -58,11 +58,13 @@ test.describe("responsive layout", () => {
   });
 
   test("images have alt text and fixed dimensions (no layout shift)", async ({ page }) => {
-    await page.goto("/");
-    for (const img of await page.locator("img").all()) {
-      expect(await img.getAttribute("alt")).not.toBeNull();
-      expect(await img.getAttribute("width")).toBeTruthy();
-      expect(await img.getAttribute("height")).toBeTruthy();
+    for (const path of allPages) {
+      await page.goto(path);
+      for (const img of await page.locator("img").all()) {
+        expect(await img.getAttribute("alt"), path).not.toBeNull();
+        expect(await img.getAttribute("width"), path).toBeTruthy();
+        expect(await img.getAttribute("height"), path).toBeTruthy();
+      }
     }
   });
 });

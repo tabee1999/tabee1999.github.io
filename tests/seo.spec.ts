@@ -3,7 +3,7 @@ import { allureLabels, allPages, content } from "./helpers";
 
 test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "SEO and AI search", "normal"));
 
-const { site, person, caseStudies, faqs, stats } = content;
+const { site, person, caseStudies, faqs, stats, pages, services, experience } = content;
 
 type Node = { "@type": string; [key: string]: unknown };
 async function jsonLd(page: import("@playwright/test").Page): Promise<Node[]> {
@@ -13,7 +13,7 @@ async function jsonLd(page: import("@playwright/test").Page): Promise<Node[]> {
 
 test.describe("SEO", () => {
   for (const path of allPages) {
-    test(`${path} has a title, description, canonical and social cards`, async ({ page }) => {
+    test(`${path} has a title, description and canonical`, async ({ page }) => {
       await page.goto(path);
       const title = await page.title();
       expect(title).toContain(person.name);
@@ -41,7 +41,34 @@ test.describe("SEO", () => {
     expect(p.knowsAbout).toEqual(expect.arrayContaining(["Manual testing", "AI-first QA", "Playwright"]));
 
     expect(graph.find((n) => n["@type"] === "ProfilePage")).toBeTruthy();
-    const faq = graph.find((n) => n["@type"] === "FAQPage")!;
+  });
+
+  test("every page has its own title and description", async ({ page }) => {
+    const titles = new Set<string>();
+    const descriptions = new Set<string>();
+    for (const path of allPages) {
+      await page.goto(path);
+      titles.add(await page.title());
+      descriptions.add((await page.locator('meta[name="description"]').getAttribute("content"))!);
+    }
+    expect(titles.size).toBe(allPages.length);
+    expect(descriptions.size).toBe(allPages.length);
+  });
+
+  test("inner pages carry breadcrumbs and their own page type for search engines", async ({ page }) => {
+    const types: Record<string, string> = { "/about/": "AboutPage", "/experience/": "WebPage", "/projects/": "CollectionPage", "/skills/": "WebPage", "/contact/": "ContactPage" };
+    for (const [path, type] of Object.entries(types)) {
+      await page.goto(path);
+      const graph = await jsonLd(page);
+      expect(graph.find((n) => n["@type"] === type), path).toBeTruthy();
+      expect(graph.find((n) => n["@type"] === "BreadcrumbList"), path).toBeTruthy();
+      expect(graph.find((n) => n["@type"] === "Person")?.name, path).toBe(person.name);
+    }
+  });
+
+  test("the contact page answers recruiters' questions as an FAQ", async ({ page }) => {
+    await page.goto("/contact/");
+    const faq = (await jsonLd(page)).find((n) => n["@type"] === "FAQPage")!;
     expect((faq.mainEntity as unknown[]).length).toBe(faqs.length);
   });
 
@@ -54,12 +81,20 @@ test.describe("SEO", () => {
   });
 
   test("the main content is in the HTML before JavaScript runs", async ({ request }) => {
-    const html = (await (await request.get("/")).text()).replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/<!-- -->/g, "");
-    const h1 = (html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? "").replace(/<[^>]+>/g, "");
+    const get = async (path: string) => (await (await request.get(path)).text()).replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/<!-- -->/g, "");
+    const home = await get("/");
+    const h1 = (home.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? "").replace(/<[^>]+>/g, "");
     expect(h1).toBe(`${person.name} ${person.role}`);
-    const expected = ["AI-first QA", "Manual and exploratory QA", ...stats.map((s) => s.detail), ...faqs.map((f) => f.q), ...faqs.map((f) => f.a)];
-    const missing = expected.filter((text) => !html.includes(text));
-    expect(missing).toEqual([]);
+    const expected: Record<string, string[]> = {
+      "/": [...stats.map((s) => s.detail), ...content.process.map((p) => p.title)],
+      "/experience/": experience.flatMap((e) => [e.role, e.bullets[0]]),
+      "/skills/": services.map((s) => s.title),
+      "/contact/": [...faqs.map((f) => f.q), ...faqs.map((f) => f.a)],
+    };
+    for (const [path, texts] of Object.entries(expected)) {
+      const html = path === "/" ? home : await get(path);
+      expect(texts.filter((t) => !html.includes(t)), path).toEqual([]);
+    }
   });
 
   test("pages send a strict Content Security Policy that the site itself obeys", async ({ page }) => {
@@ -106,5 +141,6 @@ test.describe("SEO", () => {
     expect(text).toMatch(new RegExp(`^# ${person.name}`));
     expect(text).toContain(person.email);
     for (const cs of caseStudies) expect(text).toContain(`${site.url}/case-studies/${cs.slug}/`);
+    for (const p of Object.values(pages)) expect(text).toContain(`(${site.url}${p.path})`);
   });
 });

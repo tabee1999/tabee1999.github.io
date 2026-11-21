@@ -3,7 +3,7 @@ import { allureLabels, content, watchErrors } from "./helpers";
 
 test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "Home page", "critical"));
 
-const { person, stats, projects, experience, services } = content;
+const { person, stats, projects, experience, services, pages, caseStudies } = content;
 
 test.describe("home page", () => {
   test("introduces Tabeeda with her role and calls to action", async ({ page }) => {
@@ -42,20 +42,43 @@ test.describe("home page", () => {
       await expect(highlights).toContainText(s.label, { ignoreCase: true });
       await expect(highlights).toContainText(`${s.prefix ?? ""}${s.value}${s.suffix ?? ""}`);
     }
-    await expect(page.getByTestId("hero-report")).toHaveAttribute("href", "allure/");
+    await expect(page.getByTestId("hero-report")).toHaveAttribute("href", "/allure/");
   });
 
-  test("lists AI-first QA and manual QA among the services", async ({ page }) => {
+  test("links to every other page from the explore section", async ({ page }) => {
     await page.goto("/");
+    const explore = page.locator("#explore");
+    for (const key of ["experience", "projects", "skills", "about"] as const) {
+      await expect(explore.getByRole("link", { name: new RegExp(`^${pages[key].label}`) })).toHaveAttribute("href", pages[key].path);
+    }
+    await expect(explore.getByRole("link", { name: "Contact me" })).toHaveAttribute("href", "/contact/");
+  });
+
+  test("shows how she works in four steps", async ({ page }) => {
+    await page.goto("/");
+    const steps = page.locator("#how-i-work").getByRole("listitem");
+    await expect(steps).toHaveCount(content.process.length);
+    for (const s of content.process) await expect(page.locator("#how-i-work")).toContainText(s.title);
+  });
+});
+
+test.describe("other pages", () => {
+  test("the skills page lists AI-first QA and manual QA among the services", async ({ page }) => {
+    await page.goto("/skills/");
     const section = page.locator("#services");
     for (const s of services) await expect(section.getByRole("heading", { name: s.title, exact: true })).toBeVisible();
     await expect(section.getByRole("heading", { name: "AI-first QA", exact: true })).toBeVisible();
     await expect(section.getByRole("heading", { name: "Manual and exploratory QA", exact: true })).toBeVisible();
   });
 
-  test("shows every project and every role", async ({ page }) => {
-    await page.goto("/");
+  test("the projects page shows every project and case study", async ({ page }) => {
+    await page.goto("/projects/");
     await expect(page.getByTestId("project-card")).toHaveCount(projects.length);
+    await expect(page.getByRole("tab")).toHaveCount(caseStudies.length);
+  });
+
+  test("the experience page shows every role", async ({ page }) => {
+    await page.goto("/experience/");
     for (const job of experience) {
       await expect(page.locator("#experience").getByText(job.company, { exact: false }).first()).toBeVisible();
     }
@@ -76,7 +99,7 @@ test.describe("home page", () => {
       if (r.url().startsWith("http://localhost") && r.status() >= 400) failed.push(`${r.status()} ${r.url()}`);
     });
     await page.goto("/", { waitUntil: "load" });
-    await page.locator("#contact").scrollIntoViewIfNeeded();
+    await page.getByRole("contentinfo").scrollIntoViewIfNeeded();
     expect(failed).toEqual([]);
     const broken = await page.$$eval("img", (imgs) => imgs.filter((i) => i.complete && i.naturalWidth === 0 && i.loading !== "lazy").map((i) => i.src));
     expect(broken).toEqual([]);

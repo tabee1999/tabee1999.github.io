@@ -152,7 +152,9 @@ function ProjectVisual({ kind }: { kind: Project["visual"] }) {
   );
 }
 
-function ProjectDialog({ project, onClose }: { project: Project | null; onClose: () => void }) {
+function ProjectDialog({ project, onClose, level }: { project: Project | null; onClose: () => void; level: 1 | 2 }) {
+  const Title = level === 1 ? "h2" : "h3";
+  const Sub = level === 1 ? "h3" : "h4";
   const ref = useRef<HTMLDialogElement | null>(null);
   useEffect(() => {
     const dialog = ref.current;
@@ -181,9 +183,9 @@ function ProjectDialog({ project, onClose }: { project: Project | null; onClose:
               <p className="text-sm font-semibold text-accent-700">
                 {project.company}<span className="font-normal text-mute">, {project.domain}</span>
               </p>
-              <h3 id="project-dialog-title" className="mt-1 text-2xl font-bold tracking-[-0.01em]">
+              <Title id="project-dialog-title" className="mt-1 text-2xl font-bold tracking-[-0.01em]">
                 {project.name}
-              </h3>
+              </Title>
             </div>
             <button type="button" onClick={onClose} className="btn btn-ghost btn-sm aspect-square !px-0" aria-label="Close project details">
               <Icon name="close" className="size-5" />
@@ -193,7 +195,7 @@ function ProjectDialog({ project, onClose }: { project: Project | null; onClose:
             <ProjectVisual kind={project.visual} />
           </div>
           <p className="mt-5 leading-relaxed text-mute">{project.summary}</p>
-          <h4 className="mt-6 font-bold text-ink">What I delivered</h4>
+          <Sub className="mt-6 font-bold text-ink">What I delivered</Sub>
           <ul className="mt-3 space-y-2.5">
             {project.highlights.map((h) => (
               <li key={h} className="flex gap-3 text-ink">
@@ -227,7 +229,7 @@ function ProjectDialog({ project, onClose }: { project: Project | null; onClose:
                 <span className="sr-only">(opens in a new tab)</span>
               </a>
             )}
-            <a href="#contact" onClick={onClose} className="btn btn-ghost btn-sm">
+            <a href="/contact/" onClick={onClose} className="btn btn-ghost btn-sm">
               Discuss a similar project
             </a>
           </div>
@@ -237,7 +239,8 @@ function ProjectDialog({ project, onClose }: { project: Project | null; onClose:
   );
 }
 
-export function Projects() {
+export function Projects({ level = 2 }: { level?: 1 | 2 }) {
+  const Card = level === 1 ? "h2" : "h3";
   const [filter, setFilter] = useState<Category | "All">("All");
   const [selected, setSelected] = useState<Project | null>(null);
   const opener = useRef<HTMLButtonElement | null>(null);
@@ -247,7 +250,8 @@ export function Projects() {
   return (
     <Section
       id="projects"
-      title="Products I've helped ship"
+      level={level}
+      title={level === 1 ? "QA projects: products I've helped ship" : "Products I've helped ship"}
       lead="Travel, payments, fleet, AI and fintech products tested across web, mobile and API. Select a project to see what I delivered."
     >
       <div className="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter projects by type of testing">
@@ -284,7 +288,7 @@ export function Projects() {
                 <p className="text-sm font-semibold text-accent-700">
                   {p.company}<span className="font-normal text-mute">, {p.domain}</span>
                 </p>
-                <h3 className="mt-1 text-xl font-bold tracking-[-0.01em] text-ink">{p.name}</h3>
+                <Card className="mt-1 text-xl font-bold tracking-[-0.01em] text-ink">{p.name}</Card>
                 <p className="mt-2 flex-1 leading-relaxed text-mute">{p.summary}</p>
                 <ul className="mt-4 flex flex-wrap gap-2" aria-label="Focus areas">
                   {p.tags.map((t) => (
@@ -312,6 +316,7 @@ export function Projects() {
       </ul>
 
       <ProjectDialog
+        level={level}
         project={selected}
         onClose={() => {
           setSelected(null);

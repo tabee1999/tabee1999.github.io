@@ -161,7 +161,7 @@ export function CaseStudyPage({ study }: { study: CaseStudy }) {
             </li>
             <li aria-hidden="true">/</li>
             <li>
-              <a href="/#case-studies" className="hover:text-ink">
+              <a href="/projects/#case-studies" className="hover:text-ink">
                 Case studies
               </a>
             </li>
@@ -179,7 +179,7 @@ export function CaseStudyPage({ study }: { study: CaseStudy }) {
           </h1>
           <p className="mt-5 text-xl leading-relaxed text-mute">{study.summary}</p>
           <p className="mt-5 text-sm text-mute">
-            By <a href="/#about" className="link">{person.name}</a>, {person.role}
+            By <a href="/about/" className="link">{person.name}</a>, {person.role}
           </p>
         </header>
 
@@ -268,7 +268,7 @@ export function CaseStudyPage({ study }: { study: CaseStudy }) {
           <div className="rounded-[var(--radius-card)] bg-accent-50 p-6">
             <p className="text-lg font-bold text-ink">Need this kind of QA on your team?</p>
             <div className="mt-4 flex flex-wrap gap-3">
-              <a href="/#contact" className="btn btn-primary btn-sm">
+              <a href="/contact/" className="btn btn-primary btn-sm">
                 Contact me
               </a>
               <a href={`/${person.cv}`} download className="btn btn-ghost btn-sm">

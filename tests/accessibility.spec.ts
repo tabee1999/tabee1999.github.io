@@ -1,17 +1,12 @@
 import { test, expect } from "@playwright/test";
-import { allureLabels, axeViolations, content } from "./helpers";
+import { allPages, allureLabels, axeViolations } from "./helpers";
 
 test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "Accessibility (WCAG 2.2 AA)", "critical"));
 
 test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
-  test("home page", async ({ page }) => {
-    await page.goto("/");
-    expect(await axeViolations(page)).toEqual([]);
-  });
-
-  for (const cs of content.caseStudies) {
-    test(`case study: ${cs.title}`, async ({ page }) => {
-      await page.goto(`/case-studies/${cs.slug}/`);
+  for (const path of allPages) {
+    test(`${path} has no WCAG 2.2 AA violations`, async ({ page }) => {
+      await page.goto(path);
       expect(await axeViolations(page)).toEqual([]);
     });
   }
@@ -22,21 +17,21 @@ test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
   });
 
   test("with the project dialog open", async ({ page }) => {
-    await page.goto("/#projects");
+    await page.goto("/projects/");
     await page.getByRole("button", { name: "View details for Modon Express" }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
     expect(await axeViolations(page)).toEqual([]);
   });
 
   test("with a team photo open full size", async ({ page }) => {
-    await page.goto("/#teams");
+    await page.goto("/about/");
     await page.getByTestId("team-gallery").getByRole("button").first().click();
     await expect(page.getByTestId("team-lightbox")).toBeVisible();
     expect(await axeViolations(page)).toEqual([]);
   });
 
   test("with contact form errors showing", async ({ page }) => {
-    await page.goto("/#contact");
+    await page.goto("/contact/");
     await page.getByTestId("contact-submit").click();
     await expect(page.locator("#contact-name-error")).toBeVisible();
     expect(await axeViolations(page)).toEqual([]);
@@ -80,7 +75,7 @@ test.describe("keyboard", () => {
   });
 
   test("one h1 per page, and headings don't skip levels", async ({ page }) => {
-    for (const path of ["/", `/case-studies/${content.caseStudies[0].slug}/`]) {
+    for (const path of allPages) {
       await page.goto(path);
       await expect(page.locator("h1")).toHaveCount(1);
       const levels = await page.$$eval("main h1, main h2, main h3, main h4", (hs) => hs.map((h) => Number(h.tagName[1])));

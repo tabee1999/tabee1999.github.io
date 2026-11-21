@@ -3,6 +3,7 @@ import { person, site } from "../content";
 import { Clocks } from "./Clocks";
 import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
 import { CopyEmailButton } from "./CopyEmail";
+import { Breadcrumb } from "./Layout";
 
 type Fields = { name: string; email: string; company: string; topic: string; message: string };
 type Errors = Partial<Record<keyof Fields, string>>;
@@ -58,7 +59,9 @@ function Field({
 const inputClass =
   "w-full rounded-xl border bg-surface px-4 py-3 text-ink placeholder:text-mute/80 transition-colors focus:border-accent-600 focus:outline-none aria-[invalid=true]:border-rose-700";
 
-export function Contact() {
+export function Contact({ level = 2 }: { level?: 1 | 2 }) {
+  const Title = level === 1 ? "h1" : "h2";
+  const Result = level === 1 ? "h2" : "h3";
   const [fields, setFields] = useState<Fields>({ name: "", email: "", company: "", topic: topics[0], message: "" });
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "mailto" | "failed">("idle");
@@ -123,13 +126,14 @@ export function Contact() {
   const done = status === "sent" || status === "mailto" || status === "failed";
 
   return (
-    <section id="contact" aria-labelledby="contact-title" className="-scroll-mt-10 py-16 md:-scroll-mt-14 md:py-24">
+    <section id="contact" aria-labelledby="contact-title" className={level === 1 ? "pt-28 pb-10 md:pt-36 md:pb-14" : "-scroll-mt-10 py-16 md:-scroll-mt-14 md:py-24"}>
       <div className="wrap">
+        {level === 1 && <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />}
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-14">
             <div>
-              <h2 id="contact-title" className="text-[clamp(2.4rem,5.5vw,4rem)] leading-[1] font-extrabold tracking-[-0.04em]">
+              <Title id="contact-title" className="text-[clamp(2.4rem,5.5vw,4rem)] leading-[1] font-extrabold tracking-[-0.04em]">
                 Let's work together
-              </h2>
+              </Title>
               <p className="mt-4 max-w-md text-lg leading-relaxed text-mute">
                 Hiring a QA engineer, or need someone to take quality off your plate? Send me a message about the role or project.
               </p>
@@ -168,7 +172,7 @@ export function Contact() {
                     <GitHubIcon className="size-5 text-accent-700" /> GitHub
                   </a>
                   <a
-                    href={person.cv}
+                    href={`/${person.cv}`}
                     download
                     className="flex min-h-[3.75rem] items-center gap-3 rounded-xl border border-line bg-surface px-4 font-semibold text-ink transition-colors hover:border-accent-400"
                     data-testid="contact-cv"
@@ -198,9 +202,9 @@ export function Contact() {
                   <span className={`grid size-14 place-items-center rounded-full ${status === "failed" ? "bg-rose-50 text-rose-700" : "bg-accent-50 text-ok"}`}>
                     <Icon name={status === "failed" ? "close" : "check"} className="size-7" />
                   </span>
-                  <h3 className="mt-5 text-2xl font-bold text-ink">
+                  <Result className="mt-5 text-2xl font-bold text-ink">
                     {status === "sent" ? "Thanks, your message is on its way" : status === "mailto" ? "Your email is ready to send" : "That didn't send"}
-                  </h3>
+                  </Result>
                   <p className="mt-2 leading-relaxed text-mute">
                     {status === "sent"
                       ? "I'll get back to you by email."

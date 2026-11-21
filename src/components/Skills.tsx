@@ -20,7 +20,7 @@ function JobMatch() {
   const [error, setError] = useState("");
 
   return (
-    <div className="mt-14 rounded-[1.25rem] border border-accent-200 bg-accent-50 p-6 md:p-8" data-testid="job-match">
+    <div id="job-match" className="mt-14 scroll-mt-24 rounded-[1.25rem] border border-accent-200 bg-accent-50 p-6 md:p-8" data-testid="job-match">
       <div className="grid gap-8 lg:grid-cols-2">
         <div>
           <h3 className="text-2xl font-bold tracking-[-0.015em] text-ink">Check my fit for your role</h3>
@@ -122,7 +122,7 @@ function JobMatch() {
                   <Icon name="rocket" className="mr-1 inline size-4 text-accent-600" /> Currently learning: {result.learningHits.join(", ")}.
                 </p>
               )}
-              <a href="#contact" className="btn btn-ghost btn-sm mt-5">
+              <a href="/contact/" className="btn btn-ghost btn-sm mt-5">
                 Talk to me about this role
               </a>
             </div>

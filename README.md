@@ -15,17 +15,37 @@ Every deploy publishes the results with the site:
 - **Test-run card:** the key numbers from the CV (5+ years, 300+ automated tests, regression in under a day, 700+ test cases) shown as a passing Playwright run, linking to the live Allure report
 - **Services:** AI-first QA, manual and exploratory QA, test automation, API testing, web and mobile, performance and security
 - **Projects** with filters (Automation, Manual, AI-first, API, Mobile, Performance) and a details dialog for each
-- **Interactive case studies:** keyboard-accessible tabs on the home page, plus a full page for each
+- **Interactive case studies:** keyboard-accessible tabs on the projects page, plus a full page for each
 - **Experience timeline** with expandable roles, **skills**, and a **"Check my fit"** tool where recruiters paste a job ad and see matching skills
 - **Contact form** with validation (opens a ready-to-send email until a form service is connected), copy-email button, LinkedIn, GitHub and CV
 - **FAQ** written for recruiters and for AI search engines
 - **Chat assistant** ("Ask about me") on every page: answers recruiter questions about experience, skills, projects, availability and contact. It works today with answers built from `src/content.ts`, and switches to Claude AI once the chat worker is set up ([chat-worker/README.md](chat-worker/README.md))
 
-## Design
+## Pages
 
-Light mint-grey paper, deep pine text and an emerald accent, set in Schibsted Grotesk. The one dark element is the hero's test-run card, and the one piece of motion that plays on its own is its results ticking in once on page load (shown instantly for people who set "reduce motion"). Everything else moves only in response to the visitor: menus, accordions, dialogs, the chat. Also: scroll progress bar, active-section highlight in the menu, back-to-top button.
+Each page has its own address, title, description, breadcrumbs and structured data, so search engines can index and rank them separately:
 
-The motion layer is in `src/lib/motion.tsx` (about 150 lines, no dependencies). It does what the Framer Motion features used here would do: `Reveal` ≈ `whileInView`, `CountUp` ≈ `animate` on a motion value, `useParallax` ≈ `useScroll` + `useTransform`.
+| Page | Address | What's on it |
+| --- | --- | --- |
+| Home | `/` | Hero, the test run, how I work, links to everything else |
+| About | `/about/` | Story, education, languages, team photos |
+| Experience | `/experience/` | Every role, with the GPS trail |
+| Projects | `/projects/` | Projects with filters and details, case studies |
+| Skills | `/skills/` | Expertise, tools, the job-match checker |
+| Contact | `/contact/` | Contact form, the bug-to-shield animation, FAQ |
+
+Old one-page links such as `/#experience` or `/#contact` redirect to the new pages.
+
+## Design and scroll animations
+
+Light mint-grey paper, deep pine text and an emerald accent, set in Schibsted Grotesk. Four scroll-driven animations, all built in code (no video files):
+
+- **Test run** (home): the dark test card grows and a Playwright run plays as you scroll, test by test, with a browser following along.
+- **How I work** (home): a phone with a delivery app turns into view; risks are marked, a scan finds bugs, the bugs turn into ticks and the release ships.
+- **GPS trail** (experience): a route draws itself down the job history and a pin lights up at each job.
+- **Bug to shield** (contact): a bug made of particles rebuilds itself as a shield with a tick.
+
+They share one small engine (`src/lib/scroll.ts`): one passive scroll listener writes each section's progress to a CSS variable, so most motion is plain CSS. People who prefer reduced motion, and browsers without JavaScript, see every animation's finished state with no pinned scrolling. `tests/animations.spec.ts` scrolls through each one and checks what's on screen.
 
 ## SEO and AI search
 
@@ -47,9 +67,10 @@ The motion layer is in `src/lib/motion.tsx` (about 150 lines, no dependencies). 
 ```
 ├─ src/
 │  ├─ content.ts              ← all site text: edit this
-│  ├─ App.tsx                 ← page layout (home, case study, 404)
+│  ├─ App.tsx                 ← what each page shows (home, about, experience, projects, skills, contact, case study, 404)
 │  ├─ components/             ← Hero, Projects, CaseStudies, Experience, Skills, Contact…
-│  ├─ lib/hooks.ts            ← scroll spy, scroll progress, local time
+│  ├─ lib/scroll.ts           ← scroll animation engine (progress → CSS variable)
+│  ├─ lib/hooks.ts            ← scroll progress bar, local time
 │  ├─ styles.css              ← Tailwind v4 theme: colours, fonts, buttons, cards
 │  ├─ client.tsx              ← hydrates the pre-rendered HTML in the browser
 │  └─ prerender.tsx           ← renders every page + SEO tags, sitemap, robots.txt, llms.txt
@@ -58,7 +79,7 @@ The motion layer is in `src/lib/motion.tsx` (about 150 lines, no dependencies). 
 ├─ scripts/serve.mjs          ← tiny static server for preview and tests
 ├─ src/lib/assistant.ts       ← the chat's built-in answers (no server needed)
 ├─ chat-worker/               ← Cloudflare Worker for AI chat answers (Claude), with unit tests
-├─ tests/                     ← Playwright: home, navigation, interactions, contact, chat, responsive, accessibility, SEO
+├─ tests/                     ← Playwright: home, navigation, interactions, contact, chat, animations, responsive, accessibility, SEO
 ├─ playwright.config.ts
 ├─ lighthouserc.json          ← Lighthouse budgets for the live site
 └─ .github/workflows/ci.yml   ← test → deploy to GitHub Pages → Lighthouse

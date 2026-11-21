@@ -4,7 +4,7 @@
 import { createHash } from "node:crypto";
 import { renderToString } from "react-dom/server";
 import { App, type PageData } from "./App";
-import { caseStudies, education, experience, faqs, person, projects, services, site, skillGroups, stats } from "./content";
+import { caseStudies, education, experience, faqs, pages, person, projects, services, site, skillGroups, stats, type PageKey } from "./content";
 
 type Assets = { css: string; js: string; buildYear: number };
 type Meta = { title: string; description: string; path: string; type: "profile" | "article" | "website"; noindex?: boolean; jsonLd?: object };
@@ -74,42 +74,57 @@ const websiteLd = {
 
 // ── Pages ─────────────────────────────────────────────────────────────────
 
-function homeMeta(): Meta {
-  return {
-    title: site.title,
-    description: site.description,
-    path: "/",
-    type: "profile",
-    jsonLd: {
-      "@context": "https://schema.org",
-      "@graph": [
-        personLd,
-        websiteLd,
-        {
-          "@type": "ProfilePage",
-          "@id": `${site.url}/#profile`,
-          url: `${site.url}/`,
-          name: site.title,
-          description: site.description,
-          isPartOf: { "@id": websiteId },
-          mainEntity: { "@id": personId },
-          about: { "@id": personId },
-          inLanguage: "en",
-          dateModified: new Date().toISOString().slice(0, 10),
-        },
-        {
-          "@type": "FAQPage",
-          "@id": `${site.url}/#faq`,
-          mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
-        },
-        {
-          "@type": "ItemList",
-          "@id": `${site.url}/#case-studies`,
-          name: "QA case studies",
-          itemListElement: caseStudies.map((c, i) => ({ "@type": "ListItem", position: i + 1, url: abs(`/case-studies/${c.slug}/`), name: c.title })),
-        },
-      ],
+const breadcrumbs = (trail: { name: string; path: string }[]) => ({
+  "@type": "BreadcrumbList",
+  itemListElement: [{ name: "Home", path: "/" }, ...trail].map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: abs(c.path) })),
+});
+
+const webPage = (key: PageKey, type: string, extra: object = {}) => ({
+  "@type": type,
+  "@id": `${abs(pages[key].path)}#page`,
+  url: abs(pages[key].path),
+  name: pages[key].title,
+  description: pages[key].description,
+  isPartOf: { "@id": websiteId },
+  about: { "@id": personId },
+  inLanguage: "en",
+  ...extra,
+});
+
+/** Extra structured data for each page, on top of the Person and WebSite every page carries. */
+const pageGraph: Record<PageKey, () => object[]> = {
+  home: () => [webPage("home", "ProfilePage", { mainEntity: { "@id": personId }, dateModified: new Date().toISOString().slice(0, 10) })],
+  about: () => [webPage("about", "AboutPage", { mainEntity: { "@id": personId } }), breadcrumbs([{ name: "About", path: pages.about.path }])],
+  experience: () => [webPage("experience", "WebPage"), breadcrumbs([{ name: "Experience", path: pages.experience.path }])],
+  projects: () => [
+    webPage("projects", "CollectionPage"),
+    {
+      "@type": "ItemList",
+      "@id": `${abs(pages.projects.path)}#case-studies`,
+      name: "QA case studies",
+      itemListElement: caseStudies.map((c, i) => ({ "@type": "ListItem", position: i + 1, url: abs(`/case-studies/${c.slug}/`), name: c.title })),
     },
+    breadcrumbs([{ name: "Projects", path: pages.projects.path }]),
+  ],
+  skills: () => [webPage("skills", "WebPage"), breadcrumbs([{ name: "Skills", path: pages.skills.path }])],
+  contact: () => [
+    webPage("contact", "ContactPage"),
+    {
+      "@type": "FAQPage",
+      "@id": `${abs(pages.contact.path)}#faq`,
+      mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+    },
+    breadcrumbs([{ name: "Contact", path: pages.contact.path }]),
+  ],
+};
+
+function pageMeta(key: PageKey): Meta {
+  return {
+    title: pages[key].title,
+    description: pages[key].description,
+    path: pages[key].path,
+    type: key === "home" || key === "about" ? "profile" : "website",
+    jsonLd: { "@context": "https://schema.org", "@graph": [personLd, websiteLd, ...pageGraph[key]()] },
   };
 }
 
@@ -141,14 +156,10 @@ function caseMeta(slug: string): Meta {
           inLanguage: "en",
           mainEntityOfPage: abs(path),
         },
-        {
-          "@type": "BreadcrumbList",
-          itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: `${site.url}/` },
-            { "@type": "ListItem", position: 2, name: "Case studies", item: `${site.url}/#case-studies` },
-            { "@type": "ListItem", position: 3, name: c.title, item: abs(path) },
-          ],
-        },
+        breadcrumbs([
+          { name: "Projects", path: pages.projects.path },
+          { name: c.title, path },
+        ]),
       ],
     },
   };
@@ -164,6 +175,9 @@ const origin = (u: string) => {
 const sha256 = (s: string) => `'sha256-${createHash("sha256").update(s).digest("base64")}'`;
 
 /** GoatCounter visitor stats. Links shared as ?ref=company (or utm_source) show up as that referrer. */
+/** Runs before the page paints: lets CSS know JavaScript is on, and whether scroll animations may play. */
+const headScript = `document.documentElement.classList.add("js");matchMedia("(prefers-reduced-motion: reduce)").matches||document.documentElement.classList.add("motion")`;
+
 const analyticsConfig = `window.goatcounter={referrer:function(){var q=new URLSearchParams(location.search);return q.get("ref")||q.get("utm_source")||q.get("utm_campaign")||document.referrer}};`;
 
 /**
@@ -204,9 +218,10 @@ function renderPage(meta: Meta, body: string, page: PageData, assets: Assets) {
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="${csp(site.goatcounterCode ? [pageScript, analyticsConfig] : [pageScript])}">
+<meta http-equiv="Content-Security-Policy" content="${csp(site.goatcounterCode ? [headScript, pageScript, analyticsConfig] : [headScript, pageScript])}">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>${headScript}</script>
 <title>${esc(meta.title)}</title>
 <meta name="description" content="${esc(meta.description)}">
 <meta name="robots" content="${meta.noindex ? "noindex, follow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"}">
@@ -257,8 +272,9 @@ ${analytics}
 }
 
 export function renderRoutes(assets: Assets) {
+  const keys = Object.keys(pages) as PageKey[];
   const routes: { file: string; page: PageData; meta: Meta }[] = [
-    { file: "index.html", page: { route: "home" }, meta: homeMeta() },
+    ...keys.map((key) => ({ file: `${pages[key].path.slice(1)}index.html`, page: { route: key } as PageData, meta: pageMeta(key) })),
     ...caseStudies.map((c) => ({ file: `case-studies/${c.slug}/index.html`, page: { route: "case-study", slug: c.slug } as PageData, meta: caseMeta(c.slug) })),
     {
       file: "404.html",
@@ -329,6 +345,9 @@ function llmsTxt() {
     "## Skills",
     ...skillGroups.map((g) => `- ${g.group}: ${g.items.join(", ")}`),
     "",
+    "## Pages",
+    ...(Object.keys(pages) as PageKey[]).map((k) => `- [${pages[k].label}](${abs(pages[k].path)}): ${pages[k].description}`),
+    "",
     "## Contact",
     `- Email: ${person.email}`,
     `- LinkedIn: ${person.linkedin}`,
@@ -341,7 +360,10 @@ function llmsTxt() {
 }
 
 export function siteFiles(isoDate: string): Record<string, string> {
-  const urls = [{ loc: `${site.url}/`, priority: "1.0" }, ...caseStudies.map((c) => ({ loc: abs(`/case-studies/${c.slug}/`), priority: "0.8" }))];
+  const urls = [
+    ...(Object.keys(pages) as PageKey[]).map((k) => ({ loc: abs(pages[k].path), priority: k === "home" ? "1.0" : "0.9" })),
+    ...caseStudies.map((c) => ({ loc: abs(`/case-studies/${c.slug}/`), priority: "0.7" })),
+  ];
   return {
     "robots.txt": [
       ...crawlers.flatMap((c) => [`User-agent: ${c}`, "Allow: /", ""]),

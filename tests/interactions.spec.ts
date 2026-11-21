@@ -7,7 +7,7 @@ const { projects, caseStudies, experience, faqs, person, teamPhotos } = content;
 
 test.describe("projects", () => {
   test("filters projects by type of testing", async ({ page }) => {
-    await page.goto("/#projects");
+    await page.goto("/projects/");
     const cards = page.getByTestId("project-card");
     await expect(cards).toHaveCount(projects.length);
 
@@ -25,7 +25,7 @@ test.describe("projects", () => {
   });
 
   test("opens project details in a dialog and closes it with Escape", async ({ page }) => {
-    await page.goto("/#projects");
+    await page.goto("/projects/");
     const opener = page.getByRole("button", { name: "View details for Al Rais Travel" });
     await opener.click();
 
@@ -40,7 +40,7 @@ test.describe("projects", () => {
   });
 
   test("the close button also closes the dialog", async ({ page }) => {
-    await page.goto("/#projects");
+    await page.goto("/projects/");
     await page.getByRole("button", { name: "View details for Fleetify" }).click();
     await page.getByRole("button", { name: "Close project details" }).click();
     await expect(page.getByRole("dialog")).toBeHidden();
@@ -49,7 +49,7 @@ test.describe("projects", () => {
 
 test.describe("case studies", () => {
   test("tabs switch with a click and with the arrow keys", async ({ page, isMobile }) => {
-    await page.goto("/#case-studies");
+    await page.goto("/projects/#case-studies");
     const tabs = page.getByRole("tab");
     await expect(tabs).toHaveCount(caseStudies.length);
     await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
@@ -74,7 +74,7 @@ test.describe("case studies", () => {
 
 test.describe("experience", () => {
   test("roles expand and collapse, one at a time or all together", async ({ page }) => {
-    await page.goto("/#experience");
+    await page.goto("/experience/");
     const first = page.getByRole("button", { name: new RegExp(experience[0].role) }).first();
     const second = page.locator("#job-1");
 
@@ -95,7 +95,7 @@ test.describe("experience", () => {
 
 test.describe("skills", () => {
   test("job match finds the skills a job ad asks for", async ({ page }) => {
-    await page.goto("/#skills");
+    await page.goto("/skills/");
     await page
       .getByLabel("Job description")
       .fill("Senior QA Engineer: Playwright, REST Assured API testing, CI/CD with GitHub Actions, Jira, SQL and some Python. JavaScript a plus.");
@@ -111,7 +111,7 @@ test.describe("skills", () => {
   });
 
   test("job match is honest about what isn't on the CV", async ({ page }) => {
-    await page.goto("/#skills");
+    await page.goto("/skills/");
     await page.getByLabel("Job description").fill("SDET with TypeScript, Playwright, Docker, GraphQL and performance testing with k6. Kubernetes is a plus.");
     await page.getByRole("button", { name: "Check my fit" }).click();
     const gaps = page.getByTestId("job-gaps");
@@ -122,7 +122,7 @@ test.describe("skills", () => {
   });
 
   test("job match asks for more text when the box is nearly empty", async ({ page }) => {
-    await page.goto("/#skills");
+    await page.goto("/skills/");
     await page.getByLabel("Job description").fill("QA");
     await page.getByRole("button", { name: "Check my fit" }).click();
     await expect(page.getByText("Paste at least a few lines")).toBeVisible();
@@ -132,7 +132,7 @@ test.describe("skills", () => {
 
 test.describe("team photos", () => {
   test("open full size, move between photos and close with Escape", async ({ page, isMobile }) => {
-    await page.goto("/#teams");
+    await page.goto("/about/");
     const gallery = page.getByTestId("team-gallery");
     await expect(gallery.getByRole("button")).toHaveCount(teamPhotos.length);
     for (const p of teamPhotos) await expect(gallery.getByRole("img", { name: p.alt })).toHaveCount(1);
@@ -158,7 +158,7 @@ test.describe("team photos", () => {
 
 test.describe("FAQ", () => {
   test("answers open and close", async ({ page }) => {
-    await page.goto("/#faq");
+    await page.goto("/contact/");
     const q = page.getByRole("button", { name: faqs[1].q });
     await expect(q).toHaveAttribute("aria-expanded", "false");
     await q.click();
@@ -173,7 +173,7 @@ test.describe("copy email", () => {
   test("copies the email address and confirms", async ({ page, context, browserName }) => {
     test.skip(browserName !== "chromium", "Clipboard permissions can only be granted in Chromium");
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-    await page.goto("/#contact");
+    await page.goto("/contact/");
     await page.locator("#contact").getByTestId("copy-email").click();
     await expect(page.getByTestId("toast")).toHaveText("Email address copied");
     expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(person.email);

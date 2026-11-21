@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { nav, person, site } from "../content";
-import { useScrolled, useScrollProgressBar, useScrollSpy } from "../lib/hooks";
+import { nav, pages, person, sectionPaths, site, type PageKey } from "../content";
+import { useScrolled, useScrollProgressBar } from "../lib/hooks";
 import { Clocks } from "./Clocks";
 import { GitHubIcon, Icon, LinkedInIcon } from "./Icon";
 
@@ -37,9 +37,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 // ── Header ────────────────────────────────────────────────────────────────
 
-export function Logo({ root }: { root: string }) {
+export function Logo({ current }: { current: PageKey | null }) {
   return (
-    <a href={root === "" ? "#top" : root} className="group flex items-center gap-3 rounded-xl">
+    <a href={current === "home" ? "#top" : "/"} className="group flex items-center gap-3 rounded-xl">
       <span aria-hidden="true" className="grid size-10 place-items-center rounded-[0.7rem] bg-accent-700 text-[0.95rem] font-bold tracking-tight text-white transition-colors group-hover:bg-accent-800">
         {person.initials}
       </span>
@@ -51,13 +51,10 @@ export function Logo({ root }: { root: string }) {
   );
 }
 
-const navIds = nav.map((n) => n.id);
-const noIds: string[] = [];
-
-export function Header({ root }: { root: string }) {
+/** `current` is the page being shown; case studies count as Projects. */
+export function Header({ current }: { current: PageKey | null }) {
   const scrolled = useScrolled();
   const progressBar = useScrollProgressBar<HTMLDivElement>();
-  const active = useScrollSpy(root === "" ? navIds : noIds);
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement | null>(null);
 
@@ -73,8 +70,6 @@ export function Header({ root }: { root: string }) {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const href = (id: string) => `${root}#${id}`;
-
   return (
     <header
       className={`fixed inset-x-0 top-0 z-40 transition-colors duration-200 ${
@@ -88,24 +83,23 @@ export function Header({ root }: { root: string }) {
         data-testid="scroll-progress"
       />
       <div className="wrap flex h-[4.5rem] items-center justify-between gap-4">
-        <Logo root={root} />
+        <Logo current={current} />
 
         <nav aria-label="Main" className="hidden lg:block">
           <ul className="flex items-center gap-1">
             {nav.map((n) => (
-              <li key={n.id}>
+              <li key={n.key}>
                 <a
-                  href={href(n.id)}
-                  data-section={n.id}
-                  aria-current={active === n.id ? "true" : undefined}
+                  href={n.path}
+                  aria-current={current === n.key ? "page" : undefined}
                   className={`relative rounded-lg px-3 py-2 text-[0.9375rem] font-medium transition-colors hover:text-ink ${
-                    active === n.id ? "text-ink" : "text-mute"
+                    current === n.key ? "text-ink" : "text-mute"
                   }`}
                 >
                   {n.label}
                   <span
                     className={`absolute inset-x-3 -bottom-0.5 h-0.5 rounded-full bg-accent-600 transition-transform duration-200 ${
-                      active === n.id ? "scale-x-100" : "scale-x-0"
+                      current === n.key ? "scale-x-100" : "scale-x-0"
                     }`}
                     aria-hidden="true"
                   />
@@ -116,7 +110,11 @@ export function Header({ root }: { root: string }) {
         </nav>
 
         <div className="flex items-center gap-2">
-          <a href={href("contact")} className="btn btn-primary btn-sm hidden sm:inline-flex">
+          <a
+            href={pages.contact.path}
+            aria-current={current === "contact" ? "page" : undefined}
+            className="btn btn-primary btn-sm hidden sm:inline-flex"
+          >
             Contact me
           </a>
           <button
@@ -143,18 +141,19 @@ export function Header({ root }: { root: string }) {
         <nav aria-label="Mobile" className="wrap py-4">
           <ul className="grid gap-1">
             {nav.map((n) => (
-              <li key={n.id}>
+              <li key={n.key}>
                 <a
-                  href={href(n.id)}
+                  href={n.path}
+                  aria-current={current === n.key ? "page" : undefined}
                   onClick={() => setOpen(false)}
-                  className="flex items-center rounded-xl px-3 py-3.5 text-lg font-semibold text-ink hover:bg-accent-50"
+                  className={`flex items-center rounded-xl px-3 py-3.5 text-lg font-semibold hover:bg-accent-50 ${current === n.key ? "bg-accent-50 text-accent-800" : "text-ink"}`}
                 >
                   {n.label}
                 </a>
               </li>
             ))}
           </ul>
-          <a href={href("contact")} onClick={() => setOpen(false)} className="btn btn-primary mt-3 w-full">
+          <a href={pages.contact.path} onClick={() => setOpen(false)} className="btn btn-primary mt-3 w-full">
             Contact me
           </a>
         </nav>
@@ -165,12 +164,19 @@ export function Header({ root }: { root: string }) {
 
 // ── Footer ────────────────────────────────────────────────────────────────
 
-export function Footer({ root, year }: { root: string; year: number }) {
+const footerLinks = [
+  { label: "Home", href: "/" },
+  ...nav.map((n) => ({ label: n.label, href: n.path })),
+  { label: "Case studies", href: sectionPaths["case-studies"] },
+  { label: "Contact", href: pages.contact.path },
+];
+
+export function Footer({ current, year }: { current: PageKey | null; year: number }) {
   return (
     <footer className="border-t border-line bg-surface">
       <div className="wrap grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="space-y-4">
-          <Logo root={root} />
+          <Logo current={current} />
           <p className="max-w-sm text-sm leading-relaxed text-mute">
             Senior QA Engineer, SDET and QA Automation: manual, automated and AI-first testing. Based in Pakistan and Cyprus, working remotely from anywhere.
           </p>
@@ -182,9 +188,9 @@ export function Footer({ root, year }: { root: string; year: number }) {
         <nav aria-label="Footer">
           <p className="mb-3 text-sm font-semibold text-ink">Explore</p>
           <ul className="grid grid-cols-2 gap-2 text-sm">
-            {nav.map((n) => (
-              <li key={n.id}>
-                <a href={`${root}#${n.id}`} className="text-mute transition-colors hover:text-ink">
+            {footerLinks.map((n) => (
+              <li key={n.label}>
+                <a href={n.href} className="text-mute transition-colors hover:text-ink">
                   {n.label}
                 </a>
               </li>
@@ -210,7 +216,7 @@ export function Footer({ root, year }: { root: string; year: number }) {
               </a>
             </li>
             <li>
-              <a href={`${root}${person.cv}`} download className="inline-flex items-center gap-2 text-mute hover:text-ink">
+              <a href={`/${person.cv}`} download className="inline-flex items-center gap-2 text-mute hover:text-ink">
                 <Icon name="download" className="size-4" /> Download CV
               </a>
             </li>
@@ -227,10 +233,10 @@ export function Footer({ root, year }: { root: string; year: number }) {
             <span className="inline-flex items-center gap-1.5">
               <Icon name="check" className="size-3.5 text-ok" /> Tested with Playwright, axe and Allure
             </span>
-            <a href={`${root}${site.qualityReportPath}`} className="underline decoration-accent-300 underline-offset-4 hover:text-ink" data-testid="quality-report">
+            <a href={`/${site.qualityReportPath}`} className="underline decoration-accent-300 underline-offset-4 hover:text-ink" data-testid="quality-report">
               Allure report
             </a>
-            <a href={`${root}${site.playwrightReportPath}`} className="underline decoration-accent-300 underline-offset-4 hover:text-ink">
+            <a href={`/${site.playwrightReportPath}`} className="underline decoration-accent-300 underline-offset-4 hover:text-ink">
               Playwright report
             </a>
           </p>
@@ -246,7 +252,7 @@ export function BackToTop() {
   const visible = useScrolled(900);
   return (
     <a
-      href="#top"
+      href="#main"
       aria-label="Back to top"
       onClick={(e) => {
         e.preventDefault();
@@ -265,6 +271,41 @@ export function BackToTop() {
 
 // ── Section wrapper ───────────────────────────────────────────────────────
 
+const pageOfSection: Record<string, PageKey> = { about: "about", experience: "experience", projects: "projects", services: "skills", contact: "contact" };
+const labelFor = (id: string) => pages[pageOfSection[id] ?? "home"].label;
+
+/** Breadcrumb trail shown above a page's main heading. */
+export function Breadcrumb({ items }: { items: { label: string; href?: string }[] }) {
+  return (
+    <nav aria-label="Breadcrumb" className="mb-5 text-sm text-mute">
+      <ol className="flex flex-wrap items-center gap-x-2 gap-y-1">
+        {items.map((c, i) => (
+          <li key={c.label} className="flex items-center gap-2">
+            {i > 0 && (
+              <span aria-hidden="true" className="text-field">
+                /
+              </span>
+            )}
+            {c.href ? (
+              <a href={c.href} className="underline decoration-accent-300 underline-offset-4 hover:text-ink">
+                {c.label}
+              </a>
+            ) : (
+              <span aria-current="page" className="font-semibold text-ink">
+                {c.label}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
+
+/**
+ * A titled section. `level={1}` makes it the page's main section: its title becomes the h1,
+ * a breadcrumb sits above it and it leaves room for the fixed header.
+ */
 export function Section({
   id,
   title,
@@ -272,6 +313,7 @@ export function Section({
   children,
   className = "",
   action,
+  level = 2,
 }: {
   id: string;
   title: string;
@@ -279,17 +321,21 @@ export function Section({
   children: ReactNode;
   className?: string;
   action?: ReactNode;
+  level?: 1 | 2;
 }) {
+  const Heading = level === 1 ? "h1" : "h2";
+  const pad = level === 1 ? "pt-28 pb-16 md:pt-36 md:pb-24" : "-scroll-mt-10 py-16 md:-scroll-mt-14 md:py-24";
   return (
-    // The negative scroll margin cancels part of the top padding, so menu links land the
-    // heading just under the fixed header instead of leaving a large empty gap.
-    <section id={id} aria-labelledby={`${id}-title`} className={`-scroll-mt-10 py-16 md:-scroll-mt-14 md:py-24 ${className}`}>
+    // The negative scroll margin cancels part of the top padding, so links to a section land
+    // its heading just under the fixed header instead of leaving a large empty gap.
+    <section id={id} aria-labelledby={`${id}-title`} className={`${pad} ${className}`}>
       <div className="wrap">
+        {level === 1 && <Breadcrumb items={[{ label: "Home", href: "/" }, { label: labelFor(id) }]} />}
         <div className="mb-10 flex flex-col gap-5 md:mb-12 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-2xl">
-            <h2 id={`${id}-title`} className="section-title">
+          <div className="max-w-3xl">
+            <Heading id={`${id}-title`} className={level === 1 ? "text-[clamp(2.5rem,5.5vw,4.25rem)] leading-[1.02] font-extrabold tracking-[-0.04em]" : "section-title"}>
               {title}
-            </h2>
+            </Heading>
             {lead && <p className="mt-4 text-base leading-relaxed text-mute md:text-lg">{lead}</p>}
           </div>
           {action}

@@ -2,7 +2,7 @@
 // works out what it's about and answers from src/content.ts, so it never says anything the
 // site doesn't. When site.chatEndpoint is set, Claude answers instead and this is the fallback.
 
-import { caseStudies, education, experience, person, process, projects, services, skillGroups, stats } from "../content";
+import { caseStudies, education, experience, person, process, projects, sectionPaths, services, skillGroups, stats } from "../content";
 import { matchJob, mentions, nameOf, notOnCv, termsFor } from "./match";
 
 export type ChatAction = { label: string; href: string; kind: "download" | "external" | "internal" | "mail" };
@@ -19,7 +19,7 @@ export const suggestions = [
 const cv: ChatAction = { label: "Download CV", href: `/${person.cv}`, kind: "download" };
 const email: ChatAction = { label: "Email Tabeeda", href: `mailto:${person.email}`, kind: "mail" };
 const linkedin: ChatAction = { label: "LinkedIn", href: person.linkedin, kind: "external" };
-const section = (id: string, label: string): ChatAction => ({ label, href: `/#${id}`, kind: "internal" });
+const section = (id: string, label: string): ChatAction => ({ label, href: sectionPaths[id] ?? "/", kind: "internal" });
 
 const listOf = (items: string[]) => (items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`);
 const lowerFirst = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
@@ -117,7 +117,7 @@ type Topic = { id: string; words: string[]; answer: (q: string) => Omit<Answer, 
 const svc = (title: string) => services.find((s) => s.title === title)!;
 const serviceAnswer = (title: string, extra = "") => {
   const s = svc(title);
-  return { text: `${inHerWords(s.text)}${extra}\n\n${bullets(s.points)}`, actions: [section("services", "See services"), cv] };
+  return { text: `${inHerWords(s.text)}${extra}\n\n${bullets(s.points)}`, actions: [section("services", "See expertise"), cv] };
 };
 
 const topics: Topic[] = [
@@ -287,7 +287,7 @@ const topics: Topic[] = [
     id: "case-studies",
     words: ["case study", "case studies", "example", "examples", "achievement", "achievements", "impact", "results", "accomplishment", "proud", "biggest", "success"],
     answer: () => ({
-      text: `Three examples, each with the context, the decisions and the results:\n\n${bullets(caseStudies.map((c) => `${c.title}: ${c.summary}`))}`,
+      text: `${caseStudies.length} examples, each with the context, the decisions and the results:\n\n${bullets(caseStudies.map((c) => `${c.title}: ${c.summary}`))}`,
       actions: caseStudies.map((c) => ({ label: c.area, href: `/case-studies/${c.slug}/`, kind: "internal" as const })),
     }),
   },

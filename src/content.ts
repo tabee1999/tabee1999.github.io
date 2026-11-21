@@ -556,12 +556,68 @@ export const faqs = [
   },
 ];
 
-export const nav = [
-  { id: "about", label: "About" },
-  { id: "experience", label: "Experience" },
-  { id: "projects", label: "Projects" },
-  { id: "case-studies", label: "Case studies" },
-  { id: "services", label: "Expertise" },
-  { id: "skills", label: "Skills" },
-  { id: "contact", label: "Contact" },
-];
+/** The site's pages. Each has its own address, title and description for search engines. */
+export type PageKey = "home" | "about" | "experience" | "projects" | "skills" | "contact";
+
+export const pages: Record<PageKey, { path: string; label: string; title: string; description: string }> = {
+  home: { path: "/", label: "Home", title: site.title, description: site.description },
+  about: {
+    path: "/about/",
+    label: "About",
+    title: "About Tabeeda Shakir — Senior QA Engineer in Pakistan and Cyprus",
+    description:
+      "Tabeeda Shakir is a Senior QA Engineer with 5+ years of manual, automated and AI-first testing. Her story, education and the teams she has shipped with.",
+  },
+  experience: {
+    path: "/experience/",
+    label: "Experience",
+    title: "QA Experience — Tabeeda Shakir, Senior QA Engineer and SDET",
+    description:
+      "5+ years of QA at Epicmetry, Propellus, Maleyat Group (Naqdi) and Dastgyr: Playwright, Selenium and RestAssured automation, API, mobile and manual testing.",
+  },
+  projects: {
+    path: "/projects/",
+    label: "Projects",
+    title: "QA Projects and Case Studies — Tabeeda Shakir",
+    description:
+      "Travel, logistics, fleet, fintech and AI products tested by Tabeeda Shakir, with case studies on regression automation, API testing and AI-first QA.",
+  },
+  skills: {
+    path: "/skills/",
+    label: "Skills",
+    title: "QA Skills: Playwright, Selenium, RestAssured, API Testing — Tabeeda Shakir",
+    description:
+      "Test automation, AI-first QA, manual, API, mobile, performance and security testing. Paste a job description to see how Tabeeda's skills match your role.",
+  },
+  contact: {
+    path: "/contact/",
+    label: "Contact",
+    title: "Contact Tabeeda Shakir — Hire a Senior QA Engineer or SDET",
+    description:
+      "Contact Tabeeda Shakir about Senior QA, SDET or QA Automation roles: remote, hybrid or on-site, with relocation in the EU or the GCC. Email, LinkedIn or form.",
+  },
+};
+
+/** Main menu. "Contact me" has its own button in the header. */
+export const nav: { key: PageKey; label: string; path: string }[] = (["about", "experience", "projects", "skills"] as const).map((key) => ({
+  key,
+  label: pages[key].label,
+  path: pages[key].path,
+}));
+
+/** Where each part of the site lives. Also redirects old one-page links such as /#contact. */
+export const sectionPaths: Record<string, string> = {
+  about: "/about/",
+  teams: "/about/#teams",
+  experience: "/experience/",
+  projects: "/projects/",
+  "case-studies": "/projects/#case-studies",
+  services: "/skills/",
+  skills: "/skills/#skills",
+  "job-match": "/skills/#job-match",
+  faq: "/contact/#faq",
+  contact: "/contact/",
+};
+
+/** The suite's headline number, shown in the home page's test run and the About page. */
+export const testCount = "230+";

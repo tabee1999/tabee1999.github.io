@@ -4,7 +4,7 @@ import { allureLabels, content, watchErrors } from "./helpers";
 // Quick health checks. They run on every push, and every day against the live site
 // (BASE_URL=https://tabee1999.github.io npx playwright test --grep @smoke).
 const LIVE = !!process.env.BASE_URL;
-const { person, caseStudies } = content;
+const { person, caseStudies, pages } = content;
 
 test.beforeEach(async ({}, testInfo) => allureLabels(testInfo, "Live site health", "blocker"));
 
@@ -21,7 +21,7 @@ test.describe("smoke", { tag: "@smoke" }, () => {
   test("every page in the sitemap loads", async ({ page, request }) => {
     const xml = await (await request.get("/sitemap.xml")).text();
     const paths = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
-    expect(paths.length).toBe(1 + caseStudies.length);
+    expect(paths.length).toBe(Object.keys(pages).length + caseStudies.length);
     for (const path of paths) {
       const res = await page.goto(path);
       expect(res?.status(), path).toBe(200);

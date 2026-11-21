@@ -259,6 +259,90 @@
   }
 }
 
+/* ── Scroll-driven sections ─────────────────────────────────────────────────
+   Only when motion is allowed (class set in <head>): the section grows tall and its stage
+   sticks to the screen while you scroll through it. Otherwise it's an ordinary section
+   showing its finished state. */
+.motion .scrolly {
+  height: var(--pin, 250vh);
+}
+
+.motion .scrolly-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  /* Centre the content in the part of the screen below the fixed header. */
+  padding-top: 4.5rem;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* How I work: steps light up one at a time */
+.step {
+  opacity: calc(0.38 + 0.62 * var(--w, 1));
+}
+
+html:not(.motion) .step {
+  opacity: 1;
+}
+
+@media (max-width: 1023px) {
+  .motion .steps {
+    display: grid;
+  }
+
+  .motion .steps > li {
+    grid-area: 1 / 1;
+    opacity: var(--w, 1);
+  }
+}
+
+.phone {
+  position: relative;
+  height: min(66vh, 37rem);
+  aspect-ratio: 9 / 19.5;
+  border-radius: 2.6rem;
+  padding: 0.55rem;
+  background: linear-gradient(150deg, #24564c 0%, #0b2b26 38%, #051a16 100%);
+  box-shadow:
+    inset 0 0 0 1.5px rgb(255 255 255 / 0.14),
+    inset 0 0 0 5px rgb(0 0 0 / 0.35),
+    0 50px 80px -40px rgb(8 54 44 / 0.65);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+@media (max-width: 1023px) {
+  .motion .phone {
+    height: min(46svh, 26rem);
+  }
+}
+
+.phone-screen {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 2.1rem;
+  background: var(--color-paper);
+  font-size: clamp(0.5rem, 1.35vh, 0.72rem);
+}
+
+/* Experience: the GPS trail */
+.trail-pin {
+  fill: var(--color-surface);
+  stroke: var(--color-field);
+  transition:
+    fill 0.25s ease,
+    stroke 0.25s ease;
+}
+
+.trail-pin[data-reached="true"] {
+  fill: var(--color-accent-600);
+  stroke: var(--color-accent-600);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

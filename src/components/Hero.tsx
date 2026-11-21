@@ -38,7 +38,7 @@ function TestRun() {
           {stats.length} passed
         </p>
         <a
-          href={site.qualityReportPath}
+          href={`/${site.qualityReportPath}`}
           className="inline-flex min-h-11 items-center text-sm font-semibold text-white underline decoration-pine-tick/60 underline-offset-4 hover:decoration-pine-tick"
           data-testid="hero-report"
         >
@@ -102,7 +102,7 @@ export function Hero() {
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-mute md:text-xl md:leading-relaxed">{person.heroLead}</p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a href={person.cv} download className="btn btn-primary" data-testid="cta-cv">
+            <a href={`/${person.cv}`} download className="btn btn-primary" data-testid="cta-cv">
               <Icon name="download" className="size-4" /> Download CV
             </a>
             <a href={`mailto:${person.email}`} className="btn btn-ghost" data-testid="cta-email">

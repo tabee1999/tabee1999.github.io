@@ -1,9 +1,113 @@
-import { useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import { experience } from "../content";
+import { refreshScroll, useScrollProgress } from "../lib/scroll";
 import { Icon } from "./Icon";
 import { Section } from "./Layout";
 
-export function Experience() {
+/** x position of the trail in its 32px-wide column, and the sampling step along it. */
+const X = 16;
+const STEP = 4;
+
+/**
+ * A GPS trail down the job history, like the live driver tracking I tested at Dastgyr:
+ * it draws itself as you read, and a pin lights up at each job it reaches.
+ */
+function Trail({ box }: { box: RefObject<HTMLDivElement | null> }) {
+  const svg = useRef<SVGSVGElement>(null);
+  const road = useRef<SVGPathElement>(null);
+  const line = useRef<SVGPathElement>(null);
+  const head = useRef<SVGGElement>(null);
+  const pins = useRef<(SVGCircleElement | null)[]>([]);
+  const geo = useRef<{ total: number; ys: number[]; samples: number[] } | null>(null);
+  const progress = useRef(1);
+
+  const draw = (p: number) => {
+    progress.current = p;
+    const g = geo.current;
+    const el = box.current;
+    if (!g || !el || !line.current || !head.current) return;
+    const headY = p * el.offsetHeight;
+    let len = g.total;
+    for (let k = 0; k < g.samples.length; k++) {
+      if (g.samples[k] >= headY) {
+        len = k * STEP;
+        break;
+      }
+    }
+    len = Math.min(len, g.total);
+    line.current.style.strokeDashoffset = String(g.total - len);
+    const at = line.current.getPointAtLength(len);
+    head.current.setAttribute("transform", `translate(${at.x.toFixed(1)} ${at.y.toFixed(1)})`);
+    g.ys.forEach((y, i) => pins.current[i]?.setAttribute("data-reached", String(y <= at.y + 1)));
+  };
+
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const build = () => {
+      const ol = el.querySelector("ol");
+      if (!ol || !svg.current || !road.current || !line.current) return;
+      const ys = Array.from(ol.children).map((li) => (li as HTMLElement).offsetTop + 36);
+      let d = `M ${X} 0`;
+      let prev = 0;
+      ys.forEach((y, i) => {
+        const dx = i % 2 === 0 ? 9 : -9;
+        const gap = y - prev;
+        d += ` C ${X + dx} ${(prev + gap * 0.35).toFixed(1)}, ${X - dx} ${(prev + gap * 0.65).toFixed(1)}, ${X} ${y}`;
+        prev = y;
+      });
+      road.current.setAttribute("d", d);
+      line.current.setAttribute("d", d);
+      const total = line.current.getTotalLength();
+      line.current.style.strokeDasharray = String(total);
+      const samples: number[] = [];
+      for (let len = 0; len <= total; len += STEP) samples.push(line.current.getPointAtLength(len).y);
+      const h = el.offsetHeight;
+      svg.current.setAttribute("height", String(h));
+      svg.current.setAttribute("viewBox", `0 0 32 ${h}`);
+      ys.forEach((y, i) => pins.current[i]?.setAttribute("cy", String(y)));
+      geo.current = { total, ys, samples };
+      draw(progress.current);
+      refreshScroll();
+    };
+    build();
+    const ro = new ResizeObserver(build);
+    ro.observe(el);
+    return () => ro.disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [box]);
+
+  useScrollProgress(box, { kind: "track", anchor: 0.62 }, draw);
+
+  return (
+    <svg ref={svg} className="pointer-events-none absolute top-0 left-0 w-8 overflow-visible" width="32" height="0" aria-hidden="true" data-testid="trail">
+      <path ref={road} fill="none" stroke="var(--color-line)" strokeWidth="3" strokeLinecap="round" strokeDasharray="2 7" />
+      <path ref={line} fill="none" stroke="var(--color-accent-500)" strokeWidth="3" strokeLinecap="round" />
+      {experience.map((job, i) => (
+        <circle
+          key={job.company}
+          ref={(c) => {
+            pins.current[i] = c;
+          }}
+          className="trail-pin"
+          cx={X}
+          cy="0"
+          r="6.5"
+          strokeWidth="2"
+          data-reached="false"
+        />
+      ))}
+      <g ref={head}>
+        <circle r="13" fill="var(--color-accent-500)" opacity="0.18" />
+        <circle r="6.5" fill="var(--color-accent-700)" stroke="#fff" strokeWidth="2.5" />
+      </g>
+    </svg>
+  );
+}
+
+export function Experience({ level = 2 }: { level?: 1 | 2 }) {
+  const box = useRef<HTMLDivElement>(null);
+  const JobHeading = level === 1 ? "h2" : "h3";
   const [open, setOpen] = useState<Set<number>>(() => new Set([0]));
   const allOpen = open.size === experience.length;
 
@@ -18,7 +122,8 @@ export function Experience() {
   return (
     <Section
       id="experience"
-      title="5+ years across SaaS, travel, logistics and fintech"
+      level={level}
+      title="5+ years of QA across SaaS, travel, logistics and fintech"
       action={
         <button
           type="button"
@@ -31,12 +136,14 @@ export function Experience() {
         </button>
       }
     >
+      <div ref={box} className="relative pl-10 md:pl-14">
+        <Trail box={box} />
       <ol className="border-t border-line">
         {experience.map((job, i) => {
           const isOpen = open.has(i);
           return (
             <li key={job.company} className="border-b border-line">
-              <h3>
+              <JobHeading>
                 <button
                   type="button"
                   id={`job-${i}`}
@@ -64,7 +171,7 @@ export function Experience() {
                     <Icon name="chevronDown" className="size-4" />
                   </span>
                 </button>
-              </h3>
+              </JobHeading>
               <div className="md:ml-[13rem]">
                 <p className="pb-6 leading-relaxed text-mute md:max-w-3xl">{job.summary}</p>
                 <div id={`job-panel-${i}`} role="region" aria-labelledby={`job-${i}`} className="expander" data-open={isOpen} inert={!isOpen}>
@@ -105,6 +212,7 @@ export function Experience() {
           );
         })}
       </ol>
+      </div>
     </Section>
   );
 }

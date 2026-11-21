@@ -1,16 +1,57 @@
-import { caseStudies } from "./content";
+import type { ReactNode } from "react";
+import { caseStudies, type PageKey } from "./content";
 import { CaseStudies, CaseStudyPage } from "./components/CaseStudies";
 import { Chat } from "./components/Chat";
 import { Contact } from "./components/Contact";
 import { Experience } from "./components/Experience";
 import { Hero } from "./components/Hero";
+import { Explore, HowIWork, TestRunShow } from "./components/Home";
 import { BackToTop, Footer, Header, ToastProvider } from "./components/Layout";
 import { Projects } from "./components/Projects";
 import { About, Faq, Services } from "./components/Sections";
+import { ShieldBand } from "./components/Shield";
 import { Skills } from "./components/Skills";
 import { Teams } from "./components/Teams";
 
-export type PageData = { route: "home" } | { route: "case-study"; slug: string } | { route: "404" };
+export type PageData = { route: PageKey } | { route: "case-study"; slug: string } | { route: "404" };
+
+/** What each page shows. Every page has exactly one h1. */
+const pageBody: Record<PageKey, () => ReactNode> = {
+  home: () => (
+    <>
+      <Hero />
+      <TestRunShow />
+      <HowIWork />
+      <Explore />
+    </>
+  ),
+  about: () => (
+    <>
+      <About level={1} />
+      <Teams />
+    </>
+  ),
+  experience: () => <Experience level={1} />,
+  projects: () => (
+    <>
+      <Projects level={1} />
+      <CaseStudies />
+    </>
+  ),
+  skills: () => (
+    <>
+      <Services level={1} />
+      <Skills />
+    </>
+  ),
+  contact: () => (
+    <>
+      <Contact level={1} />
+      <ShieldBand />
+      <Faq />
+    </>
+  ),
+};
 
 function NotFound() {
   return (
@@ -27,7 +68,7 @@ function NotFound() {
           <a href="/" className="btn btn-primary">
             Go to the home page
           </a>
-          <a href="/#projects" className="btn btn-ghost">
+          <a href="/projects/" className="btn btn-ghost">
             See my projects
           </a>
         </div>
@@ -37,31 +78,19 @@ function NotFound() {
 }
 
 export function App({ page, year }: { page: PageData; year: number }) {
-  const root = page.route === "home" ? "" : "/";
   const study = page.route === "case-study" ? caseStudies.find((c) => c.slug === page.slug) : undefined;
+  const current: PageKey | null = page.route === "case-study" ? "projects" : page.route === "404" ? null : page.route;
+  const Body = page.route in pageBody ? pageBody[page.route as PageKey] : null;
 
   return (
     <ToastProvider>
-      <Header root={root} />
+      <Header current={current} />
       <main id="main" tabIndex={-1} className="outline-none">
-        {page.route === "home" && (
-          <>
-            <Hero />
-            <About />
-            <Experience />
-            <Teams />
-            <Projects />
-            <CaseStudies />
-            <Services />
-            <Skills />
-            <Faq />
-            <Contact />
-          </>
-        )}
+        {Body?.()}
         {study && <CaseStudyPage study={study} />}
         {page.route === "404" && <NotFound />}
       </main>
-      <Footer root={root} year={year} />
+      <Footer current={current} year={year} />
       <BackToTop />
       <Chat />
     </ToastProvider>

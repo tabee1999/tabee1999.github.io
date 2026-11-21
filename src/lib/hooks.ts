@@ -41,34 +41,6 @@ export function useScrollProgressBar<T extends HTMLElement>() {
   return ref;
 }
 
-/** The id of the section currently in the middle of the screen. */
-export function useScrollSpy(ids: string[]) {
-  const [active, setActive] = useState<string | null>(null);
-  useEffect(() => {
-    if (!("IntersectionObserver" in window)) return;
-    const els = ids.map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
-    const visible = new Set<string>();
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) visible.add(entry.target.id);
-          else visible.delete(entry.target.id);
-        }
-        const current = ids.find((id) => visible.has(id));
-        // Between two menu sections (e.g. the team photos) keep the last one highlighted;
-        // back up in the hero, highlight nothing.
-        if (current) setActive(current);
-        else if (els[0] && els[0].getBoundingClientRect().top > window.innerHeight / 2) setActive(null);
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    els.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, [ids]);
-  return active;
-}
-
-/** Local times in several time zones, e.g. ["18:42", "16:42"]. Empty on the server. */
 export function useLocalTimes(timeZones: string[]) {
   const key = timeZones.join("|");
   const [times, setTimes] = useState<string[]>(() => timeZones.map(() => ""));
