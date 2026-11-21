@@ -400,7 +400,7 @@ export const experience: Job[] = [
     url: "https://app.dastgyr.com/",
     about: "B2B e-commerce marketplace connecting retailers and suppliers, headquartered in London with operations in Pakistan and Kenya.",
     role: "QA Engineer",
-    period: "Dec 2021 – Jan 2024",
+    period: "Jan 2021 – Jan 2024",
     location: "Hybrid · Karachi, Pakistan",
     summary: "B2B e-commerce marketplace and logistics apps.",
     bullets: [
@@ -410,18 +410,6 @@ export const experience: Job[] = [
       "Validated backend data integrity with SQL and tracked results in TestRail.",
     ],
     tags: ["Mobile", "Selenium", "RestAssured", "Java", "Jenkins"],
-  },
-  {
-    company: "Squarera (A DataPillar Company)",
-    role: "SQA & UI/UX Designer",
-    period: "Jan 2021 – Sep 2021",
-    location: "Karachi, Pakistan",
-    summary: "QA and UI/UX for SaaS MVP launches.",
-    bullets: [
-      "Owned QA for 2 SaaS MVP launches, finding critical bugs before release.",
-      "Wrote and ran 50+ UI test cases and worked with designers on 3 key modules to reduce layout bugs.",
-    ],
-    tags: ["Manual QA", "UI testing", "Figma"],
   },
 ];
 
