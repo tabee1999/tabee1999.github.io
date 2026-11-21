@@ -12,7 +12,7 @@ type Meta = { title: string; description: string; path: string; type: "profile" 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const json = (o: unknown) => JSON.stringify(o).replace(/</g, "\\u003c");
 const abs = (path: string) => `${site.url}${path}`;
-const ogImage = abs("/og-image.jpg");
+const ogImage = abs(`/${site.ogImage}`);
 
 // ── Structured data (schema.org) ──────────────────────────────────────────
 
@@ -237,6 +237,7 @@ ${verify}
 <meta property="og:description" content="${esc(meta.description)}">
 <meta property="og:url" content="${url}">
 <meta property="og:image" content="${ogImage}">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="${esc(`${person.name}, ${person.role}`)}">
@@ -246,6 +247,7 @@ ${meta.type === "profile" ? `<meta property="profile:first_name" content="${esc(
 <meta name="twitter:title" content="${esc(meta.title)}">
 <meta name="twitter:description" content="${esc(meta.description)}">
 <meta name="twitter:image" content="${ogImage}">
+<meta name="twitter:image:alt" content="${esc(`${person.name}, ${person.role}`)}">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">

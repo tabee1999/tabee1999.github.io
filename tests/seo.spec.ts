@@ -25,7 +25,7 @@ test.describe("SEO", () => {
 
       await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `${site.url}${path}`);
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /^index, follow/);
-      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", `${site.url}/og-image.jpg`);
+      await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", `${site.url}/${site.ogImage}`);
       await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary_large_image");
       await expect(page.locator("html")).toHaveAttribute("lang", "en");
     });
@@ -113,6 +113,17 @@ test.describe("SEO", () => {
     await page.getByRole("button", { name: "What is AI-first QA?" }).click();
     await expect(page.getByTestId("chat-answer")).toHaveCount(1);
     expect(violations).toEqual([]);
+  });
+
+  test("the link-preview image is a 1200 × 630 JPEG", async ({ request }) => {
+    const res = await request.get(`/${site.ogImage}`);
+    expect(res.status()).toBe(200);
+    expect(res.headers()["content-type"]).toContain("image/jpeg");
+    const bytes = await res.body();
+    // Read the size from the JPEG's start-of-frame marker.
+    let i = 2;
+    while (i < bytes.length && !(bytes[i] === 0xff && (bytes[i + 1] === 0xc0 || bytes[i + 1] === 0xc2))) i += 2 + bytes.readUInt16BE(i + 2);
+    expect([bytes.readUInt16BE(i + 7), bytes.readUInt16BE(i + 5)]).toEqual([1200, 630]);
   });
 
   test("the 404 page is not indexed", async ({ page }) => {
