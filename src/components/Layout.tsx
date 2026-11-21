@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { nav, pages, person, sectionPaths, site, type PageKey } from "../content";
 import { useScrolled, useScrollProgressBar } from "../lib/hooks";
 import { Clocks } from "./Clocks";
@@ -58,7 +58,9 @@ export function Header({ current }: { current: PageKey | null }) {
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement | null>(null);
 
-  useEffect(() => {
+  // A layout effect, so Escape works from the moment the menu shows (in the browser Preact
+  // runs plain effects a frame later, which a fast keypress could beat).
+  useLayoutEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
