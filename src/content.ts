@@ -15,7 +15,16 @@ export type Project = {
   url?: string;
   /** Shown as a small drawn preview on the card. */
   visual: "travel" | "payments" | "fleet" | "visa" | "trading" | "marketplace" | "assistant";
+  /** The project page's h1: what was tested, in the words someone would search for. */
+  headline: string;
+  /** The project page's <title> (about 60 characters). */
+  seoTitle: string;
+  /** The case study that tells the longer story, if there is one. */
+  caseStudy?: string;
 };
+
+/** Each project has its own page at /projects/<slug>/. */
+export const projectPath = (slug: string) => `/projects/${slug}/`;
 
 export type Category = "Automation" | "Manual" | "AI-first" | "API" | "Mobile" | "Performance";
 
@@ -32,6 +41,12 @@ export type CaseStudy = {
   outcome?: string;
   lessons?: string;
 };
+
+/**
+ * The suite's headline number: tests per run across Chrome, Firefox and mobile Chrome, as
+ * Playwright reports it. Check with `npx playwright test --list` (354 when last updated).
+ */
+export const testCount = "350+";
 
 export const site = {
   url: "https://tabee1999.github.io",
@@ -110,7 +125,7 @@ export const services = [
   {
     icon: "sparkles",
     title: "AI-first QA",
-    text: "AI is part of my daily workflow. I use Claude, ChatGPT, Claude Code, OpenAI Codex, GitHub Copilot and Cursor to draft and debug Playwright and RestAssured code, explain unfamiliar errors and APIs, and suggest edge cases I might have missed, then I review and run everything before it's merged. I also test AI features, like the chat assistant on this site, for honesty, accuracy and safety.",
+    text: "AI is part of my daily workflow. I use Claude, ChatGPT, Claude Code, OpenAI Codex and GitHub Copilot to draft and debug Playwright and RestAssured code, explain unfamiliar errors and APIs, and suggest edge cases I might have missed, then I review and run everything before it's merged. I also test AI features, like the chat assistant on this site, for honesty, accuracy and safety.",
     points: ["AI pair-programming for test code", "AI-suggested edge cases, human-reviewed", "Testing AI and LLM features"],
   },
   {
@@ -158,6 +173,9 @@ export const projects: Project[] = [
     platforms: ["Web", "Mobile", "API"],
     url: "https://www.alrais.com/",
     visual: "travel",
+    headline: "QA for a flight and hotel booking platform",
+    seoTitle: "QA for a Travel Booking Platform: Al Rais Travel — Tabeeda Shakir",
+    caseStudy: "regression-automation-three-products",
   },
   {
     slug: "modon-express",
@@ -170,6 +188,9 @@ export const projects: Project[] = [
     categories: ["Manual", "Automation", "API"],
     platforms: ["Web", "Mobile", "API"],
     visual: "payments",
+    headline: "QA for buyer and seller portals with secure payments",
+    seoTitle: "Payments and KYC Testing: Modon Express — Tabeeda Shakir",
+    caseStudy: "regression-automation-three-products",
   },
   {
     slug: "fleetify",
@@ -182,6 +203,8 @@ export const projects: Project[] = [
     categories: ["Manual", "Performance", "Automation"],
     platforms: ["Web", "Mobile"],
     visual: "fleet",
+    headline: "QA for a fleet management app in the GCC",
+    seoTitle: "Fleet Management App Testing: Fleetify — Tabeeda Shakir",
   },
   {
     slug: "visa-platform",
@@ -195,6 +218,9 @@ export const projects: Project[] = [
     platforms: ["Web", "Mobile", "API"],
     url: "https://propellus.ai/",
     visual: "visa",
+    headline: "QA for an AI visa processing platform",
+    seoTitle: "QA for an AI Visa Processing Platform — Tabeeda Shakir",
+    caseStudy: "qa-from-scratch-at-a-startup",
   },
   {
     slug: "trading-platforms",
@@ -208,6 +234,8 @@ export const projects: Project[] = [
     platforms: ["Web", "MetaTrader 5"],
     url: "https://naqdi.com/",
     visual: "trading",
+    headline: "QA for forex, gold and crypto trading platforms",
+    seoTitle: "Fintech QA: Forex and Crypto Trading (MT5) — Tabeeda Shakir",
   },
   {
     slug: "b2b-marketplace",
@@ -221,6 +249,9 @@ export const projects: Project[] = [
     platforms: ["iOS", "Android", "Web"],
     url: "https://app.dastgyr.com/",
     visual: "marketplace",
+    headline: "QA for a B2B marketplace and its logistics apps",
+    seoTitle: "B2B Marketplace and Logistics App Testing — Tabeeda Shakir",
+    caseStudy: "b2b-marketplace-and-logistics-apps",
   },
   {
     slug: "portfolio-ai-assistant",
@@ -233,6 +264,9 @@ export const projects: Project[] = [
     categories: ["AI-first", "Automation", "API"],
     platforms: ["Web", "API"],
     visual: "assistant",
+    headline: "Testing an AI chat assistant (LLM QA)",
+    seoTitle: "LLM Testing: QA for an AI Chat Assistant — Tabeeda Shakir",
+    caseStudy: "testing-an-ai-chat-assistant",
   },
 ];
 
@@ -459,30 +493,32 @@ export const education = {
 };
 
 /** The AI tools she uses every day, shown on the home page and the skills page. */
+/**
+ * The AI tools on the home page, each with one line on what she actually does with it. Keep this
+ * list to tools she can give a real example of in an interview.
+ */
 export const aiTools: { group: string; tools: { name: string; icon: string; use: string }[] }[] = [
   {
     group: "Assistants",
     tools: [
-      { name: "Claude", icon: "chat", use: "Thinking through test scenarios, edge cases and tricky bugs, and reviewing test code." },
-      { name: "ChatGPT", icon: "sparkles", use: "Quick answers when I'm stuck, test data ideas and explanations of unfamiliar errors." },
-      { name: "Perplexity", icon: "globe", use: "Researching tools, error messages and documentation, with the sources linked." },
+      { name: "Claude", icon: "chat", use: "Turn user stories into first-draft test cases and edge cases, then review them before they go into TestRail." },
+      { name: "ChatGPT", icon: "sparkles", use: "Make realistic test data, like sample passport and visa records for OCR testing at Propellus." },
     ],
   },
   {
-    group: "Coding agents and editors",
+    group: "Coding agents",
     tools: [
-      { name: "Claude Code", icon: "code", use: "Writing and refactoring Playwright and RestAssured tests across a repo." },
-      { name: "OpenAI Codex", icon: "code", use: "Generating test code blocks and fixing failing tests." },
-      { name: "GitHub Copilot", icon: "sparkles", use: "Inline suggestions while I write test code in VS Code." },
-      { name: "Cursor", icon: "pointer", use: "An AI code editor for changes that span a whole test suite." },
+      { name: "Claude Code", icon: "code", use: `Built and tested this portfolio with it: ${testCount} Playwright tests running in GitHub Actions.` },
+      { name: "OpenAI Codex", icon: "code", use: "Fix failing Playwright tests and clean up RestAssured API tests." },
+      { name: "GitHub Copilot", icon: "sparkles", use: "Autocomplete while writing Playwright and RestAssured tests in VS Code." },
     ],
   },
   {
     group: "AI inside my testing tools",
     tools: [
-      { name: "Playwright MCP", icon: "automation", use: "Letting an AI agent drive a real browser to explore flows and draft UI tests." },
-      { name: "Postman Postbot", icon: "api", use: "Drafting API tests and assertions for Postman collections." },
-      { name: "Applitools Eyes", icon: "eye", use: "Visual AI that catches layout and visual regressions across screens." },
+      { name: "Playwright MCP", icon: "automation", use: "Let an AI agent click through a flow in a real browser, then turn it into a Playwright test." },
+      { name: "Postman Postbot", icon: "api", use: "Draft response checks for Postman collections that then run with Newman in CI." },
+      { name: "Applitools Eyes", icon: "eye", use: "Compare screens with approved baselines to catch layout shifts after UI changes." },
     ],
   },
 ];
@@ -508,11 +544,9 @@ export const skillAliases: Record<string, string[]> = {
   "AI test data generation": ["test data"],
   Claude: ["claude", "anthropic"],
   ChatGPT: ["chatgpt", "openai", "gpt"],
-  Perplexity: ["perplexity"],
   "Claude Code": ["claude code"],
   "OpenAI Codex": ["codex", "openai codex"],
   "GitHub Copilot": ["copilot", "github copilot"],
-  Cursor: ["cursor", "cursor ai", "cursor ide"],
   "Playwright MCP": ["mcp", "playwright mcp", "model context protocol"],
   "Postman Postbot": ["postbot"],
   "Applitools Eyes": ["applitools", "visual ai", "visual testing"],
@@ -579,7 +613,7 @@ export const faqs = [
   },
   {
     q: "How does she use AI in testing?",
-    a: "Every day, with Claude, ChatGPT, Claude Code, OpenAI Codex, GitHub Copilot and Cursor: as a coding partner for Playwright and RestAssured test code, to explain errors and unfamiliar APIs, and to suggest edge cases. She also uses AI inside her testing tools (Playwright MCP, Postman Postbot and Applitools Eyes). She reviews and runs everything before it is merged, and she tests AI features too, like the chat assistant on this site.",
+    a: "Every day, with Claude, ChatGPT, Claude Code, OpenAI Codex and GitHub Copilot: as a coding partner for Playwright and RestAssured test code, to explain errors and unfamiliar APIs, and to suggest edge cases. She also uses AI inside her testing tools (Playwright MCP, Postman Postbot and Applitools Eyes). She reviews and runs everything before it is merged, and she tests AI features too, like the chat assistant on this site.",
   },
   {
     q: "How can I contact Tabeeda?",
@@ -649,9 +683,3 @@ export const sectionPaths: Record<string, string> = {
   faq: "/contact/#faq",
   contact: "/contact/",
 };
-
-/**
- * The suite's headline number: tests per run across Chrome, Firefox and mobile Chrome, as
- * Playwright reports it. Check with `npx playwright test --list` (354 when last updated).
- */
-export const testCount = "350+";

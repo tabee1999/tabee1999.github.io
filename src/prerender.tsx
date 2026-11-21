@@ -2,11 +2,36 @@
 // then React hydrates it in the browser. Also generates sitemap.xml, robots.txt and llms.txt.
 
 import { createHash } from "node:crypto";
+import type { ComponentType } from "react";
 import { renderToString } from "react-dom/server";
-import { App, type PageData } from "./App";
-import { caseStudies, education, experience, faqs, pages, person, projects, services, site, skillGroups, stats, type PageKey } from "./content";
+import { App } from "./App";
+import { caseStudies, education, experience, faqs, pages, person, projectPath, projects, services, site, skillGroups, stats, type PageKey } from "./content";
+import { routeKind, routeSlug, type PageData, type RouteKind } from "./pages";
+import AboutPage from "./pages/about";
+import CaseStudyRoute from "./pages/case-study";
+import ContactPage from "./pages/contact";
+import ExperiencePage from "./pages/experience";
+import HomePage from "./pages/home";
+import NotFound from "./pages/not-found";
+import ProjectRoute from "./pages/project";
+import ProjectsPage from "./pages/projects";
+import SkillsPage from "./pages/skills";
 
-type Assets = { css: string; js: string; buildYear: number };
+/** Each kind of page's script, and the shared chunks it imports (preloaded so they download in parallel). */
+export type PageScript = { entry: string; preload: string[] };
+type Assets = { css: string; scripts: Record<RouteKind, PageScript>; buildYear: number };
+
+const bodies: Record<RouteKind, ComponentType<{ slug?: string }>> = {
+  home: HomePage,
+  about: AboutPage,
+  experience: ExperiencePage,
+  projects: ProjectsPage,
+  skills: SkillsPage,
+  contact: ContactPage,
+  "case-study": CaseStudyRoute,
+  project: ProjectRoute,
+  "not-found": NotFound,
+};
 type Meta = { title: string; description: string; path: string; type: "profile" | "article" | "website"; noindex?: boolean; jsonLd?: object };
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -97,7 +122,13 @@ const pageGraph: Record<PageKey, () => object[]> = {
   about: () => [webPage("about", "AboutPage", { mainEntity: { "@id": personId } }), breadcrumbs([{ name: "About", path: pages.about.path }])],
   experience: () => [webPage("experience", "WebPage"), breadcrumbs([{ name: "Experience", path: pages.experience.path }])],
   projects: () => [
-    webPage("projects", "CollectionPage"),
+    webPage("projects", "CollectionPage", { mainEntity: { "@id": `${abs(pages.projects.path)}#projects` } }),
+    {
+      "@type": "ItemList",
+      "@id": `${abs(pages.projects.path)}#projects`,
+      name: "QA projects",
+      itemListElement: projects.map((p, i) => ({ "@type": "ListItem", position: i + 1, url: abs(projectPath(p.slug)), name: p.headline })),
+    },
     {
       "@type": "ItemList",
       "@id": `${abs(pages.projects.path)}#case-studies`,
@@ -165,6 +196,46 @@ function caseMeta(slug: string): Meta {
   };
 }
 
+function projectMeta(slug: string): Meta {
+  const p = projects.find((x) => x.slug === slug)!;
+  const path = projectPath(p.slug);
+  return {
+    title: p.seoTitle,
+    // Search results show about 160 characters: short summaries get the headline in front.
+    description: p.summary.length < 110 ? `${p.headline}. ${p.summary}` : p.summary,
+    path,
+    type: "article",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@graph": [
+        personLd,
+        websiteLd,
+        {
+          "@type": "WebPage",
+          "@id": `${abs(path)}#page`,
+          url: abs(path),
+          name: p.seoTitle,
+          description: p.summary,
+          isPartOf: { "@id": websiteId },
+          inLanguage: "en",
+          mainEntity: {
+            "@type": "CreativeWork",
+            name: p.headline,
+            description: p.summary,
+            creator: { "@id": personId },
+            keywords: [p.domain, ...p.tags, ...p.categories.map((c) => `${c} testing`), "QA", "software testing"].join(", "),
+            ...(p.url ? { about: { "@type": "Thing", name: p.name, url: p.url } } : { about: p.name }),
+          },
+        },
+        breadcrumbs([
+          { name: "Projects", path: pages.projects.path },
+          { name: p.name, path },
+        ]),
+      ],
+    },
+  };
+}
+
 const origin = (u: string) => {
   try {
     return u ? new URL(u).origin : "";
@@ -182,7 +253,7 @@ const analyticsConfig = `window.goatcounter={referrer:function(){var q=new URLSe
 
 /**
  * Content Security Policy: only this site's own scripts (plus exact hashes of the two inline
- * ones), Google Fonts, and the services the site is configured to talk to.
+ * ones), and the services the site is configured to talk to.
  */
 function csp(inlineScripts: string[]) {
   const gc = site.goatcounterCode ? `https://${site.goatcounterCode}.goatcounter.com` : "";
@@ -190,8 +261,8 @@ function csp(inlineScripts: string[]) {
   return [
     "default-src 'self'",
     `script-src 'self' ${inlineScripts.map(sha256).join(" ")}${gc ? " https://gc.zgo.at" : ""}`,
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self'",
     `img-src 'self' data:${gc ? ` ${gc}` : ""}`,
     `connect-src ${connect}`,
     "object-src 'none'",
@@ -202,6 +273,7 @@ function csp(inlineScripts: string[]) {
 
 function renderPage(meta: Meta, body: string, page: PageData, assets: Assets) {
   const url = abs(meta.path);
+  const script = assets.scripts[routeKind(page)];
   const pageScript = `window.__PAGE__=${json({ page, year: assets.buildYear })}`;
   const analytics = site.goatcounterCode
     ? `<script>${analyticsConfig}</script><script data-goatcounter="https://${esc(site.goatcounterCode)}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>`
@@ -253,19 +325,17 @@ ${meta.type === "profile" ? `<meta property="profile:first_name" content="${esc(
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM-readable summary">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="/fonts/schibsted-grotesk.woff2" as="font" type="font/woff2" crossorigin>
 ${preloadPhoto}
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="/assets/${assets.css}">
-<link rel="modulepreload" href="/assets/${assets.js}">
+${[script.entry, ...script.preload].map((f) => `<link rel="modulepreload" href="/assets/${f}">`).join("")}
 ${meta.jsonLd ? `<script type="application/ld+json">${json(meta.jsonLd)}</script>` : ""}
 </head>
 <body>
 <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:rounded-full focus:bg-accent-700 focus:px-5 focus:py-3 focus:font-semibold focus:text-white">Skip to content</a>
 <div id="root">${body}</div>
 <script>${pageScript}</script>
-<script type="module" src="/assets/${assets.js}"></script>
+<script type="module" src="/assets/${script.entry}"></script>
 ${analytics}
 </body>
 </html>
@@ -278,16 +348,22 @@ export function renderRoutes(assets: Assets) {
   const routes: { file: string; page: PageData; meta: Meta }[] = [
     ...keys.map((key) => ({ file: `${pages[key].path.slice(1)}index.html`, page: { route: key } as PageData, meta: pageMeta(key) })),
     ...caseStudies.map((c) => ({ file: `case-studies/${c.slug}/index.html`, page: { route: "case-study", slug: c.slug } as PageData, meta: caseMeta(c.slug) })),
+    ...projects.map((p) => ({ file: `${projectPath(p.slug).slice(1)}index.html`, page: { route: "project", slug: p.slug } as PageData, meta: projectMeta(p.slug) })),
     {
       file: "404.html",
       page: { route: "404" },
       meta: { title: `Page not found — ${person.name}`, description: "This page doesn't exist.", path: "/404.html", type: "website", noindex: true },
     },
   ];
-  return routes.map(({ file, page, meta }) => ({
-    file,
-    html: renderPage(meta, renderToString(<App page={page} year={assets.buildYear} />), page, assets),
-  }));
+  return routes.map(({ file, page, meta }) => {
+    const Body = bodies[routeKind(page)];
+    const html = renderToString(
+      <App page={page} year={assets.buildYear}>
+        <Body slug={routeSlug(page)} />
+      </App>,
+    );
+    return { file, html: renderPage(meta, html, page, assets) };
+  });
 }
 
 // ── Crawler files ─────────────────────────────────────────────────────────
@@ -339,7 +415,7 @@ function llmsTxt() {
     ...experience.map((e) => `- ${e.role}, ${e.company} (${e.period}, ${e.location}): ${e.summary}${e.about ? ` About the company: ${e.about}` : ""}${e.url ? ` ${e.url}` : ""}`),
     "",
     "## Projects",
-    ...projects.map((p) => `- ${p.name} (${p.company}, ${p.domain}): ${p.summary}${p.url ? ` ${p.url}` : ""}`),
+    ...projects.map((p) => `- [${p.name}](${abs(projectPath(p.slug))}) (${p.company}, ${p.domain}): ${p.summary}${p.url ? ` Product: ${p.url}` : ""}`),
     "",
     "## Case studies",
     ...caseStudies.map((c) => `- [${c.title}](${abs(`/case-studies/${c.slug}/`)}): ${c.summary}`),
@@ -364,6 +440,7 @@ function llmsTxt() {
 export function siteFiles(isoDate: string): Record<string, string> {
   const urls = [
     ...(Object.keys(pages) as PageKey[]).map((k) => ({ loc: abs(pages[k].path), priority: k === "home" ? "1.0" : "0.9" })),
+    ...projects.map((p) => ({ loc: abs(projectPath(p.slug)), priority: "0.7" })),
     ...caseStudies.map((c) => ({ loc: abs(`/case-studies/${c.slug}/`), priority: "0.7" })),
   ];
   return {

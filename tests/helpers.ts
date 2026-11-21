@@ -5,9 +5,10 @@ import * as content from "../src/content";
 export { content };
 
 export const caseStudyPaths = content.caseStudies.map((cs) => `/case-studies/${cs.slug}/`);
+export const projectPaths = content.projects.map((p) => content.projectPath(p.slug));
 /** Home, About, Experience, Projects, Skills and Contact. */
 export const sitePages = Object.values(content.pages).map((p) => p.path);
-export const allPages = [...sitePages, ...caseStudyPaths];
+export const allPages = [...sitePages, ...projectPaths, ...caseStudyPaths];
 
 /** On small screens the main nav sits behind a menu button. Opens it if needed. */
 export async function openMenuIfCollapsed(page: Page) {

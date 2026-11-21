@@ -80,6 +80,26 @@ test.describe("SEO", () => {
     await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "article");
   });
 
+  test("each project has its own page, titled and marked up for search", async ({ page, request }) => {
+    for (const project of content.projects) {
+      const path = content.projectPath(project.slug);
+      await page.goto(path);
+      await expect(page).toHaveTitle(project.seoTitle);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(project.headline);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `${content.site.url}${path}`);
+      const graph = await jsonLd(page);
+      expect(graph.find((n) => n["@type"] === "WebPage")?.url, path).toBe(`${content.site.url}${path}`);
+      const crumbs = graph.find((n) => n["@type"] === "BreadcrumbList")!.itemListElement as { name: string }[];
+      expect(crumbs.map((c) => c.name), path).toEqual(["Home", "Projects", project.name]);
+    }
+    // The projects page lists them all for search engines, and its cards link to them
+    await page.goto("/projects/");
+    const list = (await jsonLd(page)).find((n) => n["@id"] === `${content.site.url}/projects/#projects`)!;
+    expect((list.itemListElement as unknown[]).length).toBe(content.projects.length);
+    const html = await (await request.get("/projects/")).text();
+    for (const p of content.projects) expect(html).toContain(`href="${content.projectPath(p.slug)}"`);
+  });
+
   test("the main content is in the HTML before JavaScript runs", async ({ request }) => {
     const get = async (path: string) => (await (await request.get(path)).text()).replace(/&#x27;/g, "'").replace(/&amp;/g, "&").replace(/<!-- -->/g, "");
     const home = await get("/");

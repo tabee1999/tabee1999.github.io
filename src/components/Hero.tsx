@@ -54,24 +54,26 @@ function TestRun() {
 
 /** The facts recruiters check first, in one place near the top. */
 function QuickFacts() {
+  // On phones only the four facts recruiters filter on show here; the rest are on the
+  // contact page and in the FAQ, so the hero stays short.
   const facts = [
     { label: "Roles", value: person.targetRoles.join(", ") },
-    { label: "Experience", value: "5+ years, now Senior QA Engineer at Epicmetry" },
+    { label: "Experience", value: "5+ years, now Senior QA Engineer at Epicmetry", desktopOnly: true },
     { label: "Based in", value: person.location },
     { label: "Work authorisation", value: person.workAuthorisation },
     { label: "Open to", value: person.openTo },
-    { label: "Employment", value: person.employment },
-    { label: "Languages", value: person.languages },
-    { label: "Time zones", value: person.timezones.map((t) => `${t.label} ${t.offset}`).join("; ") },
+    { label: "Employment", value: person.employment, desktopOnly: true },
+    { label: "Languages", value: person.languages, desktopOnly: true },
+    { label: "Time zones", value: person.timezones.map((t) => `${t.label} ${t.offset}`).join("; "), desktopOnly: true },
   ];
   return (
     <section aria-labelledby="facts-title" className="wrap relative mt-8 md:mt-10">
       <h2 id="facts-title" className="sr-only">
         Quick facts
       </h2>
-      <dl className="grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-4" data-testid="quick-facts">
+      <dl className="grid gap-x-10 gap-y-4 sm:grid-cols-2 sm:gap-y-6 lg:grid-cols-4" data-testid="quick-facts">
         {facts.map((f) => (
-          <div key={f.label}>
+          <div key={f.label} className={f.desktopOnly ? "hidden sm:block" : undefined}>
             <dt className="text-sm font-semibold text-mute">{f.label}</dt>
             <dd className="mt-1 leading-snug text-ink">{f.value}</dd>
           </div>

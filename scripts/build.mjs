@@ -15,6 +15,7 @@ import { createRequire } from "node:module";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { createHash } from "node:crypto";
+import { gzipSync } from "node:zlib";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -39,18 +40,83 @@ const common = {
   absWorkingDir: ROOT,
 };
 
+// One small entry script per kind of page (home, about, a project…). Each imports only the
+// components its page uses; code several pages share lands in common chunks the browser caches.
+const routeKinds = ["home", "about", "experience", "projects", "skills", "contact", "case-study", "project", "not-found"];
+const pageEntries = {
+  name: "page-entries",
+  setup(b) {
+    b.onResolve({ filter: /^page-entry:/ }, (a) => ({ path: a.path.slice("page-entry:".length), namespace: "page-entry" }));
+    b.onLoad({ filter: /.*/, namespace: "page-entry" }, (a) => ({
+      contents: `import { boot } from "./client";\nimport Page from "./pages/${a.path}";\nboot(Page);\n`,
+      resolveDir: join(ROOT, "src"),
+      loader: "tsx",
+    }));
+  },
+};
+
+// In the browser, Preact (about 4 kB) runs the same React components instead of React's ~55 kB
+// runtime, through preact/compat. Pre-rendering below still uses React itself. Set
+// RUNTIME=react to build the browser code with React instead (for comparing behaviour).
+const usePreact = process.env.RUNTIME !== "react";
+const preactAlias = {
+  react: "preact/compat",
+  "react-dom": "preact/compat",
+  "react-dom/client": "preact/compat/client",
+  "react/jsx-runtime": "preact/jsx-runtime",
+};
+// Offline fallback: point PREACT_SRC at a checkout of github.com/preactjs/preact when npm can't install it.
+const preactSource = {
+  name: "preact-source",
+  setup(b) {
+    const dir = process.env.PREACT_SRC;
+    const files = { preact: "src/index.js", "preact/hooks": "hooks/src/index.js", "preact/compat": "compat/src/index.js", "preact/compat/client": "compat/client.mjs", "preact/jsx-runtime": "jsx-runtime/src/index.js" };
+    const target = (path) => files[preactAlias[path] ?? path];
+    b.onResolve({ filter: /^(preact|react|react-dom)(\/.*)?$/ }, (a) => (target(a.path) ? { path: join(dir, target(a.path)) } : undefined));
+  },
+};
+let preactInstalled = true;
+try {
+  require.resolve("preact/package.json");
+} catch {
+  preactInstalled = false;
+}
+if (usePreact && !preactInstalled && !process.env.PREACT_SRC) throw new Error("preact isn't installed: run npm install (or set RUNTIME=react)");
+
 const client = await esbuild({
   ...common,
-  entryPoints: ["src/client.tsx"],
+  ...(usePreact && preactInstalled ? { alias: preactAlias } : {}),
+  entryPoints: Object.fromEntries(routeKinds.map((k) => [k, `page-entry:${k}`])),
   format: "esm",
+  splitting: true,
   target: ["es2020"],
   minify: true,
-  write: false,
+  outdir: join(DIST, "assets"),
+  entryNames: "[name].[hash]",
+  chunkNames: "chunk.[hash]",
+  metafile: true,
   platform: "browser",
+  plugins: [pageEntries, ...(usePreact && !preactInstalled ? [preactSource] : [])],
 });
-const appJs = client.outputFiles[0].text;
-const jsName = `app.${hash(appJs)}.js`;
-writeFileSync(join(DIST, "assets", jsName), appJs);
+
+// For each kind of page: its entry file and every chunk it imports up front (preloaded in <head>).
+const outputs = client.metafile.outputs;
+const fileOf = (out) => out.replace(/^dist\/assets\//, "");
+const staticImports = (out, seen = new Set()) => {
+  for (const imp of outputs[out].imports) {
+    if (imp.kind !== "import-statement" || seen.has(imp.path)) continue;
+    seen.add(imp.path);
+    staticImports(imp.path, seen);
+  }
+  return seen;
+};
+const scripts = {};
+for (const [out, meta] of Object.entries(outputs)) {
+  const kind = meta.entryPoint?.replace(/^page-entry:/, "");
+  if (!kind || !routeKinds.includes(kind)) continue;
+  scripts[kind] = { entry: fileOf(out), preload: [...staticImports(out)].map(fileOf) };
+}
+const sizeOf = (kind) => [scripts[kind].entry, ...scripts[kind].preload].reduce((n, f) => n + gzipSync(readFileSync(join(DIST, "assets", f))).length, 0);
 
 await esbuild({
   ...common,
@@ -100,7 +166,7 @@ cpSync(join(ROOT, "public"), DIST, { recursive: true });
 
 // ── 4. Pre-render pages ───────────────────────────────────────────────────
 const { renderRoutes, siteFiles } = await import(pathToFileURL(join(TMP, "prerender.mjs")).href);
-const pages = renderRoutes({ css: cssName, js: jsName, buildYear: new Date().getFullYear() });
+const pages = renderRoutes({ css: cssName, scripts, buildYear: new Date().getFullYear() });
 for (const page of pages) {
   const file = join(DIST, page.file);
   mkdirSync(dirname(file), { recursive: true });
@@ -112,4 +178,5 @@ for (const [name, body] of Object.entries(siteFiles(new Date().toISOString().sli
 
 rmSync(TMP, { recursive: true, force: true });
 const kb = (n) => `${(n / 1024).toFixed(1)} kB`;
-console.log(`✓ Built ${pages.length} pages in ${Date.now() - t0} ms  (js ${kb(appJs.length)}, css ${kb(css.length)})`);
+console.log(`✓ Built ${pages.length} pages in ${Date.now() - t0} ms  (css ${kb(css.length)}, ${kb(gzipSync(css).length)} gzipped)`);
+console.log(`  JavaScript per page, gzipped: ${routeKinds.map((k) => `${k} ${kb(sizeOf(k))}`).join(", ")}`);

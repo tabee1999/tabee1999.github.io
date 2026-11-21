@@ -20,6 +20,14 @@ const allure: [string, Record<string, unknown>][] = ALLURE
 
 export default defineConfig({
   testDir: "./tests",
+  // Visual baselines (tests/visual.spec.ts) are made on GitHub's Linux runners by the
+  // "Visual baselines" workflow, one folder per browser project.
+  snapshotPathTemplate: "{testDir}/__screenshots__/{projectName}/{arg}{ext}",
+  expect: {
+    // 0 pixels may differ. A pixel only counts as different if its colour moved more than the
+    // default threshold (anti-aliasing noise stays below it).
+    toHaveScreenshot: { maxDiffPixels: 0, animations: "disabled", caret: "hide", scale: "css" },
+  },
   fullyParallel: true,
   forbidOnly: CI,
   // One retry in CI: a test that only passes on retry is still reported as "flaky",

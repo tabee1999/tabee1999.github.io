@@ -54,11 +54,27 @@ test.describe("home page", () => {
     await expect(explore.getByRole("link", { name: "Contact me" })).toHaveAttribute("href", "/contact/");
   });
 
-  test("lists the AI tools she uses every day", async ({ page }) => {
+  test("lists the AI tools she uses, each with what she does with it", async ({ page }) => {
     await page.goto("/");
     const section = page.locator("#ai-tools");
-    await expect(section.getByRole("heading", { level: 2 })).toContainText("AI tools I use every day");
-    for (const t of content.aiTools.flatMap((g) => g.tools)) await expect(section).toContainText(t.name);
+    await expect(section.getByRole("heading", { level: 2 })).toContainText("what I actually use AI for");
+    const tools = content.aiTools.flatMap((g) => g.tools);
+    expect(tools.length).toBeLessThanOrEqual(8);
+    for (const t of tools) {
+      await expect(section).toContainText(t.name);
+      await expect(section).toContainText(t.use);
+    }
+    // Tools she doesn't use at work aren't listed
+    await expect(section).not.toContainText("Perplexity");
+    await expect(section).not.toContainText("Cursor");
+  });
+
+  test("featured projects come right after the test run and open their own pages", async ({ page }) => {
+    await page.goto("/");
+    const order = await page.locator("main > section[id]").evaluateAll((els) => els.map((e) => e.id));
+    expect(order.indexOf("featured")).toBe(order.indexOf("test-run") + 1);
+    const cards = page.locator("#featured").getByRole("link").filter({ hasText: /Epicmetry|Propellus|Maleyat/ });
+    await expect(cards.first()).toHaveAttribute("href", /^\/projects\/[a-z0-9-]+\/$/);
   });
 
   test("shows how she works in four steps", async ({ page }) => {

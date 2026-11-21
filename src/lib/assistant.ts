@@ -2,7 +2,7 @@
 // works out what it's about and answers from src/content.ts, so it never says anything the
 // site doesn't. When site.chatEndpoint is set, Claude answers instead and this is the fallback.
 
-import { aiTools, caseStudies, education, experience, person, process, projects, sectionPaths, services, skillGroups, stats } from "../content";
+import { aiTools, caseStudies, education, experience, person, process, projectPath, projects, sectionPaths, services, skillGroups, stats } from "../content";
 import { matchJob, mentions, nameOf, notOnCv, termsFor } from "./match";
 
 export type ChatAction = { label: string; href: string; kind: "download" | "external" | "internal" | "mail" };
@@ -105,7 +105,7 @@ function entityAnswer(q: string): Answer | null {
     return {
       topic: "project",
       text: `${project.name} (${project.company}, ${lowerFirst(project.domain)}). ${inHerWords(project.summary)}\n\n${bullets(project.highlights)}`,
-      actions: [section("projects", "See projects")],
+      actions: [{ label: `See the ${project.name} project`, href: projectPath(project.slug), kind: "internal" }, section("projects", "All projects")],
     };
   }
   return null;

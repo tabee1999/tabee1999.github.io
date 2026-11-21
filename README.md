@@ -27,10 +27,11 @@ Each page has its own address, title, description, breadcrumbs and structured da
 
 | Page | Address | What's on it |
 | --- | --- | --- |
-| Home | `/` | Hero, the test run, how I work, links to everything else |
+| Home | `/` | Hero, the test run, featured projects, how I work, AI tools, links to everything else |
 | About | `/about/` | Story, education, languages, team photos |
 | Experience | `/experience/` | Every role, with the GPS trail |
-| Projects | `/projects/` | Projects with filters and details, case studies |
+| Projects | `/projects/` | Projects with filters, case studies |
+| Each project | `/projects/<slug>/` | What I tested and delivered, my role, the related case study (titled for searches like “QA for a travel booking platform”) |
 | Skills | `/skills/` | Expertise, tools, the job-match checker |
 | Contact | `/contact/` | Contact form, the bug-to-shield animation, FAQ |
 
@@ -46,6 +47,16 @@ Light mint-grey paper, deep pine text and an emerald accent, set in Schibsted Gr
 - **Bug to shield** (contact): a bug made of particles rebuilds itself as a shield with a tick.
 
 They share one small engine (`src/lib/scroll.ts`): one passive scroll listener writes each section's progress to a CSS variable, so most motion is plain CSS. People who prefer reduced motion, and browsers without JavaScript, see every animation's finished state with no pinned scrolling. `tests/animations.spec.ts` scrolls through each one and checks what's on screen.
+
+## Speed
+
+Built to load fast on cheap phones and slow connections:
+
+- **About 25–40 kB of JavaScript per page** (gzipped), down from 108 kB. The browser runs the React components on [Preact](https://preactjs.com/) through `preact/compat` (about 4 kB instead of React's ~55 kB), while pre-rendering at build time still uses React. Set `RUNTIME=react` to build the browser code with React instead.
+- **Code split per page.** Each kind of page (`src/pages/`) gets its own small entry script; shared code sits in cached chunks that are preloaded in the `<head>`. The chat window and its answer engine download only when someone hovers or opens the chat button.
+- **Fonts served from the site** (`public/fonts/`, Latin subset, variable weight, 72 kB for both), so no extra connection to a font service before text shows.
+- **The hero background rests.** It repaints only the dots near the scan line or pointer, at up to 30 frames a second, plays three sweeps and stops until the pointer moves. It stays still with reduced motion, data saver or a low-memory phone.
+- `tests/performance.spec.ts` holds the budgets: 50 kB of JavaScript on the home page, 40 kB elsewhere, 20 kB of CSS, nothing loaded from other servers.
 
 ## SEO and AI search
 
@@ -67,22 +78,25 @@ They share one small engine (`src/lib/scroll.ts`): one passive scroll listener w
 ```
 ├─ src/
 │  ├─ content.ts              ← all site text: edit this
-│  ├─ App.tsx                 ← what each page shows (home, about, experience, projects, skills, contact, case study, 404)
+│  ├─ App.tsx                 ← the frame every page shares (header, footer, chat)
+│  ├─ pages/                  ← what each kind of page shows; one script per page kind
 │  ├─ components/             ← Hero, Projects, CaseStudies, Experience, Skills, Contact…
 │  ├─ lib/scroll.ts           ← scroll animation engine (progress → CSS variable)
 │  ├─ lib/hooks.ts            ← scroll progress bar, local time
 │  ├─ styles.css              ← Tailwind v4 theme: colours, fonts, buttons, cards
-│  ├─ client.tsx              ← hydrates the pre-rendered HTML in the browser
+│  ├─ client.tsx              ← boot(): hydrates the pre-rendered HTML in the browser
 │  └─ prerender.tsx           ← renders every page + SEO tags, sitemap, robots.txt, llms.txt
 ├─ public/                    ← photo, CV, favicon, link-preview image (copied as-is)
 ├─ scripts/build.mjs          ← esbuild + Tailwind → dist/
 ├─ scripts/serve.mjs          ← tiny static server for preview and tests
 ├─ src/lib/assistant.ts       ← the chat's built-in answers (no server needed)
 ├─ chat-worker/               ← Cloudflare Worker for AI chat answers (Claude), with unit tests
-├─ tests/                     ← Playwright: home, navigation, interactions, contact, chat, animations, responsive, accessibility, SEO
+├─ tests/                     ← Playwright: home, navigation, interactions, contact, chat, animations, responsive, accessibility, SEO, performance, visual
+├─ tests/__screenshots__/     ← approved screenshots for the visual checks (made in CI)
 ├─ playwright.config.ts
 ├─ lighthouserc.json          ← Lighthouse budgets for the live site
-└─ .github/workflows/ci.yml   ← test → deploy to GitHub Pages → Lighthouse
+├─ .github/workflows/ci.yml   ← test → deploy to GitHub Pages → Lighthouse
+└─ .github/workflows/visual-baselines.yml ← re-take the approved screenshots after a design change
 ```
 
 ## Run it locally
@@ -117,8 +131,9 @@ npm run test:allure    # run the suite and open it as an Allure report
 | A recruiter can't reach me or download the CV | CV link returns a real PDF; email, LinkedIn and GitHub links; contact form validation and the email it opens |
 | Broken links or pages | every internal link on every page is requested; anchors exist; 404 page works |
 | Layout breaks on a phone | no sideways scrolling at 360, 768, 1024 and 1440px; mobile menu; 44px tap targets |
-| Interactive parts stop working | project filters and dialog, case study tabs (mouse and keyboard), experience accordion, FAQ, job match, copy email |
+| Interactive parts stop working | project filters and project pages, case study tabs (mouse and keyboard), experience accordion, FAQ, job match, copy email |
 | The chat says something wrong or goes off topic | built-in answers checked against the CV; AI mode tested with a mocked service (reply, history, outage fallback, rate limit); worker unit tests for origin checks, input limits, rate limiting, hidden errors and the on-topic system prompt |
 | Not usable with a keyboard or screen reader | axe (WCAG 2.2 AA) on every page and in open states; skip link; visible focus; heading order |
 | Not found in Google or AI search | titles, descriptions, canonicals, social cards, JSON-LD, robots.txt, sitemap, llms.txt; content present before JavaScript runs |
-| Slow or poorly built | Lighthouse on the live site after each deploy |
+| Slow or poorly built | JavaScript and CSS budgets per page; no third-party requests; the hero animation rests; Lighthouse on the live site after each deploy |
+| A layout or style change slips through unnoticed | visual regression: key screens compared with approved screenshots at 0 pixels of difference (desktop and mobile Chrome, on Linux CI). After a deliberate design change, run **Actions → Visual baselines** to approve the new look |

@@ -1,7 +1,9 @@
+import type { ComponentType } from "react";
 import { hydrateRoot } from "react-dom/client";
-import { App, type PageData } from "./App";
+import { App } from "./App";
 import { sectionPaths } from "./content";
 import { trackClicks } from "./lib/analytics";
+import { routeSlug, type PageData } from "./pages";
 
 declare global {
   interface Window {
@@ -31,17 +33,29 @@ function revealOnScroll() {
   html.classList.add("reveal-ready");
 }
 
-const data = window.__PAGE__ ?? { page: { route: "home" } as PageData, year: new Date().getFullYear() };
+/**
+ * Starts a page in the browser. Each kind of page has its own small entry script (made by
+ * scripts/build.mjs) that calls this with that page's component.
+ */
+export function boot(Page: ComponentType<{ slug?: string }>) {
+  const data = window.__PAGE__ ?? { page: { route: "home" } as PageData, year: new Date().getFullYear() };
 
-// The site used to be one long page. Old links such as /#experience or /#contact (in CVs,
-// emails or search results) now go to the page that section moved to.
-const moved = data.page.route === "home" ? sectionPaths[decodeURIComponent(location.hash.slice(1))] : undefined;
+  // The site used to be one long page. Old links such as /#experience or /#contact (in CVs,
+  // emails or search results) now go to the page that section moved to.
+  const moved = data.page.route === "home" ? sectionPaths[decodeURIComponent(location.hash.slice(1))] : undefined;
+  if (moved) {
+    location.replace(moved);
+    return;
+  }
 
-if (moved) {
-  location.replace(moved);
-} else {
   const root = document.getElementById("root");
-  if (root) hydrateRoot(root, <App page={data.page} year={data.year} />);
+  if (root)
+    hydrateRoot(
+      root,
+      <App page={data.page} year={data.year}>
+        <Page slug={routeSlug(data.page)} />
+      </App>,
+    );
   trackClicks();
   revealOnScroll();
 }

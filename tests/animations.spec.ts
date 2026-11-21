@@ -40,6 +40,22 @@ test.describe("animations", () => {
     await expect(page.getByTestId("tested-for")).toContainText("Fleetify");
   });
 
+  test("the hero grid rests after a few sweeps and wakes when the pointer moves", async ({ page }) => {
+    await page.clock.install();
+    await page.goto("/");
+    const grid = page.getByTestId("hero-grid");
+    const frame = () => grid.evaluate((c) => (c as HTMLCanvasElement).toDataURL());
+    await page.clock.runFor(25_000);
+    const resting = await frame();
+    await page.clock.runFor(1_000);
+    expect(await frame()).toBe(resting);
+
+    const box = (await grid.boundingBox())!;
+    await page.mouse.move(box.x + box.width * 0.7, box.y + 200);
+    await page.clock.runFor(500);
+    expect(await frame()).not.toBe(resting);
+  });
+
   test("the test run plays as you scroll", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("html")).toHaveClass(/\bmotion\b/);

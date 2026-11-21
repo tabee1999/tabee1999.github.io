@@ -63,7 +63,7 @@ test.describe("chat (built-in answers)", () => {
     const reply = await ask(page, "Does she use Codex or Claude Code?");
     await expect(reply).toContainText("OpenAI Codex");
     await expect(reply).toContainText("Claude Code");
-    await expect(reply).toContainText("Playwright and RestAssured tests");
+    await expect(reply).toContainText("Fix failing Playwright tests");
   });
 
   test("links to the page that has the details", async ({ page }) => {

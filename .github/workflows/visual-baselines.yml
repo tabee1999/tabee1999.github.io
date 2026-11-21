@@ -1,0 +1,53 @@
+name: Visual baselines
+
+# Run by hand (Actions → Visual baselines → Run workflow) after a deliberate design change.
+# It takes the approved screenshots on the same Linux runner CI uses and commits them, so the
+# visual checks in tests/visual.spec.ts compare every later build against them.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: visual-baselines
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: Take and commit approved screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+      - name: Install Chrome
+        run: npx playwright install --with-deps chromium
+
+      - name: Build site
+        run: npm run build
+
+      - name: Take the screenshots
+        run: npx playwright test tests/visual.spec.ts --project=desktop-chrome --project=mobile-chrome --update-snapshots=all --retries=0
+        env:
+          UPDATE_BASELINES: "1"
+
+      # The screenshots only match the browser build they were taken with.
+      - name: Record the Playwright version
+        run: node -p "require('@playwright/test/package.json').version" > tests/__screenshots__/playwright-version.txt
+
+      - name: Commit them
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/__screenshots__
+          if git diff --cached --quiet; then echo "Screenshots unchanged"; exit 0; fi
+          git commit -m "Update approved visual screenshots"
+          git push

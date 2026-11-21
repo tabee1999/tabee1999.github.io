@@ -1,16 +1,7 @@
-import { useEffect, useRef, useState } from "react";
-import { caseStudies, categories, projects, type Category, type Project } from "../content";
+import { useState } from "react";
+import { categories, projectPath, projects, type Category, type Project } from "../content";
 import { Icon } from "./Icon";
 import { Section } from "./Layout";
-
-/** Which case study tells the longer story behind each project. */
-const projectCaseStudy: Record<string, string> = {
-  "al-rais-travel": "regression-automation-three-products",
-  "modon-express": "regression-automation-three-products",
-  "portfolio-ai-assistant": "testing-an-ai-chat-assistant",
-  "visa-platform": "qa-from-scratch-at-a-startup",
-  "b2b-marketplace": "b2b-marketplace-and-logistics-apps",
-};
 
 const visualIcon: Record<Project["visual"], string> = {
   travel: "plane",
@@ -152,98 +143,9 @@ export function ProjectVisual({ kind }: { kind: Project["visual"] }) {
   );
 }
 
-function ProjectDialog({ project, onClose, level }: { project: Project | null; onClose: () => void; level: 1 | 2 }) {
-  const Title = level === 1 ? "h2" : "h3";
-  const Sub = level === 1 ? "h3" : "h4";
-  const ref = useRef<HTMLDialogElement | null>(null);
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-    if (project && !dialog.open) dialog.showModal();
-    if (!project && dialog.open) dialog.close();
-  }, [project]);
-
-  const study = project ? caseStudies.find((c) => c.slug === projectCaseStudy[project.slug]) : undefined;
-
-  return (
-    <dialog
-      ref={ref}
-      onClose={onClose}
-      onClick={(e) => {
-        if (e.target === ref.current) onClose();
-      }}
-      aria-labelledby="project-dialog-title"
-      className="project-dialog m-auto max-h-[calc(100dvh-2rem)] w-[min(40rem,calc(100vw-2rem))] overflow-y-auto rounded-[1.25rem] border border-line bg-surface p-0 text-ink shadow-2xl backdrop:bg-ink/60"
-      data-testid="project-dialog"
-    >
-      {project && (
-        <div className="panel-in p-6 md:p-8">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold text-accent-700">
-                {project.company}<span className="font-normal text-mute">, {project.domain}</span>
-              </p>
-              <Title id="project-dialog-title" className="mt-1 text-2xl font-bold tracking-[-0.01em]">
-                {project.name}
-              </Title>
-            </div>
-            <button type="button" onClick={onClose} className="btn btn-ghost btn-sm aspect-square !px-0" aria-label="Close project details">
-              <Icon name="close" className="size-5" />
-            </button>
-          </div>
-          <div className="mt-5">
-            <ProjectVisual kind={project.visual} />
-          </div>
-          <p className="mt-5 leading-relaxed text-mute">{project.summary}</p>
-          <Sub className="mt-6 font-bold text-ink">What I delivered</Sub>
-          <ul className="mt-3 space-y-2.5">
-            {project.highlights.map((h) => (
-              <li key={h} className="flex gap-3 text-ink">
-                <span className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-accent-50 text-ok">
-                  <Icon name="check" className="size-3.5" />
-                </span>
-                {h}
-              </li>
-            ))}
-          </ul>
-          <dl className="mt-6 grid gap-4 border-t border-line pt-6 sm:grid-cols-2">
-            <div>
-              <dt className="text-sm font-semibold text-mute">Platforms</dt>
-              <dd className="mt-1">{project.platforms.join(", ")}</dd>
-            </div>
-            <div>
-              <dt className="text-sm font-semibold text-mute">Testing</dt>
-              <dd className="mt-1">{project.categories.join(", ")}</dd>
-            </div>
-          </dl>
-          <div className="mt-7 flex flex-wrap gap-3">
-            {study && (
-              <a href={`/case-studies/${study.slug}/`} className="btn btn-primary btn-sm">
-                Read the case study
-              </a>
-            )}
-            {project.url && (
-              <a href={project.url} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
-                Visit {new URL(project.url).hostname.replace(/^(www|app)\./, "")}
-                <Icon name="arrowUpRight" className="size-4" />
-                <span className="sr-only">(opens in a new tab)</span>
-              </a>
-            )}
-            <a href="/contact/" onClick={onClose} className="btn btn-ghost btn-sm">
-              Discuss a similar project
-            </a>
-          </div>
-        </div>
-      )}
-    </dialog>
-  );
-}
-
 export function Projects({ level = 2 }: { level?: 1 | 2 }) {
   const Card = level === 1 ? "h2" : "h3";
   const [filter, setFilter] = useState<Category | "All">("All");
-  const [selected, setSelected] = useState<Project | null>(null);
-  const opener = useRef<HTMLButtonElement | null>(null);
   const shown = filter === "All" ? projects : projects.filter((p) => p.categories.includes(filter));
   const count = (c: Category) => projects.filter((p) => p.categories.includes(c)).length;
 
@@ -252,7 +154,7 @@ export function Projects({ level = 2 }: { level?: 1 | 2 }) {
       id="projects"
       level={level}
       title={level === 1 ? "QA projects: products I've helped ship" : "Products I've helped ship"}
-      lead="Travel, payments, fleet, AI and fintech products tested across web, mobile and API. Select a project to see what I delivered."
+      lead="Travel, payments, fleet, AI and fintech products tested across web, mobile and API. Open a project to see what I tested and delivered."
     >
       <div className="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filter projects by type of testing">
         {(["All", ...categories] as const).map((c) => {
@@ -297,32 +199,19 @@ export function Projects({ level = 2 }: { level?: 1 | 2 }) {
                     </li>
                   ))}
                 </ul>
-                <button
-                  type="button"
-                  className="mt-5 inline-flex min-h-11 w-fit cursor-pointer items-center font-semibold text-accent-700 underline decoration-accent-300 underline-offset-4 after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] group-hover:decoration-accent-700 focus-visible:outline-none"
-                  onClick={(e) => {
-                    opener.current = e.currentTarget;
-                    setSelected(p);
-                  }}
-                  aria-haspopup="dialog"
+                <a
+                  href={projectPath(p.slug)}
+                  aria-label={`See the project: ${p.name}`}
+                  className="mt-5 inline-flex min-h-11 w-fit items-center font-semibold text-accent-700 underline decoration-accent-300 underline-offset-4 after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] group-hover:decoration-accent-700 focus-visible:outline-none"
                   data-track={`project-${p.slug}`}
                 >
-                  View details <span className="sr-only">for {p.name}</span>
-                </button>
+                  See the project
+                </a>
               </div>
             </div>
           </li>
         ))}
       </ul>
-
-      <ProjectDialog
-        level={level}
-        project={selected}
-        onClose={() => {
-          setSelected(null);
-          opener.current?.focus();
-        }}
-      />
     </Section>
   );
 }

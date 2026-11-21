@@ -16,13 +16,6 @@ test.describe("accessibility (axe, WCAG 2.2 AA)", () => {
     expect(await axeViolations(page)).toEqual([]);
   });
 
-  test("with the project dialog open", async ({ page }) => {
-    await page.goto("/projects/");
-    await page.getByRole("button", { name: "View details for Modon Express" }).click();
-    await expect(page.getByRole("dialog")).toBeVisible();
-    expect(await axeViolations(page)).toEqual([]);
-  });
-
   test("with a team photo open full size", async ({ page }) => {
     await page.goto("/about/");
     await page.getByTestId("team-gallery").getByRole("button").first().click();

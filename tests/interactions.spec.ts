@@ -24,26 +24,29 @@ test.describe("projects", () => {
     await expect(cards).toHaveCount(projects.length);
   });
 
-  test("opens project details in a dialog and closes it with Escape", async ({ page }) => {
+  test("each project card opens that project's own page", async ({ page }) => {
     await page.goto("/projects/");
-    const opener = page.getByRole("button", { name: "View details for Al Rais Travel" });
-    await opener.click();
+    await page.getByRole("link", { name: "See the project: Al Rais Travel" }).click();
+    await expect(page).toHaveURL(/\/projects\/al-rais-travel\/$/);
 
-    const dialog = page.getByRole("dialog", { name: "Al Rais Travel" });
-    await expect(dialog).toBeVisible();
-    for (const h of projects[0].highlights) await expect(dialog.getByText(h)).toBeVisible();
-    await expect(dialog.getByRole("link", { name: "Read the case study" })).toHaveAttribute("href", `/case-studies/${caseStudies[0].slug}/`);
+    const project = projects[0];
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(project.headline);
+    for (const h of project.highlights) await expect(page.getByTestId("project-page").getByText(h, { exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Read the case study" })).toHaveAttribute("href", `/case-studies/${caseStudies[0].slug}/`);
+    await expect(page.getByRole("link", { name: /Visit alrais\.com/ })).toHaveAttribute("href", project.url!);
 
-    await page.keyboard.press("Escape");
-    await expect(dialog).toBeHidden();
-    await expect(opener).toBeFocused();
+    // Breadcrumb back to the list
+    await page.getByRole("navigation", { name: "Breadcrumb" }).getByRole("link", { name: "Projects" }).click();
+    await expect(page).toHaveURL(/\/projects\/$/);
   });
 
-  test("the close button also closes the dialog", async ({ page }) => {
-    await page.goto("/projects/");
-    await page.getByRole("button", { name: "View details for Fleetify" }).click();
-    await page.getByRole("button", { name: "Close project details" }).click();
-    await expect(page.getByRole("dialog")).toBeHidden();
+  test("project pages link to every other project", async ({ page }) => {
+    await page.goto(content.projectPath("fleetify"));
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(projects.find((p) => p.slug === "fleetify")!.headline);
+    const more = page.getByRole("region", { name: "More QA projects" });
+    await expect(more.getByRole("link")).toHaveCount(projects.length - 1);
+    // Fleetify has no case study, so there's no case-study box on its page
+    await expect(page.getByRole("link", { name: "Read the case study" })).toHaveCount(0);
   });
 });
 

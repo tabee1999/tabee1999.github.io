@@ -1,5 +1,5 @@
 import { useRef, type CSSProperties, type RefObject } from "react";
-import { aiTools, experience, pages, person, process, projects, caseStudies } from "../content";
+import { aiTools, experience, pages, person, process, projectPath, projects, caseStudies } from "../content";
 import { seg, segment, span, useScrollProgress } from "../lib/scroll";
 import { Icon } from "./Icon";
 import { ProjectVisual } from "./Projects";
@@ -36,7 +36,7 @@ export function HowIWork() {
       id="how-i-work"
       aria-labelledby="how-title"
       className="scrolly overflow-x-clip border-y border-line bg-surface"
-      style={{ "--runway": "190vh" } as Vars}
+      style={{ "--runway": "125vh" } as Vars}
     >
       <div className="scrolly-stage">
         <div className="wrap grid items-center gap-6 py-8 md:py-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
@@ -242,6 +242,7 @@ function Phone({ route, driver }: { route: RefObject<SVGPathElement | null>; dri
 
 export function AITools() {
   let n = 0;
+  const count = aiTools.reduce((sum, g) => sum + g.tools.length, 0);
   return (
     <section id="ai-tools" aria-labelledby="ai-tools-title" className="relative overflow-hidden bg-pine py-16 text-pine-text md:py-20">
       <div
@@ -254,10 +255,10 @@ export function AITools() {
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between" data-reveal="">
           <div className="max-w-2xl">
             <h2 id="ai-tools-title" className="text-[clamp(2rem,3.6vw,2.75rem)] leading-[1.08] font-bold tracking-[-0.03em] text-white">
-              AI-first QA: the AI tools I use every day
+              AI-first QA: what I actually use AI for
             </h2>
             <p className="mt-4 text-pine-dim md:text-lg">
-              AI makes me faster at writing tests, finding edge cases and getting unstuck. I review and run everything it produces before it's merged.
+              {count} tools and what I actually do with each. I review and run everything AI produces before it's merged.
             </p>
           </div>
           <a href={pages.skills.path} className="btn self-start border-white/25 text-white hover:border-pine-tick lg:self-auto">
@@ -305,7 +306,7 @@ const featured = ["al-rais-travel", "visa-platform", "trading-platforms"];
 export function FeaturedProjects() {
   const picks = featured.map((slug) => projects.find((p) => p.slug === slug)!).filter(Boolean);
   return (
-    <section id="featured" aria-labelledby="featured-title" className="pt-14 pb-6 md:pt-20 md:pb-8">
+    <section id="featured" aria-labelledby="featured-title" className="py-12 md:py-16">
       <div className="wrap">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between" data-reveal="">
           <div className="max-w-2xl">
@@ -323,7 +324,7 @@ export function FeaturedProjects() {
         <ul className="mt-10 grid gap-5 md:grid-cols-3">
           {picks.map((p, i) => (
             <li key={p.slug} data-reveal="" style={{ "--reveal-delay": `${i * 110}ms` } as Vars}>
-              <a href={pages.projects.path} className="card group flex h-full flex-col p-3 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-accent-400 hover:shadow-[0_18px_40px_-24px_rgb(8_54_44/0.45)]">
+              <a href={projectPath(p.slug)} className="card group flex h-full flex-col p-3 transition-[border-color,transform,box-shadow] duration-300 hover:-translate-y-1 hover:border-accent-400 hover:shadow-[0_18px_40px_-24px_rgb(8_54_44/0.45)]">
                 <ProjectVisual kind={p.visual} />
                 <span className="flex flex-1 flex-col px-3 pt-5 pb-3">
                   <span className="text-sm font-semibold text-accent-700">

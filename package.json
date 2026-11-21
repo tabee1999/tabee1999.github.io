@@ -20,6 +20,7 @@
     "test:allure": "ALLURE=1 playwright test; allure generate ./allure-results && allure open"
   },
   "dependencies": {
+    "preact": "^10.29.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

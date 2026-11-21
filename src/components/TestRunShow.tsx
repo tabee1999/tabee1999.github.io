@@ -76,7 +76,7 @@ export function TestRunShow() {
   });
 
   return (
-    <section ref={ref} id="test-run" aria-labelledby="test-run-title" className="scrolly" style={{ "--runway": "150vh" } as Vars}>
+    <section ref={ref} id="test-run" aria-labelledby="test-run-title" className="scrolly" style={{ "--runway": "100vh" } as Vars}>
       <div className="scrolly-stage">
         <div className="wrap pt-10 pb-4 md:pt-14 md:pb-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-10">

@@ -1,5 +1,22 @@
 @import "tailwindcss";
 
+/* Fonts are served from this site (Latin subset, variable weight), so there's no extra
+   connection to a font service before the text can show. Licences: public/fonts/OFL-*.txt */
+@font-face {
+  font-family: "Schibsted Grotesk";
+  src: url("/fonts/schibsted-grotesk.woff2") format("woff2");
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/jetbrains-mono.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Design tokens: mint-grey paper, deep pine ink, an emerald accent scale, and one dark
    "pine" surface reserved for the hero's test-run card. */
 @theme {
