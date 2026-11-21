@@ -5,7 +5,7 @@ import { test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import worker, { LIMITS, resetProfileCache, resetRateLimits, systemPrompt, validateMessages } from "./worker.js";
 
-const SITE = "https://tabee1999.github.io";
+const SITE = "https://tabeedashakir.github.io";
 const env = { ANTHROPIC_API_KEY: "test-key" };
 const realFetch = globalThis.fetch;
 let calls;

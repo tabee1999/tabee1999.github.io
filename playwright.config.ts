@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const PORT = Number(process.env.PORT ?? 4321);
 const CI = !!process.env.CI;
-// BASE_URL=https://tabee1999.github.io runs the suite against the live site (daily monitor).
+// BASE_URL=https://tabeedashakir.github.io runs the suite against the live site (daily monitor).
 const LIVE = process.env.BASE_URL;
 // ALLURE=1 also writes Allure results (CI turns it on; the report is published at /allure/).
 const ALLURE = !!process.env.ALLURE;
@@ -12,7 +12,7 @@ const allure: [string, Record<string, unknown>][] = ALLURE
         "allure-playwright",
         {
           resultsDir: "allure-results",
-          environmentInfo: { Site: "https://tabee1999.github.io", Browsers: "Chrome, Firefox, mobile Chrome (Pixel 7)", "Node.js": process.version },
+          environmentInfo: { Site: "https://tabeedashakir.github.io", Browsers: "Chrome, Firefox, mobile Chrome (Pixel 7)", "Node.js": process.version },
         },
       ],
     ]

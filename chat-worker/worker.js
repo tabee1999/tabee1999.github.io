@@ -1,4 +1,4 @@
-// Cloudflare Worker behind the AI chat on https://tabee1999.github.io
+// Cloudflare Worker behind the AI chat on https://tabeedashakir.github.io
 //
 // - keeps the Anthropic API key secret (the website never sees it)
 // - only answers requests from the portfolio's own address
@@ -11,8 +11,8 @@
 
 const DEFAULTS = {
   MODEL: "claude-haiku-5-5",
-  ALLOWED_ORIGINS: "https://tabee1999.github.io",
-  PROFILE_URL: "https://tabee1999.github.io/llms.txt",
+  ALLOWED_ORIGINS: "https://tabeedashakir.github.io",
+  PROFILE_URL: "https://tabeedashakir.github.io/llms.txt",
 };
 
 export const LIMITS = {
@@ -27,7 +27,7 @@ export const LIMITS = {
 
 const FALLBACK_PROFILE = `# Tabeeda Shakir — Senior QA Engineer
 Senior QA Engineer with 5+ years in manual, automated and AI-first testing (Playwright, Selenium, RestAssured, Postman, Java, SQL, JMeter).
-Contact: tabeeda1@gmail.com · https://www.linkedin.com/in/tabeeda-shakirshah101010 · CV: https://tabee1999.github.io/cv/Tabeeda-Shakir-CV.pdf`;
+Contact: tabeeda1@gmail.com · https://www.linkedin.com/in/tabeeda-shakirshah101010 · CV: https://tabeedashakir.github.io/cv/Tabeeda-Shakir-CV.pdf`;
 
 export function systemPrompt(profile) {
   return `You are the assistant on Tabeeda Shakir's portfolio website. Visitors are mostly recruiters and hiring managers. Answer their questions about Tabeeda's professional profile.

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { allureLabels, content, watchErrors } from "./helpers";
 
 // Quick health checks. They run on every push, and every day against the live site
-// (BASE_URL=https://tabee1999.github.io npx playwright test --grep @smoke).
+// (BASE_URL=https://tabeedashakir.github.io npx playwright test --grep @smoke).
 const LIVE = !!process.env.BASE_URL;
 const { person, caseStudies, pages, projects } = content;
 

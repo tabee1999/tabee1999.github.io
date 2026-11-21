@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 // Checks every external link on the live site: is it still up, and has the linked page been
 // hacked with gambling or spam content (it happens to small company sites)?
-//   node scripts/check-links.mjs [--site https://tabee1999.github.io] [--list]
+//   node scripts/check-links.mjs [--site https://tabeedashakir.github.io] [--list]
 // Exits with 1 if a link is broken or looks compromised, so the daily monitor flags it.
 
 import { appendFileSync } from "node:fs";
 
 const args = process.argv.slice(2);
-const site = (args.includes("--site") ? args[args.indexOf("--site") + 1] : "https://tabee1999.github.io").replace(/\/$/, "");
+const site = (args.includes("--site") ? args[args.indexOf("--site") + 1] : "https://tabeedashakir.github.io").replace(/\/$/, "");
 const listOnly = args.includes("--list");
-const UA = "Mozilla/5.0 (compatible; TabeedaPortfolioLinkCheck/1.0; +https://tabee1999.github.io)";
+const UA = "Mozilla/5.0 (compatible; TabeedaPortfolioLinkCheck/1.0; +https://tabeedashakir.github.io)";
 
 // Signs that a page has been injected with spam. Kept strict to avoid false alarms.
 const SPAM = /\b(casino|slot gacor|togel|judi online|sportsbook|online betting|poker online|bandar)\b/i;
@@ -42,7 +42,7 @@ for (const page of pages) {
 const llms = await (await get(`${site}/llms.txt`)).text();
 for (const m of llms.matchAll(/https?:\/\/[^\s)]+/g)) {
   const url = m[0].replace(/[.,]$/, "");
-  if (!url.startsWith(site) && !url.startsWith("https://tabee1999.github.io")) links.add(url);
+  if (!url.startsWith(site) && !/^https:\/\/(tabeedashakir|tabee1999)\.github\.io/.test(url)) links.add(url);
 }
 
 if (listOnly) {

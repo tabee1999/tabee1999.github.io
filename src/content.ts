@@ -49,11 +49,11 @@ export type CaseStudy = {
 export const testCount = "350+";
 
 export const site = {
-  url: "https://tabee1999.github.io",
+  url: "https://tabeedashakir.github.io",
   // Link-preview image for LinkedIn, WhatsApp, Slack and email (1200 × 630). Rename the file when it
   // changes, so those apps fetch the new one instead of showing their cached copy.
   ogImage: "og-tabeeda-shakir-senior-qa-engineer.jpg",
-  repoUrl: "https://github.com/tabee1999/tabee1999.github.io",
+  repoUrl: "https://github.com/tabeedashakir/tabeedashakir.github.io",
   // Test results published with every deploy: an Allure dashboard and the raw Playwright report.
   qualityReportPath: "allure/",
   playwrightReportPath: "report/",
@@ -99,7 +99,7 @@ export const person = {
   available: "Open to new roles",
   email: "tabeeda1@gmail.com",
   linkedin: "https://www.linkedin.com/in/tabeeda-shakirshah101010",
-  github: "https://github.com/tabee1999",
+  github: "https://github.com/tabeedashakir",
   cv: "cv/Tabeeda-Shakir-CV.pdf",
   photo: "images/tabeeda-shakir-senior-qa-engineer",
   avatar: "images/tabeeda-shakir-avatar",

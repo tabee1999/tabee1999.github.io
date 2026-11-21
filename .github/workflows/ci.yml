@@ -102,7 +102,7 @@ jobs:
 
       # Trends build up over time: the previous run's history is read back from the live site.
       - name: Fetch previous Allure history
-        run: curl -fsSL https://tabee1999.github.io/allure/history.jsonl -o allure-history.jsonl || rm -f allure-history.jsonl
+        run: curl -fsSL https://tabeedashakir.github.io/allure/history.jsonl -o allure-history.jsonl || rm -f allure-history.jsonl
 
       # The site footer and About section link to /allure/.
       - name: Build the Allure report

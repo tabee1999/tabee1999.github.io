@@ -2,11 +2,11 @@
   "ci": {
     "collect": {
       "url": [
-        "https://tabee1999.github.io/",
-        "https://tabee1999.github.io/experience/",
-        "https://tabee1999.github.io/contact/",
-        "https://tabee1999.github.io/projects/al-rais-travel/",
-        "https://tabee1999.github.io/case-studies/regression-automation-three-products/"
+        "https://tabeedashakir.github.io/",
+        "https://tabeedashakir.github.io/experience/",
+        "https://tabeedashakir.github.io/contact/",
+        "https://tabeedashakir.github.io/projects/al-rais-travel/",
+        "https://tabeedashakir.github.io/case-studies/regression-automation-three-products/"
       ],
       "numberOfRuns": 3,
       "settings": {

@@ -1,13 +1,13 @@
 # Tabeeda Shakir — Senior QA Engineer portfolio
 
-Live at **https://tabee1999.github.io**
+Live at **https://tabeedashakir.github.io**
 
 A portfolio built and tested like a product: React + TypeScript + Tailwind CSS, pre-rendered to static HTML for search engines, and checked on every push by a Playwright suite (desktop Chrome, desktop Firefox, mobile Chrome), axe accessibility scans and Lighthouse.
 
 Every deploy publishes the results with the site:
 
-- **[Allure report](https://tabee1999.github.io/allure/)**: tests grouped by feature and severity, with trends that build up across deploys
-- **[Playwright report](https://tabee1999.github.io/report/)**: the raw run, with traces for any retried test
+- **[Allure report](https://tabeedashakir.github.io/allure/)**: tests grouped by feature and severity, with trends that build up across deploys
+- **[Playwright report](https://tabeedashakir.github.io/report/)**: the raw run, with traces for any retried test
 
 ## What's on the site
 
@@ -67,11 +67,11 @@ Built to load fast on cheap phones and slow connections:
 
 ## Monitoring, security and stats
 
-- **Daily live-site monitor** (`.github/workflows/monitor.yml`): smoke tests against https://tabee1999.github.io and a check that every external link still works and hasn't been hacked with spam. GitHub emails you if it fails.
+- **Daily live-site monitor** (`.github/workflows/monitor.yml`): smoke tests against https://tabeedashakir.github.io and a check that every external link still works and hasn't been hacked with spam. GitHub emails you if it fails.
 - **CodeQL** code scanning on every push and weekly; results under the repository's Security tab.
 - **Dependabot** opens weekly update pull requests for npm packages and GitHub Actions; each runs the full test suite.
 - **Content Security Policy** on every page: only the site's own scripts (inline ones are hash-pinned), Google Fonts and configured services.
-- **Visitor stats (optional):** set `site.goatcounterCode` to a free [GoatCounter](https://www.goatcounter.com) code to see visits by country, referrer, device and page, plus clicks on the CV, email, LinkedIn, chat and Allure report. No cookies and no personal data. Share the site as `https://tabee1999.github.io/?ref=company-name` in each application to see which company opened it.
+- **Visitor stats (optional):** set `site.goatcounterCode` to a free [GoatCounter](https://www.goatcounter.com) code to see visits by country, referrer, device and page, plus clicks on the CV, email, LinkedIn, chat and Allure report. No cookies and no personal data. Share the site as `https://tabeedashakir.github.io/?ref=company-name` in each application to see which company opened it.
 
 ## Project structure
 

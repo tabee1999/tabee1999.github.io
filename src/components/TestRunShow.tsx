@@ -214,7 +214,7 @@ function MiniBrowser({ cursor, ripple }: { cursor: RefObject<HTMLSpanElement | n
           <div className="relative h-5 flex-1 font-mono text-[0.66rem] text-mute">
             {run.map((t, i) => (
               <span key={t.name} className="absolute inset-0 truncate leading-5" style={{ opacity: during(i) }}>
-                tabee1999.github.io{t.url}
+                tabeedashakir.github.io{t.url}
               </span>
             ))}
           </div>

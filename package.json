@@ -12,7 +12,7 @@
     "test": "playwright test",
     "test:chrome": "playwright test --project=desktop-chrome --project=mobile-chrome",
     "test:worker": "node --test chat-worker/worker.test.mjs",
-    "test:live": "BASE_URL=https://tabee1999.github.io/ playwright test --grep @smoke",
+    "test:live": "BASE_URL=https://tabeedashakir.github.io/ playwright test --grep @smoke",
     "check:links": "node scripts/check-links.mjs",
     "lighthouse": "lhci autorun",
     "test:ui": "playwright test --ui",

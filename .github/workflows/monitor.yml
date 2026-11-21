@@ -32,10 +32,10 @@ jobs:
       - name: Install browser
         run: npx playwright install --with-deps chromium
 
-      - name: Smoke tests on https://tabee1999.github.io
+      - name: Smoke tests on https://tabeedashakir.github.io
         run: npx playwright test --grep @smoke --project=desktop-chrome --project=mobile-chrome
         env:
-          BASE_URL: https://tabee1999.github.io/
+          BASE_URL: https://tabeedashakir.github.io/
 
       - name: Upload report
         if: ${{ failure() }}
@@ -57,4 +57,4 @@ jobs:
           node-version: 22
 
       - name: Check every external link on the live site
-        run: node scripts/check-links.mjs --site https://tabee1999.github.io
+        run: node scripts/check-links.mjs --site https://tabeedashakir.github.io

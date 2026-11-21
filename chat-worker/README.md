@@ -4,9 +4,9 @@ The "Ask about me" chat on the portfolio works without this: it answers from `sr
 
 GitHub Pages only hosts static files, so the Anthropic API key can't go in the website (anyone could copy it). This small Cloudflare Worker holds the key instead and:
 
-- only accepts requests from `https://tabee1999.github.io`
+- only accepts requests from `https://tabeedashakir.github.io`
 - limits each visitor to 20 messages per 10 minutes, and caps message length and reply length
-- answers only from the public profile in `https://tabee1999.github.io/llms.txt` (generated from `src/content.ts`, so the chat and the site always agree)
+- answers only from the public profile in `https://tabeedashakir.github.io/llms.txt` (generated from `src/content.ts`, so the chat and the site always agree)
 - tells Claude not to invent anything, to stay on her professional profile, and to send salary, visa and personal questions to email
 - never shows API errors or the key to visitors
 
@@ -54,8 +54,8 @@ Optional variables (Cloudflare **Settings → Variables**, or `[vars]` in `wrang
 | Variable | Default | What it does |
 | --- | --- | --- |
 | `MODEL` | `claude-haiku-5-5` | The Claude model used for replies |
-| `ALLOWED_ORIGINS` | `https://tabee1999.github.io` | Websites allowed to use the chat, comma-separated (add `http://localhost:4321` to try it locally) |
-| `PROFILE_URL` | `https://tabee1999.github.io/llms.txt` | Where the chat reads the profile it answers from |
+| `ALLOWED_ORIGINS` | `https://tabeedashakir.github.io` | Websites allowed to use the chat, comma-separated (add `http://localhost:4321` to try it locally) |
+| `PROFILE_URL` | `https://tabeedashakir.github.io/llms.txt` | Where the chat reads the profile it answers from |
 
 ## Tests
 
