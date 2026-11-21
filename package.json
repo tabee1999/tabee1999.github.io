@@ -27,7 +27,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
     "@lhci/cli": "^0.14.0",
-    "@playwright/test": "^1.56.0",
+    "@playwright/test": "1.65.1",
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

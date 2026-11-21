@@ -34,11 +34,14 @@ function needsBaseline(name: string) {
   test.skip(approvedWith !== runningWith, `Screenshots were approved with Playwright ${approvedWith}, this is ${runningWith}: run the "Visual baselines" workflow`);
 }
 
-/** Things that legitimately change between runs: the random bugs on the hero grid and the clocks. */
-const changing = (page: Page) => [page.getByTestId("hero-grid"), page.getByTestId("local-time")];
+/** Things that legitimately change between runs and get masked: the clocks. */
+const changing = (page: Page) => [page.getByTestId("local-time")];
 
 async function open(page: Page, path: string) {
   await page.goto(path);
+  // The hero's background grid places its bugs at random, and it sits behind the whole hero,
+  // so it's hidden rather than masked (a mask would cover everything in front of it too).
+  await page.addStyleTag({ content: '[data-testid="hero-grid"] { visibility: hidden !important; }' });
   await page.evaluate(() => document.fonts.ready);
   // Every eagerly loaded image decoded, so nothing pops in mid-screenshot. (Lazy images below
   // the fold never load until scrolled to, so waiting for them would hang.)
@@ -54,10 +57,10 @@ test.describe("visual regression", () => {
     await expect(page).toHaveScreenshot("home-first-screen.png", { mask: changing(page) });
   });
 
-  test("hero photo with its checks", async ({ page }) => {
-    needsBaseline("hero-photo.png");
+  test("the whole hero, with the photo and its checks", async ({ page }) => {
+    needsBaseline("hero.png");
     await open(page, "/");
-    await expect(page.getByTestId("photo-scan")).toHaveScreenshot("hero-photo.png");
+    await expect(page.locator("#top")).toHaveScreenshot("hero.png", { mask: changing(page) });
   });
 
   test("projects grid", async ({ page }) => {
