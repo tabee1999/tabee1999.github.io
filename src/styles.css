@@ -496,6 +496,31 @@ html:not(.motion) .marquee {
   transform: none;
 }
 
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.motion .run-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+/* Short screens (laptops at higher zoom): keep the whole test run in view. */
+@media (max-height: 760px) {
+  .run-lead {
+    display: none !important;
+  }
+
+  .run-list > li {
+    padding-block: 0.12rem;
+  }
+
+  .mini-page {
+    max-height: calc(100svh - 22rem);
+  }
+}
+
 /* ── Scroll-driven sections ─────────────────────────────────────────────────
    Only when motion is allowed (class set in <head>): the section grows tall and its stage
    sticks to the screen while you scroll through it. Otherwise it's an ordinary section

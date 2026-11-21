@@ -41,18 +41,18 @@ test.describe("animations", () => {
   test("the test run plays as you scroll", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("html")).toHaveClass(/\bmotion\b/);
-    const count = page.locator("#test-run").getByText(/passed$/);
+    const count = page.getByTestId("run-count");
     await expect.poll(() => progressOf(page, "#test-run")).toBe(0);
-    await expect(count).toHaveText("0 passed");
+    await expect(count).toHaveText("0");
 
     await scrollPinned(page, "#test-run", 0.5);
     await expect.poll(() => progressOf(page, "#test-run")).toBeCloseTo(0.5, 1);
     const halfway = parseInt((await count.textContent()) ?? "", 10);
-    expect(halfway).toBeGreaterThan(50);
-    expect(halfway).toBeLessThan(200);
+    expect(halfway).toBeGreaterThan(80);
+    expect(halfway).toBeLessThan(300);
 
     await scrollPinned(page, "#test-run", 1);
-    await expect(count).toHaveText(`${content.testCount} passed`);
+    await expect(count).toHaveText(content.testCount);
     await expect(page.getByTestId("test-run-panel")).toBeInViewport();
   });
 
@@ -98,7 +98,7 @@ test.describe("animations with reduced motion", () => {
     for (const id of ["#test-run", "#how-i-work"]) {
       expect(await page.locator(id).evaluate((el) => el.getBoundingClientRect().height)).toBeLessThan(vh * 1.9);
     }
-    await expect(page.locator("#test-run").getByText(/passed$/)).toHaveText(`${content.testCount} passed`);
+    await expect(page.getByTestId("run-count")).toHaveText(content.testCount);
     await expect.poll(() => opacity(page, "Released v2.4")).toBeGreaterThan(0.9);
     // The hero grid is drawn once and stays still.
     const grid = page.getByTestId("hero-grid");

@@ -607,5 +607,8 @@ export const sectionPaths: Record<string, string> = {
   contact: "/contact/",
 };
 
-/** The suite's headline number, shown in the home page's test run and the About page. */
-export const testCount = "230+";
+/**
+ * The suite's headline number: tests per run across Chrome, Firefox and mobile Chrome, as
+ * Playwright reports it. Check with `npx playwright test --list` (354 when last updated).
+ */
+export const testCount = "350+";
