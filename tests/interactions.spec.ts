@@ -118,10 +118,25 @@ test.describe("skills", () => {
     await page.getByLabel("Job description").fill("SDET with TypeScript, Playwright, Docker, GraphQL and performance testing with k6. Kubernetes is a plus.");
     await page.getByRole("button", { name: "Check my fit" }).click();
     const gaps = page.getByTestId("job-gaps");
-    for (const tool of ["TypeScript", "Docker", "GraphQL", "k6", "Kubernetes"]) await expect(gaps).toContainText(tool);
+    for (const tool of ["Docker", "GraphQL", "k6", "Kubernetes"]) await expect(gaps).toContainText(tool);
+    await expect(gaps).not.toContainText("TypeScript");
     await expect(gaps).toContainText("k6 · closest experience: JMeter");
     await expect(page.getByTestId("job-summary")).toContainText("on my CV");
     await expect(page.getByTestId("job-result").getByText("Playwright", { exact: true })).toBeVisible();
+  });
+
+  test("job match covers mobile automation and device clouds", async ({ page }) => {
+    await page.goto("/skills/");
+    await page.getByLabel("Job description").fill(
+      "Mobile Automation. Strong hands-on experience with Appium, Java, and TestNG. API Automation using Rest Assured / Playwright / Pytest. Programming knowledge in Java, JavaScript / TypeScript, or Python. API testing using Postman or SoapUI. Experience with BrowserStack / LambdaTest / pCloudy. Familiarity with AI-driven testing and OWASP Mobile.",
+    );
+    await page.getByRole("button", { name: "Check my fit" }).click();
+    const result = page.getByTestId("job-result");
+    for (const skill of ["Appium", "TestNG", "RestAssured", "Playwright", "TypeScript", "Postman", "SoapUI", "BrowserStack", "LambdaTest", "OWASP Mobile Top 10"]) {
+      await expect(result.getByText(skill, { exact: true })).toBeVisible();
+    }
+    // Pytest isn't on her CV: it's listed honestly, with the closest thing she has used
+    await expect(page.getByTestId("job-gaps")).toContainText("pytest · closest experience: TestNG and JUnit");
   });
 
   test("job match recognises the AI tools she uses", async ({ page }) => {

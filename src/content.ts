@@ -149,13 +149,13 @@ export const services = [
   {
     icon: "devices",
     title: "Web and mobile testing",
-    text: "iOS, Android and web apps, with cross-browser, responsive and accessibility (WCAG) checks.",
+    text: "iOS, Android and web apps, with Appium automation on real devices in BrowserStack and LambdaTest, and cross-browser, responsive and accessibility (WCAG) checks.",
     points: ["iOS and Android", "Cross-browser", "WCAG checks"],
   },
   {
     icon: "gauge",
     title: "Performance and security",
-    text: "JMeter load tests and OWASP ZAP security scans before releases, with results the team can act on.",
+    text: "JMeter load tests, OWASP ZAP security scans and OWASP Mobile Top 10 checks before releases, with results the team can act on.",
     points: ["JMeter load tests", "OWASP ZAP scans", "Release readiness"],
   },
 ];
@@ -395,11 +395,13 @@ export const experience: Job[] = [
     summary: "QA lead for travel, logistics, fleet and restaurant products across web, mobile and API.",
     bullets: [
       "Lead QA for Al Rais Travel (travel booking), Modon Express (logistics and delivery), Fleetify (fleet management) and Tawla (restaurant management) across web, mobile and API.",
-      "Automated regression with 300+ Playwright, RestAssured and Postman/Newman tests in GitHub Actions, cutting full regression from 2–3 days to under a day.",
-      "Designed and ran 700+ functional, API and UI test cases, tracked in TestRail.",
-      "Lead bug triage and give go/no-go input on 3+ releases a month; run JMeter performance tests and OWASP ZAP scans before releases.",
+      "Automated regression with 300+ Playwright (TypeScript), RestAssured and Postman/Newman tests in GitHub Actions, cutting full regression from 2–3 days to under a day.",
+      "Automated mobile tests for the Android and iOS apps with Appium, Java and TestNG, running on real devices in BrowserStack and LambdaTest.",
+      "Designed and ran 700+ functional, API and UI test cases, tracked in TestRail, and tested REST and SOAP APIs with Postman and SoapUI.",
+      "Lead bug triage and give go/no-go input on 3+ releases a month; run JMeter performance tests, OWASP ZAP scans and OWASP Mobile Top 10 checks before releases.",
+      "Use AI-driven testing (Claude Code, OpenAI Codex and Playwright MCP) to draft, fix and maintain test scripts, and review every change before it's merged.",
     ],
-    tags: ["Playwright", "RestAssured", "Postman", "GitHub Actions", "TestRail"],
+    tags: ["Playwright", "Appium", "RestAssured", "BrowserStack", "LambdaTest", "SoapUI", "GitHub Actions"],
   },
   {
     company: "Propellus",
@@ -529,10 +531,10 @@ export const skillGroups = [
     items: ["AI-assisted test design", "Prompt-based test generation", "LLM and chatbot testing", "AI test data generation", ...aiTools.flatMap((g) => g.tools.map((t) => t.name))],
   },
   { group: "Manual QA", items: ["Manual testing", "Test case design", "Exploratory testing", "Regression and smoke", "UAT", "Cross-browser and responsive", "Bug reporting and triage"] },
-  { group: "Automation", items: ["Playwright", "Selenium", "RestAssured", "TestNG", "JUnit", "Postman", "Newman", "Gherkin (BDD)", "Allure Report"] },
-  { group: "Languages and data", items: ["Java", "JavaScript", "SQL"] },
-  { group: "CI/CD and tools", items: ["GitHub Actions", "Jenkins", "Azure DevOps", "CI/CD pipelines", "Git", "GitHub", "Jira", "TestRail", "Confluence", "Figma"] },
-  { group: "Performance and security", items: ["JMeter", "OWASP ZAP", "Chrome DevTools"] },
+  { group: "Automation", items: ["Playwright", "Selenium", "Appium", "RestAssured", "TestNG", "JUnit", "Postman", "Newman", "SoapUI", "Gherkin (BDD)", "Allure Report"] },
+  { group: "Languages and data", items: ["Java", "JavaScript", "TypeScript", "SQL"] },
+  { group: "CI/CD and tools", items: ["GitHub Actions", "Jenkins", "Azure DevOps", "CI/CD pipelines", "Git", "GitHub", "BrowserStack", "LambdaTest", "Jira", "TestRail", "Confluence", "Figma"] },
+  { group: "Performance and security", items: ["JMeter", "OWASP ZAP", "OWASP Mobile Top 10", "Chrome DevTools"] },
   { group: "Practices", items: ["Test strategy", "Agile / Scrum", "Shift-left testing", "Release readiness (go/no-go)", "Root cause analysis", "WCAG accessibility"] },
 ];
 
@@ -555,11 +557,17 @@ export const skillAliases: Record<string, string[]> = {
   "Exploratory testing": ["exploratory"],
   "Regression and smoke": ["regression", "smoke", "sanity"],
   UAT: ["uat", "user acceptance"],
-  "Cross-browser and responsive": ["cross-browser", "cross browser", "responsive", "browserstack"],
+  "Cross-browser and responsive": ["cross-browser", "cross browser", "responsive"],
   "Bug reporting and triage": ["bug", "bugs", "defect", "defects", "triage"],
   Playwright: ["playwright"],
   "Allure Report": ["allure", "allure report", "test reporting"],
   Selenium: ["selenium", "webdriver"],
+  Appium: ["appium", "mobile automation", "mobile test automation"],
+  SoapUI: ["soapui", "soap ui", "soap"],
+  TypeScript: ["typescript"],
+  BrowserStack: ["browserstack"],
+  LambdaTest: ["lambdatest", "lambda test"],
+  "OWASP Mobile Top 10": ["owasp mobile", "mobile security", "masvs", "mastg"],
   RestAssured: ["restassured", "rest assured", "rest-assured", "api testing", "api automation"],
   Postman: ["postman"],
   Newman: ["newman"],
@@ -601,7 +609,7 @@ export const faqs = [
   },
   {
     q: "Which tools does she use?",
-    a: "Playwright, Selenium, RestAssured, TestNG, Postman and Newman, Java, JavaScript and SQL, JMeter and OWASP ZAP, with GitHub Actions, Jenkins or Azure DevOps for CI/CD, Git and GitHub for version control, and Jira and TestRail for test management.",
+    a: "Playwright, Selenium, Appium, RestAssured, TestNG, Postman, Newman and SoapUI, Java, JavaScript, TypeScript and SQL, BrowserStack and LambdaTest for real devices, JMeter, OWASP ZAP and OWASP Mobile Top 10, with GitHub Actions, Jenkins or Azure DevOps for CI/CD, Git and GitHub for version control, and Jira and TestRail for test management.",
   },
   {
     q: "What roles is Tabeeda open to?",
@@ -650,7 +658,7 @@ export const pages: Record<PageKey, { path: string; label: string; title: string
   skills: {
     path: "/skills/",
     label: "Skills",
-    title: "QA Skills: Playwright, Selenium, RestAssured, API Testing — Tabeeda Shakir",
+    title: "QA Skills: Playwright, Appium, Selenium, RestAssured, API Testing — Tabeeda Shakir",
     description:
       "Test automation, AI-first QA, manual, API, mobile, performance and security testing. Paste a job description to see how Tabeeda's skills match your role.",
   },
